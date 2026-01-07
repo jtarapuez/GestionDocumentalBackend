@@ -1,0 +1,97 @@
+{
+  "endpoint": "PUT /api/v1/subseries/{id}",
+  "description": "Actualiza una subserie documental existente",
+  "method": "PUT",
+  "url": "http://localhost:8080/api/v1/subseries/5",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "id": 5
+  },
+  "body": {
+    "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez (Actualizada)",
+    "descripcion": "Subserie documental actualizada para trámites iniciales de pensiones de vejez con nueva información",
+    "formatoDoc": "MIXTO",
+    "seguridad": "RESERVADA",
+    "normativa": "Ley de Seguridad Social - Artículo 123 (Actualizado)",
+    "responsable": "0987654321",
+    "estado": "Actualizado",
+    "justificacion": "Actualización de la subserie para reflejar cambios en la normativa"
+  },
+  "note": "En PUT, solo envía los campos que quieres actualizar. Los campos no enviados se mantienen igual.",
+  "examples": [
+    {
+      "description": "Actualizar solo nombre y descripción",
+      "id": 5,
+      "body": {
+        "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez (Actualizada)",
+        "descripcion": "Descripción actualizada de la subserie"
+      }
+    },
+    {
+      "description": "Actualizar formato y seguridad",
+      "id": 5,
+      "body": {
+        "formatoDoc": "DIGITAL",
+        "seguridad": "PUBLICA"
+      }
+    },
+    {
+      "description": "Actualización completa",
+      "id": 5,
+      "body": {
+        "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez (Actualizada)",
+        "descripcion": "Subserie documental actualizada",
+        "formatoDoc": "MIXTO",
+        "seguridad": "RESERVADA",
+        "normativa": "Nueva normativa",
+        "responsable": "0987654321",
+        "justificacion": "Actualización completa de la subserie"
+      }
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": {
+        "id": 5,
+        "idSerie": 7,
+        "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez (Actualizada)",
+        "descripcion": "Subserie documental actualizada para trámites iniciales",
+        "formatoDoc": "MIXTO",
+        "seguridad": "RESERVADA",
+        "normativa": "Ley de Seguridad Social - Artículo 123 (Actualizado)",
+        "responsable": "0987654321",
+        "estado": "Actualizado",
+        "justificacion": "Actualización de la subserie para reflejar cambios en la normativa",
+        "usuCreacion": "1234567890",
+        "fecCreacion": "2026-01-07T..."
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "errorResponse": {
+    "statusCode": 404,
+    "body": {
+      "data": null,
+      "meta": null,
+      "error": {
+        "message": "Subserie no encontrada con ID: 999",
+        "code": "SUBSERIE_NOT_FOUND",
+        "details": null
+      }
+    }
+  },
+  "curlExample": "curl -X PUT 'http://localhost:8080/api/v1/subseries/5' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"nombreSubserie\":\"PRUEBA - Subserie Actualizada\",\"descripcion\":\"Descripción actualizada\"}'",
+  "notes": [
+    "El estado se actualiza automáticamente a 'Actualizado' cuando se modifica una subserie",
+    "Solo envía los campos que quieres actualizar (no es necesario enviar todos)",
+    "El ID en la URL debe existir en la base de datos",
+    "IDs de prueba disponibles: 5, 6, 7, 8"
+  ]
+}

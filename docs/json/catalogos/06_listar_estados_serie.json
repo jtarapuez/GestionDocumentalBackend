@@ -1,0 +1,45 @@
+{
+  "endpoint": "GET /api/v1/catalogos/estados-serie",
+  "description": "Lista los valores del catálogo ESTADO_SERIE (Creado, Actualizado)",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/estados-serie",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "codigo": "CREADO",
+          "descripcion": "Creado",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 3
+        },
+        {
+          "id": 2,
+          "codigo": "ACTUALIZADO",
+          "descripcion": "Actualizado",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 3
+        }
+      ],
+      "meta": {
+        "timestamp": "2025-01-XXT10:30:00",
+        "totalItems": 2
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/estados-serie' -H 'Content-Type: application/json'",
+  "notes": [
+    "Endpoint de conveniencia para obtener estados de serie",
+    "Equivalente a: GET /api/v1/catalogos/ESTADO_SERIE/detalles",
+    "Siempre retorna 2 valores: Creado, Actualizado"
+  ]
+}

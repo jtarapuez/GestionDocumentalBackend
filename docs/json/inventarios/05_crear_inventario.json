@@ -1,0 +1,188 @@
+{
+  "endpoint": "POST /api/v1/inventarios",
+  "description": "Registra un nuevo inventario documental",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/inventarios",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "idSeccion": 23,
+    "idSerie": 7,
+    "idSubserie": 5,
+    "numeroExpediente": "EXP-TEST-001",
+    "numeroCedula": "1234567890",
+    "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+    "descripcionSerie": "Expediente de prueba para pensiones de vejez - Trámite inicial. [PRUEBA]",
+    "numeroExtremoDesde": 1,
+    "numeroExtremoHasta": 50,
+    "fechaDesde": "2020-01-15",
+    "fechaHasta": "2020-12-31",
+    "cantidadFojas": 75,
+    "tipoContenedor": "Caja",
+    "numeroContenedor": 1,
+    "soporte": "Físico",
+    "tipoArchivo": "Archivo activo",
+    "observaciones": "Inventario de prueba para desarrollo. [PRUEBA]",
+    "supervisor": "0987654321"
+  },
+  "requiredFields": [
+    "idSeccion",
+    "idSerie",
+    "idSubserie",
+    "numeroExpediente"
+  ],
+  "optionalFields": [
+    "numeroCedula",
+    "numeroRuc",
+    "nombresApellidos",
+    "razonSocial",
+    "descripcionSerie",
+    "numeroExtremoDesde",
+    "numeroExtremoHasta",
+    "fechaDesde",
+    "fechaHasta",
+    "cantidadFojas",
+    "tipoContenedor",
+    "numeroContenedor",
+    "soporte",
+    "tipoArchivo",
+    "posicionPasivo",
+    "numeroRac",
+    "numeroFila",
+    "numeroColumna",
+    "numeroPosicion",
+    "bodega",
+    "observaciones",
+    "supervisor"
+  ],
+  "validValues": {
+    "tipoContenedor": ["Caja", "Carpeta", "Legajo", "Tomo"],
+    "soporte": ["Físico", "Digital", "Mixto"],
+    "tipoArchivo": ["Archivo activo", "Archivo pasivo"]
+  },
+  "examples": [
+    {
+      "description": "Inventario completo - Archivo Activo",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-001",
+        "numeroCedula": "1234567890",
+        "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+        "descripcionSerie": "Expediente de prueba para pensiones de vejez",
+        "numeroExtremoDesde": 1,
+        "numeroExtremoHasta": 50,
+        "fechaDesde": "2020-01-15",
+        "fechaHasta": "2020-12-31",
+        "cantidadFojas": 75,
+        "tipoContenedor": "Caja",
+        "numeroContenedor": 1,
+        "soporte": "Físico",
+        "tipoArchivo": "Archivo activo",
+        "observaciones": "Inventario de prueba",
+        "supervisor": "0987654321"
+      }
+    },
+    {
+      "description": "Inventario completo - Archivo Pasivo (con posición)",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-002",
+        "numeroCedula": "0987654321",
+        "nombresApellidos": "MARÍA GARCÍA LÓPEZ",
+        "descripcionSerie": "Expediente de prueba para archivo pasivo",
+        "numeroExtremoDesde": 51,
+        "numeroExtremoHasta": 100,
+        "fechaDesde": "2019-01-01",
+        "fechaHasta": "2019-12-31",
+        "cantidadFojas": 120,
+        "tipoContenedor": "Carpeta",
+        "numeroContenedor": 2,
+        "soporte": "Físico",
+        "tipoArchivo": "Archivo pasivo",
+        "posicionPasivo": "RAC.01.02.03.04.01",
+        "numeroRac": 1,
+        "numeroFila": 2,
+        "numeroColumna": 3,
+        "numeroPosicion": 4,
+        "bodega": 1,
+        "observaciones": "Inventario de prueba - Archivo pasivo",
+        "supervisor": "0987654321"
+      }
+    },
+    {
+      "description": "Inventario mínimo (solo campos requeridos)",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-003"
+      }
+    },
+    {
+      "description": "Inventario con RUC (empresa)",
+      "body": {
+        "idSeccion": 24,
+        "idSerie": 8,
+        "idSubserie": 6,
+        "numeroExpediente": "EXP-TEST-004",
+        "numeroRuc": "0991234567001",
+        "razonSocial": "EMPRESA DE PRUEBA S.A.",
+        "descripcionSerie": "Expediente de prueba para empresa",
+        "tipoContenedor": "Legajo",
+        "numeroContenedor": 1,
+        "soporte": "Digital",
+        "tipoArchivo": "Archivo activo",
+        "supervisor": "0987654321"
+      }
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 201,
+    "body": {
+      "data": {
+        "id": 1,
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-001",
+        "numeroCedula": "1234567890",
+        "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+        "estadoInventario": "Registrado",
+        "operador": "1234567890",
+        "supervisor": "0987654321",
+        "usuCreacion": "1234567890",
+        "fecCreacion": "2026-01-07T..."
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "errorResponse": {
+    "statusCode": 400,
+    "body": {
+      "data": null,
+      "meta": null,
+      "error": {
+        "message": "No se puede registrar inventario: existen pendientes vencidos (más de 5 días)",
+        "code": "INVENTARIO_VALIDATION_ERROR"
+      }
+    }
+  },
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/inventarios' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"idSeccion\":23,\"idSerie\":7,\"idSubserie\":5,\"numeroExpediente\":\"EXP-TEST-001\"}'",
+  "notes": [
+    "Requiere rol OPERADOR_SDNGD (actualmente temporal)",
+    "No se puede registrar si hay pendientes vencidos (más de 5 días)",
+    "El estado inicial será 'Registrado'",
+    "El operador se obtiene del contexto de seguridad (temporal: '1234567890')",
+    "Los valores de 'tipoContenedor' y 'tipoArchivo' deben coincidir con los códigos del catálogo",
+    "Para archivo pasivo, se puede usar 'posicionPasivo' o los campos individuales (numeroRac, numeroFila, etc.)"
+  ]
+}

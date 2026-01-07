@@ -1,0 +1,55 @@
+{
+  "endpoint": "GET /api/v1/series/{idSerie}/subseries",
+  "description": "Lista las subseries de una serie específica",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/series/7/subseries",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "idSerie": 7
+  },
+  "examples": [
+    {
+      "idSerie": 7,
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 5,
+              "idSerie": 7,
+              "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+              "descripcion": "Subserie documental de prueba para trámites iniciales de pensiones de vejez",
+              "formatoDoc": "FISICO",
+              "seguridad": "CONFIDENCIAL",
+              "estado": "Creado"
+            },
+            {
+              "id": 6,
+              "idSerie": 7,
+              "nombreSubserie": "PRUEBA - Subserie Renovaciones Vejez",
+              "descripcion": "Subserie documental de prueba para renovaciones de pensiones de vejez",
+              "formatoDoc": "DIGITAL",
+              "seguridad": "PUBLICA",
+              "estado": "Creado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T...",
+            "totalItems": 2
+          },
+          "error": null
+        }
+      }
+    }
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/series/7/subseries' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Retorna todas las subseries de la serie especificada",
+    "Serie ID 7 tiene 2 subseries (IDs: 5, 6)",
+    "Serie ID 8 tiene 1 subserie (ID: 7)",
+    "Serie ID 9 tiene 1 subserie (ID: 8)"
+  ]
+}

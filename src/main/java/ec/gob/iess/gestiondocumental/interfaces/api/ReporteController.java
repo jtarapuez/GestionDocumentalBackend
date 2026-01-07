@@ -17,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * Controlador REST para reportes y exportación de inventarios
  * Expone endpoints para exportar inventarios a PDF y Excel
  */
-@Path("/api/v1/reportes")
+@Path("/v1/reportes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Reportes", description = "API para generación de reportes y exportación de inventarios")

@@ -20,7 +20,7 @@ import java.util.List;
  * Controlador REST para la gestión de subseries documentales
  * Expone endpoints para crear, actualizar y consultar subseries
  */
-@Path("/api/v1/subseries")
+@Path("/v1/subseries")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Subseries Documentales", description = "API para gestión de subseries documentales")

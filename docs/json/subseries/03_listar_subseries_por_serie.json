@@ -1,0 +1,50 @@
+{
+  "endpoint": "GET /api/v1/subseries/serie/{idSerie}",
+  "description": "Lista todas las subseries de una serie específica (endpoint alternativo)",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/subseries/serie/7",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "idSerie": 7
+  },
+  "note": "Este es un endpoint alternativo. También puedes usar: GET /api/v1/subseries?idSerie=7",
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 5,
+          "idSerie": 7,
+          "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+          "descripcion": "Subserie documental de prueba para trámites iniciales de pensiones de vejez",
+          "formatoDoc": "FISICO",
+          "seguridad": "CONFIDENCIAL",
+          "estado": "Creado"
+        },
+        {
+          "id": 6,
+          "idSerie": 7,
+          "nombreSubserie": "PRUEBA - Subserie Renovaciones Vejez",
+          "descripcion": "Subserie documental de prueba para renovaciones de pensiones de vejez",
+          "formatoDoc": "DIGITAL",
+          "seguridad": "PUBLICA",
+          "estado": "Creado"
+        }
+      ],
+      "meta": {
+        "timestamp": "2026-01-07T...",
+        "totalItems": 2
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/subseries/serie/7' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Endpoint alternativo para listar subseries por serie",
+    "Equivalente a: GET /api/v1/subseries?idSerie=7",
+    "Serie ID 7 tiene 2 subseries"
+  ]
+}

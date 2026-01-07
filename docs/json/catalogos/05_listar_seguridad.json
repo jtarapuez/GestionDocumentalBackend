@@ -1,0 +1,53 @@
+{
+  "endpoint": "GET /api/v1/catalogos/seguridad",
+  "description": "Lista los valores del catálogo SEGURIDAD (Pública, Confidencial, Reservada)",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/seguridad",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "codigo": "PUBLICA",
+          "descripcion": "Pública",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 2
+        },
+        {
+          "id": 2,
+          "codigo": "CONFIDENCIAL",
+          "descripcion": "Confidencial",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 2
+        },
+        {
+          "id": 3,
+          "codigo": "RESERVADA",
+          "descripcion": "Reservada",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 2
+        }
+      ],
+      "meta": {
+        "timestamp": "2025-01-XXT10:30:00",
+        "totalItems": 3
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/seguridad' -H 'Content-Type: application/json'",
+  "notes": [
+    "Endpoint de conveniencia para obtener niveles de seguridad",
+    "Equivalente a: GET /api/v1/catalogos/SEGURIDAD/detalles",
+    "Siempre retorna 3 valores: Pública, Confidencial, Reservada"
+  ]
+}

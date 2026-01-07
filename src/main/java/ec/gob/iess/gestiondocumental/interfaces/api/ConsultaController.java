@@ -20,7 +20,7 @@ import java.util.List;
  * Controlador REST para consultas avanzadas de inventarios
  * Expone endpoints para consultas con múltiples filtros
  */
-@Path("/api/v1/consultas")
+@Path("/v1/consultas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Consultas", description = "API para consultas avanzadas de inventarios documentales")

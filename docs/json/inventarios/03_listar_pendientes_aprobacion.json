@@ -1,0 +1,41 @@
+{
+  "endpoint": "GET /api/v1/inventarios/pendientes-aprobacion",
+  "description": "Lista inventarios pendientes de aprobación (para supervisores)",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/inventarios/pendientes-aprobacion",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "note": "Este endpoint requiere rol SUPERVISOR_SDNGD (actualmente temporal hasta implementar Keycloak)",
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "idSeccion": 23,
+          "idSerie": 7,
+          "idSubserie": 5,
+          "numeroExpediente": "EXP-TEST-001",
+          "numeroCedula": "1234567890",
+          "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+          "estadoInventario": "Registrado",
+          "operador": "1234567890",
+          "supervisor": "0987654321",
+          "fecCreacion": "2026-01-07T..."
+        }
+      ],
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/inventarios/pendientes-aprobacion' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Retorna solo inventarios en estado 'Registrado' o 'Actualizado'",
+    "Requiere rol SUPERVISOR_SDNGD (actualmente temporal)",
+    "Los inventarios pendientes son aquellos que esperan aprobación del supervisor"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "endpoint": "POST /api/v1/subseries",
+  "description": "Crea una nueva subserie documental",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/subseries",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "idSerie": 7,
+    "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+    "descripcion": "Subserie documental de prueba para trámites iniciales de pensiones de vejez. Incluye documentación de primera solicitud.",
+    "formatoDoc": "FISICO",
+    "seguridad": "CONFIDENCIAL",
+    "normativa": "Ley de Seguridad Social - Artículo 123",
+    "responsable": "1234567890",
+    "estado": "Creado",
+    "justificacion": "Subserie creada para pruebas del sistema de gestión documental"
+  },
+  "requiredFields": [
+    "idSerie",
+    "nombreSubserie",
+    "descripcion",
+    "formatoDoc",
+    "seguridad"
+  ],
+  "optionalFields": [
+    "normativa",
+    "responsable",
+    "estado",
+    "justificacion"
+  ],
+  "validValues": {
+    "formatoDoc": ["FISICO", "DIGITAL", "MIXTO"],
+    "seguridad": ["PUBLICA", "CONFIDENCIAL", "RESERVADA"],
+    "estado": ["Creado", "Actualizado"]
+  },
+  "examples": [
+    {
+      "description": "Subserie con formato físico",
+      "body": {
+        "idSerie": 7,
+        "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+        "descripcion": "Subserie documental de prueba para trámites iniciales",
+        "formatoDoc": "FISICO",
+        "seguridad": "CONFIDENCIAL",
+        "normativa": "Ley de Seguridad Social",
+        "responsable": "1234567890",
+        "estado": "Creado",
+        "justificacion": "Subserie de prueba"
+      }
+    },
+    {
+      "description": "Subserie con formato digital",
+      "body": {
+        "idSerie": 8,
+        "nombreSubserie": "PRUEBA - Subserie Evaluaciones Médicas",
+        "descripcion": "Subserie documental de prueba para evaluaciones médicas",
+        "formatoDoc": "DIGITAL",
+        "seguridad": "PUBLICA",
+        "normativa": "Reglamento de Evaluaciones",
+        "responsable": "1234567890",
+        "estado": "Creado",
+        "justificacion": "Subserie de prueba para desarrollo"
+      }
+    },
+    {
+      "description": "Subserie mínima (solo campos requeridos)",
+      "body": {
+        "idSerie": 7,
+        "nombreSubserie": "PRUEBA - Subserie Mínima",
+        "descripcion": "Subserie con solo campos requeridos",
+        "formatoDoc": "MIXTO",
+        "seguridad": "PUBLICA"
+      }
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 201,
+    "body": {
+      "data": {
+        "id": 9,
+        "idSerie": 7,
+        "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+        "descripcion": "Subserie documental de prueba para trámites iniciales de pensiones de vejez",
+        "formatoDoc": "FISICO",
+        "seguridad": "CONFIDENCIAL",
+        "normativa": "Ley de Seguridad Social - Artículo 123",
+        "responsable": "1234567890",
+        "estado": "Creado",
+        "justificacion": "Subserie creada para pruebas del sistema de gestión documental",
+        "usuCreacion": "1234567890",
+        "fecCreacion": "2026-01-07T..."
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/subseries' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"idSerie\":7,\"nombreSubserie\":\"PRUEBA - Subserie Trámites Iniciales Vejez\",\"descripcion\":\"Subserie documental de prueba\",\"formatoDoc\":\"FISICO\",\"seguridad\":\"CONFIDENCIAL\"}'",
+  "notes": [
+    "El campo 'estado' es opcional. Si no se envía, se asigna 'Creado' por defecto",
+    "El 'idSerie' debe existir en la base de datos (IDs disponibles: 7, 8, 9)",
+    "Los valores de 'formatoDoc' y 'seguridad' deben coincidir con los códigos del catálogo",
+    "El 'responsable' es la cédula del usuario responsable"
+  ]
+}

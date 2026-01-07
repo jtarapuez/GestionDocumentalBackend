@@ -56,16 +56,19 @@ ejecutar_script() {
 }
 
 # Ejecutar scripts en orden
-echo -e "${YELLOW}Paso 1/4: Insertar Secciones${NC}"
+echo -e "${YELLOW}Paso 0/5: Insertar Catálogo de Secciones Documentales${NC}"
+ejecutar_script "05_insertar_catalogos_secciones.sql" "Catálogo de Secciones Documentales (Áreas IESS)" || exit 1
+
+echo -e "${YELLOW}Paso 1/5: Insertar Secciones${NC}"
 ejecutar_script "01_insertar_secciones.sql" "Secciones Documentales" || exit 1
 
-echo -e "${YELLOW}Paso 2/4: Insertar Series${NC}"
+echo -e "${YELLOW}Paso 2/5: Insertar Series${NC}"
 ejecutar_script "02_insertar_series.sql" "Series Documentales" || exit 1
 
-echo -e "${YELLOW}Paso 3/4: Insertar Subseries${NC}"
+echo -e "${YELLOW}Paso 3/5: Insertar Subseries${NC}"
 ejecutar_script "03_insertar_subseries.sql" "Subseries Documentales" || exit 1
 
-echo -e "${YELLOW}Paso 4/4: Insertar Inventarios${NC}"
+echo -e "${YELLOW}Paso 4/5: Insertar Inventarios${NC}"
 ejecutar_script "04_insertar_inventarios.sql" "Inventarios Documentales" || exit 1
 
 echo ""
@@ -74,7 +77,8 @@ echo -e "${GREEN}  ✓ TODOS LOS SCRIPTS EJECUTADOS EXITOSAMENTE${NC}"
 echo -e "${GREEN}=====================================================${NC}"
 echo ""
 echo "Datos de prueba insertados:"
-echo "  - 3 Secciones"
+echo "  - 1 Catálogo de Secciones Documentales (60+ áreas IESS)"
+echo "  - 3 Secciones de prueba"
 echo "  - 3 Series"
 echo "  - 4 Subseries"
 echo "  - 5 Inventarios"

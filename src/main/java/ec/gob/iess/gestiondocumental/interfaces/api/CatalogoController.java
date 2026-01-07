@@ -21,7 +21,7 @@ import java.util.List;
  * Controlador REST para la gestión de catálogos
  * Expone endpoints para consultar catálogos y sus detalles
  */
-@Path("/api/v1/catalogos")
+@Path("/v1/catalogos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Catálogos", description = "API para gestión de catálogos del sistema documental")
@@ -347,3 +347,4 @@ public class CatalogoController {
         }
     }
 }
+

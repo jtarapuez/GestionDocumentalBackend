@@ -1,0 +1,61 @@
+{
+  "endpoint": "GET /api/v1/subseries/{id}",
+  "description": "Obtiene una subserie documental específica por su ID",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/subseries/5",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "id": 5
+  },
+  "examples": [
+    {
+      "id": 5,
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": {
+            "id": 5,
+            "idSerie": 7,
+            "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+            "descripcion": "Subserie documental de prueba para trámites iniciales de pensiones de vejez",
+            "formatoDoc": "FISICO",
+            "seguridad": "CONFIDENCIAL",
+            "normativa": "Normativa de prueba",
+            "responsable": "Responsable de prueba",
+            "estado": "Creado",
+            "justificacion": "Justificación de prueba",
+            "usuCreacion": "1234567890",
+            "fecCreacion": "2026-01-07T..."
+          },
+          "meta": {
+            "timestamp": "2026-01-07T..."
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "id": 999,
+      "expectedResponse": {
+        "statusCode": 404,
+        "body": {
+          "data": null,
+          "meta": null,
+          "error": {
+            "message": "Subserie no encontrada con ID: 999",
+            "code": "SUBSERIE_NOT_FOUND",
+            "details": null
+          }
+        }
+      }
+    }
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/subseries/5' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "IDs de prueba disponibles: 5, 6, 7, 8",
+    "Si la subserie no existe, retorna 404"
+  ]
+}

@@ -17,6 +17,14 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 
 ## 📁 Archivos
 
+### 0. `00_configurar_schema.sql`
+**Descripción:** Configura el schema actual de Oracle.
+
+**Cuándo usar:**
+- Antes de ejecutar cualquier script si no estás conectado directamente al schema DOCUMENTAL_OWNER
+
+---
+
 ### 1. `00_limpiar_datos_prueba.sql`
 **Descripción:** Elimina todos los datos de prueba de la base de datos.
 
@@ -28,7 +36,37 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 
 ---
 
-### 2. `01_insertar_secciones.sql`
+### 2. `05_insertar_catalogos_secciones.sql`
+**Descripción:** Inserta el catálogo de secciones documentales (Áreas IESS) basado en el ANEXO 1 del requerimiento funcional GTI-P02-F02.
+
+**Datos insertados:**
+- Catálogo maestro: `SECCIONES_DOC` (código acortado para cumplir límite de 20 caracteres)
+- 110 áreas IESS (Direcciones Nacionales, Subdirecciones Nacionales, Coordinaciones, Comités, etc.)
+
+**Ejecutar primero:** Este script debe ejecutarse ANTES de los demás, ya que las secciones documentales pueden referenciar este catálogo.
+
+**Nota:** Este script inserta el catálogo completo de áreas IESS. Las secciones de prueba en `01_insertar_secciones.sql` son independientes.
+
+**Script de verificación:** Ver `05_verificar_catalogos_secciones.sql` para consultar los datos insertados.
+
+---
+
+### 2.1. `05_verificar_catalogos_secciones.sql`
+**Descripción:** Script de verificación para consultar el catálogo de secciones documentales insertado.
+
+**Uso:** Ejecutar en Toad, SQL Developer o cualquier cliente SQL para verificar que los datos se insertaron correctamente.
+
+**Contenido:**
+- Resumen del catálogo (total de áreas)
+- Listado completo de todas las áreas
+- Verificación de estados
+- Consultas de ejemplo
+
+**Ejecutar:** Puede ejecutarse independientemente después de `05_insertar_catalogos_secciones.sql`.
+
+---
+
+### 3. `01_insertar_secciones.sql`
 **Descripción:** Inserta 3 secciones documentales de prueba.
 
 **Datos insertados:**
@@ -36,11 +74,11 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 - PRUEBA - Sección Prestaciones
 - TEST - Sección Recursos Humanos
 
-**Ejecutar primero:** Este es el primer script en el orden de ejecución.
+**Ejecutar después de:** `05_insertar_catalogos_secciones.sql` (opcional, pero recomendado)
 
 ---
 
-### 3. `02_insertar_series.sql`
+### 4. `02_insertar_series.sql`
 **Descripción:** Inserta 3 series documentales de prueba.
 
 **Datos insertados:**
@@ -52,7 +90,7 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 
 ---
 
-### 4. `03_insertar_subseries.sql`
+### 5. `03_insertar_subseries.sql`
 **Descripción:** Inserta 4 subseries documentales de prueba.
 
 **Datos insertados:**
@@ -65,7 +103,7 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 
 ---
 
-### 5. `04_insertar_inventarios.sql`
+### 6. `04_insertar_inventarios.sql`
 **Descripción:** Inserta 5 inventarios documentales de prueba con diferentes estados.
 
 **Datos insertados:**
@@ -88,6 +126,7 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 sqlplus DOCUMENTAL_OWNER/DOC87desa@192.168.29.208:1539/PDBIESS_DESA
 
 # Ejecutar scripts en orden
+@05_insertar_catalogos_secciones.sql
 @01_insertar_secciones.sql
 @02_insertar_series.sql
 @03_insertar_subseries.sql
@@ -97,7 +136,7 @@ sqlplus DOCUMENTAL_OWNER/DOC87desa@192.168.29.208:1539/PDBIESS_DESA
 ### Opción 2: Ejecutar desde SQL Developer o DBeaver
 
 1. Abrir cada archivo `.sql`
-2. Ejecutar en orden: 01 → 02 → 03 → 04
+2. Ejecutar en orden: 05 → 01 → 02 → 03 → 04
 3. Verificar que cada script muestre los datos insertados
 
 ### Opción 3: Ejecutar desde línea de comandos
@@ -132,7 +171,8 @@ WHERE NUM_EXPEDIENTE LIKE 'EXP-TEST-%' OR NUM_EXPEDIENTE LIKE 'TEST-%';
 ```
 
 **Resultados esperados:**
-- Secciones: 3
+- Catálogo de Secciones: 1 catálogo con 60+ áreas IESS
+- Secciones de prueba: 3
 - Series: 3
 - Subseries: 4
 - Inventarios: 5

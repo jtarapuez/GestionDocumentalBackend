@@ -1,0 +1,50 @@
+{
+  "endpoint": "GET /api/v1/catalogos/secciones",
+  "description": "Lista todas las secciones documentales activas del sistema",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/secciones",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "codigo": "SEC-001",
+          "nombre": "PRUEBA - Sección Pensiones",
+          "descripcion": "Sección de prueba para pensiones",
+          "estado": "Creado"
+        },
+        {
+          "id": 2,
+          "codigo": "SEC-002",
+          "nombre": "PRUEBA - Sección Prestaciones",
+          "descripcion": "Sección de prueba para prestaciones",
+          "estado": "Creado"
+        },
+        {
+          "id": 3,
+          "codigo": "SEC-003",
+          "nombre": "TEST - Sección Recursos Humanos",
+          "descripcion": "Sección de prueba para recursos humanos",
+          "estado": "Creado"
+        }
+      ],
+      "meta": {
+        "timestamp": "2025-01-XXT10:30:00",
+        "totalItems": 3
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/secciones' -H 'Content-Type: application/json'",
+  "notes": [
+    "Retorna solo secciones documentales con estado activo",
+    "Las secciones de prueba tienen prefijo 'PRUEBA' o 'TEST'",
+    "Este endpoint es diferente a /api/v1/catalogos/SECCIONES_DOC/detalles (que retorna áreas IESS)"
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "Realiza una consulta avanzada de inventarios con múltiples filtros opcionales",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "idSeccion": 23,
+    "idSerie": 7,
+    "idSubserie": 5,
+    "numeroExpediente": "EXP-TEST-001",
+    "tipoContenedor": "Caja",
+    "tipoArchivo": "Archivo activo",
+    "operador": "1234567890",
+    "numeroCedula": "1234567890",
+    "estado": "Registrado",
+    "fechaDesde": "2020-01-01",
+    "fechaHasta": "2020-12-31"
+  },
+  "note": "Todos los campos son opcionales. Puedes combinar múltiples filtros para una búsqueda más específica.",
+  "availableFilters": {
+    "idSeccion": "Filtro por sección (Long)",
+    "idSerie": "Filtro por serie (Long)",
+    "idSubserie": "Filtro por subserie (Long)",
+    "numeroExpediente": "Filtro por número de expediente (String)",
+    "tipoContenedor": "Filtro por tipo de contenedor: Caja, Carpeta, Legajo, Tomo (String)",
+    "numeroContenedor": "Filtro por número de contenedor (Integer)",
+    "tipoArchivo": "Filtro por tipo de archivo: Archivo activo, Archivo pasivo (String)",
+    "operador": "Filtro por cédula del operador (String)",
+    "numeroCedula": "Filtro por cédula del beneficiario (String)",
+    "numeroRuc": "Filtro por RUC de empresa (String)",
+    "nombresApellidos": "Filtro por nombres y apellidos (String, búsqueda parcial)",
+    "razonSocial": "Filtro por razón social (String, búsqueda parcial)",
+    "descripcionSerie": "Filtro por descripción de serie (String, búsqueda parcial)",
+    "estado": "Filtro por estado: Registrado, Pendiente, Actualizado, Aprobado (String)",
+    "fechaDesde": "Filtro por fecha desde (LocalDate, formato: YYYY-MM-DD)",
+    "fechaHasta": "Filtro por fecha hasta (LocalDate, formato: YYYY-MM-DD)"
+  },
+  "examples": [
+    {
+      "description": "Consulta por sección y serie",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7
+      }
+    },
+    {
+      "description": "Consulta por número de expediente",
+      "body": {
+        "numeroExpediente": "EXP-TEST-001"
+      }
+    },
+    {
+      "description": "Consulta por operador y estado",
+      "body": {
+        "operador": "1234567890",
+        "estado": "Registrado"
+      }
+    },
+    {
+      "description": "Consulta por cédula del beneficiario",
+      "body": {
+        "numeroCedula": "1234567890"
+      }
+    },
+    {
+      "description": "Consulta por rango de fechas",
+      "body": {
+        "fechaDesde": "2020-01-01",
+        "fechaHasta": "2020-12-31"
+      }
+    },
+    {
+      "description": "Consulta por tipo de archivo y contenedor",
+      "body": {
+        "tipoArchivo": "Archivo activo",
+        "tipoContenedor": "Caja"
+      }
+    },
+    {
+      "description": "Consulta completa con múltiples filtros",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7,
+        "estado": "Registrado",
+        "operador": "1234567890",
+        "fechaDesde": "2020-01-01",
+        "fechaHasta": "2020-12-31"
+      }
+    },
+    {
+      "description": "Consulta vacía (retorna todos los inventarios)",
+      "body": {}
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 6,
+          "idSeccion": 23,
+          "idSerie": 7,
+          "idSubserie": 5,
+          "numeroExpediente": "EXP-TEST-001",
+          "numeroCedula": "1234567890",
+          "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+          "estadoInventario": "Registrado"
+        }
+      ],
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/consultas' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"idSeccion\":23,\"estado\":\"Registrado\"}'",
+  "notes": [
+    "Todos los filtros son opcionales",
+    "Puedes combinar múltiples filtros para refinar la búsqueda",
+    "Los filtros de texto (nombresApellidos, razonSocial, descripcionSerie) realizan búsqueda parcial (LIKE)",
+    "Los filtros de fecha permiten buscar por rango",
+    "Si no envías ningún filtro, retorna todos los inventarios",
+    "NOTA: Algunos filtros avanzados (tipoContenedor, operador, cédula, etc.) están marcados como TODO en el código y pueden no estar completamente implementados"
+  ]
+}

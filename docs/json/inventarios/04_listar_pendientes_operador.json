@@ -1,0 +1,41 @@
+{
+  "endpoint": "GET /api/v1/inventarios/pendientes",
+  "description": "Lista inventarios pendientes de aprobación del operador actual",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/inventarios/pendientes",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "note": "Este endpoint requiere rol OPERADOR_SDNGD. Actualmente usa usuario temporal '1234567890' hasta implementar Keycloak",
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "idSeccion": 23,
+          "idSerie": 7,
+          "idSubserie": 5,
+          "numeroExpediente": "EXP-TEST-001",
+          "numeroCedula": "1234567890",
+          "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+          "estadoInventario": "Registrado",
+          "operador": "1234567890",
+          "supervisor": "0987654321",
+          "fecCreacion": "2026-01-07T..."
+        }
+      ],
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/inventarios/pendientes' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Retorna solo inventarios del operador actual que están pendientes de aprobación",
+    "Requiere rol OPERADOR_SDNGD (actualmente temporal)",
+    "El usuario actual se obtiene del contexto de seguridad (temporal: '1234567890')"
+  ]
+}

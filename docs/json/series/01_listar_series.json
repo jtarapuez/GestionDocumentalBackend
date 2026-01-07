@@ -1,0 +1,100 @@
+{
+  "endpoint": "GET /api/v1/series",
+  "description": "Lista todas las series documentales activas",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/series",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "queryParameters": {
+    "idSeccion": {
+      "type": "Long",
+      "required": false,
+      "description": "Filtro opcional para listar series de una sección específica",
+      "example": "23"
+    }
+  },
+  "examples": [
+    {
+      "description": "Listar todas las series",
+      "url": "http://localhost:8080/api/v1/series",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 7,
+              "idSeccion": 23,
+              "nombreSerie": "PRUEBA - Serie Pensiones de Vejez",
+              "descripcion": "Serie documental de prueba para pensiones de vejez",
+              "formatoDoc": "FISICO",
+              "seguridad": "CONFIDENCIAL",
+              "estado": "Creado"
+            },
+            {
+              "id": 8,
+              "idSeccion": 23,
+              "nombreSerie": "PRUEBA - Serie Pensiones de Invalidez",
+              "descripcion": "Serie documental de prueba para pensiones de invalidez",
+              "formatoDoc": "DIGITAL",
+              "seguridad": "PUBLICA",
+              "estado": "Creado"
+            },
+            {
+              "id": 9,
+              "idSeccion": 24,
+              "nombreSerie": "PRUEBA - Serie Prestaciones Económicas",
+              "descripcion": "Serie documental de prueba para prestaciones económicas",
+              "formatoDoc": "MIXTO",
+              "seguridad": "RESERVADA",
+              "estado": "Creado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T...",
+            "totalItems": 3
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "description": "Listar series filtradas por sección",
+      "url": "http://localhost:8080/api/v1/series?idSeccion=23",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 7,
+              "idSeccion": 23,
+              "nombreSerie": "PRUEBA - Serie Pensiones de Vejez",
+              "descripcion": "Serie documental de prueba para pensiones de vejez",
+              "estado": "Creado"
+            },
+            {
+              "id": 8,
+              "idSeccion": 23,
+              "nombreSerie": "PRUEBA - Serie Pensiones de Invalidez",
+              "descripcion": "Serie documental de prueba para pensiones de invalidez",
+              "estado": "Creado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T...",
+            "totalItems": 2
+          },
+          "error": null
+        }
+      }
+    }
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/series' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "curlExampleWithFilter": "curl -X GET 'http://localhost:8080/api/v1/series?idSeccion=23' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Puedes filtrar por sección usando el parámetro query: ?idSeccion=23",
+    "Retorna solo series activas",
+    "Las series de prueba tienen prefijo 'PRUEBA' o 'TEST'"
+  ]
+}

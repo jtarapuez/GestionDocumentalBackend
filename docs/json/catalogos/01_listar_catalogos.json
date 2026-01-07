@@ -1,0 +1,78 @@
+{
+  "endpoint": "GET /api/v1/catalogos",
+  "description": "Lista todos los catálogos activos del sistema",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "codigo": "FORMATO",
+          "descripcion": "Catálogo de formatos de documentos",
+          "estado": "A",
+          "observacion": "Formato del documento: Físico, Digital, Mixto"
+        },
+        {
+          "id": 2,
+          "codigo": "SEGURIDAD",
+          "descripcion": "Catálogo de niveles de seguridad",
+          "estado": "A",
+          "observacion": "Nivel de seguridad del documento"
+        },
+        {
+          "id": 3,
+          "codigo": "ESTADO_SERIE",
+          "descripcion": "Catálogo de estados de serie documental",
+          "estado": "A",
+          "observacion": null
+        },
+        {
+          "id": 4,
+          "codigo": "ESTADO_INVENTARIO",
+          "descripcion": "Catálogo de estados de inventario",
+          "estado": "A",
+          "observacion": null
+        },
+        {
+          "id": 5,
+          "codigo": "TIPO_CONTENEDOR",
+          "descripcion": "Catálogo de tipos de contenedor",
+          "estado": "A",
+          "observacion": null
+        },
+        {
+          "id": 6,
+          "codigo": "TIPO_ARCHIVO",
+          "descripcion": "Catálogo de tipos de archivo",
+          "estado": "A",
+          "observacion": null
+        },
+        {
+          "id": 7,
+          "codigo": "SECCIONES_DOC",
+          "descripcion": "Catálogo de secciones documentales - Áreas IESS",
+          "estado": "A",
+          "observacion": "Catálogo basado en ANEXO 1 del requerimiento funcional GTI-P02-F02"
+        }
+      ],
+      "meta": {
+        "timestamp": "2025-01-XXT10:30:00",
+        "totalItems": 7
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos' -H 'Content-Type: application/json'",
+  "notes": [
+    "Retorna solo catálogos con estado 'A' (Activo)",
+    "La lista incluye todos los catálogos del sistema",
+    "El catálogo SECCIONES_DOC contiene 110 áreas IESS"
+  ]
+}

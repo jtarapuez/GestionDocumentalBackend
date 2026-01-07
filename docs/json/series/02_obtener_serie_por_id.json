@@ -1,0 +1,61 @@
+{
+  "endpoint": "GET /api/v1/series/{id}",
+  "description": "Obtiene una serie documental específica por su ID",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/series/7",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "id": 7
+  },
+  "examples": [
+    {
+      "id": 7,
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": {
+            "id": 7,
+            "idSeccion": 23,
+            "nombreSerie": "PRUEBA - Serie Pensiones de Vejez",
+            "descripcion": "Serie documental de prueba para pensiones de vejez",
+            "formatoDoc": "FISICO",
+            "seguridad": "CONFIDENCIAL",
+            "normativa": "Normativa de prueba",
+            "responsable": "Responsable de prueba",
+            "estado": "Creado",
+            "justificacion": "Justificación de prueba",
+            "usuCreacion": "1234567890",
+            "fecCreacion": "2026-01-07T..."
+          },
+          "meta": {
+            "timestamp": "2026-01-07T..."
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "id": 999,
+      "expectedResponse": {
+        "statusCode": 404,
+        "body": {
+          "data": null,
+          "meta": null,
+          "error": {
+            "message": "Serie no encontrada con ID: 999",
+            "code": "SERIE_NOT_FOUND",
+            "details": null
+          }
+        }
+      }
+    }
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/series/7' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "IDs de prueba disponibles: 7, 8, 9",
+    "Si la serie no existe, retorna 404"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "endpoint": "GET /api/v1/catalogos/formatos",
+  "description": "Lista los valores del catálogo FORMATO (Físico, Digital, Mixto)",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/formatos",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "codigo": "FISICO",
+          "descripcion": "Físico",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 1
+        },
+        {
+          "id": 2,
+          "codigo": "DIGITAL",
+          "descripcion": "Digital",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 1
+        },
+        {
+          "id": 3,
+          "codigo": "MIXTO",
+          "descripcion": "Mixto",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 1
+        }
+      ],
+      "meta": {
+        "timestamp": "2025-01-XXT10:30:00",
+        "totalItems": 3
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/formatos' -H 'Content-Type: application/json'",
+  "notes": [
+    "Endpoint de conveniencia para obtener formatos",
+    "Equivalente a: GET /api/v1/catalogos/FORMATO/detalles",
+    "Siempre retorna 3 valores: Físico, Digital, Mixto"
+  ]
+}

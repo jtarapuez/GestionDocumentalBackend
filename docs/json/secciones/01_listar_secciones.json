@@ -1,0 +1,48 @@
+{
+  "endpoint": "GET /api/v1/catalogos/secciones",
+  "description": "Lista todas las secciones documentales activas del sistema",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/secciones",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "note": "Las secciones están en el CatalogoController, no tienen su propio controlador",
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 23,
+          "nombre": "PRUEBA - Sección Pensiones",
+          "descripcion": "Sección documental de prueba para expedientes de pensiones. [PRUEBA]",
+          "estadoRegistro": "Creado"
+        },
+        {
+          "id": 24,
+          "nombre": "PRUEBA - Sección Prestaciones",
+          "descripcion": "Sección documental de prueba para prestaciones sociales. [PRUEBA]",
+          "estadoRegistro": "Creado"
+        },
+        {
+          "id": 25,
+          "nombre": "TEST - Sección Recursos Humanos",
+          "descripcion": "Sección documental de prueba para recursos humanos. [TEST]",
+          "estadoRegistro": "Creado"
+        }
+      ],
+      "meta": {
+        "timestamp": "2026-01-07T...",
+        "totalItems": 3
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/secciones' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Este endpoint está en el CatalogoController, no tiene su propio controlador",
+    "Retorna solo secciones con estado activo",
+    "Las secciones de prueba tienen prefijo 'PRUEBA' o 'TEST'"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "endpoint": "GET /api/v1/catalogos/estados-inventario",
+  "description": "Lista los valores del catálogo ESTADO_INVENTARIO (Registrado, Pendiente, Actualizado, Aprobado)",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/estados-inventario",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "codigo": "REGISTRADO",
+          "descripcion": "Registrado",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 4
+        },
+        {
+          "id": 2,
+          "codigo": "PENDIENTE",
+          "descripcion": "Pendiente de Aprobación",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 4
+        },
+        {
+          "id": 3,
+          "codigo": "ACTUALIZADO",
+          "descripcion": "Actualizado",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 4
+        },
+        {
+          "id": 4,
+          "codigo": "APROBADO",
+          "descripcion": "Aprobado",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 4
+        }
+      ],
+      "meta": {
+        "timestamp": "2025-01-XXT10:30:00",
+        "totalItems": 4
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/estados-inventario' -H 'Content-Type: application/json'",
+  "notes": [
+    "Endpoint de conveniencia para obtener estados de inventario",
+    "Equivalente a: GET /api/v1/catalogos/ESTADO_INVENTARIO/detalles",
+    "Retorna 4 valores: Registrado, Pendiente, Actualizado, Aprobado"
+  ]
+}

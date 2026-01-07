@@ -1,0 +1,70 @@
+{
+  "endpoint": "PUT /api/v1/inventarios/{id}/aprobar",
+  "description": "Aprueba un inventario documental (solo supervisores)",
+  "method": "PUT",
+  "url": "http://localhost:8080/api/v1/inventarios/1/aprobar",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "id": 1
+  },
+  "body": {
+    "observaciones": "Inventario aprobado correctamente. Todos los documentos están en orden."
+  },
+  "note": "Solo se pueden aprobar inventarios en estado 'Registrado' o 'Actualizado'. Requiere rol SUPERVISOR_SDNGD.",
+  "examples": [
+    {
+      "description": "Aprobar sin observaciones",
+      "id": 1,
+      "body": {}
+    },
+    {
+      "description": "Aprobar con observaciones",
+      "id": 1,
+      "body": {
+        "observaciones": "Inventario aprobado correctamente. Todos los documentos están en orden."
+      }
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": {
+        "id": 1,
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-001",
+        "estadoInventario": "Aprobado",
+        "supervisor": "0987654321",
+        "fechaCambioEstado": "2026-01-07T...",
+        "cedulaUsuarioCambio": "0987654321"
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "errorResponse": {
+    "statusCode": 400,
+    "body": {
+      "data": null,
+      "meta": null,
+      "error": {
+        "message": "No se puede aprobar: el inventario no está en estado 'Registrado' o 'Actualizado'",
+        "code": "INVENTARIO_APROBACION_VALIDATION_ERROR"
+      }
+    }
+  },
+  "curlExample": "curl -X PUT 'http://localhost:8080/api/v1/inventarios/1/aprobar' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"observaciones\":\"Aprobado correctamente\"}'",
+  "notes": [
+    "Requiere rol SUPERVISOR_SDNGD (actualmente temporal: '0987654321')",
+    "Solo se pueden aprobar inventarios en estado 'Registrado' o 'Actualizado'",
+    "El estado cambia a 'Aprobado'",
+    "Las observaciones son opcionales",
+    "El supervisor se obtiene del contexto de seguridad (temporal: '0987654321')"
+  ]
+}

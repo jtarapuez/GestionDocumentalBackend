@@ -22,7 +22,7 @@ import java.util.List;
  * Controlador REST para la gestión de series documentales
  * Expone endpoints para crear, actualizar y consultar series
  */
-@Path("/api/v1/series")
+@Path("/v1/series")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Series Documentales", description = "API para gestión de series documentales")

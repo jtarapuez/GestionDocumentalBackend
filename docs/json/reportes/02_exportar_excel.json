@@ -1,0 +1,85 @@
+{
+  "endpoint": "POST /api/v1/reportes/exportar-excel",
+  "description": "Exporta inventarios a Excel según los filtros proporcionados",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/reportes/exportar-excel",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  },
+  "body": {
+    "idSeccion": 23,
+    "idSerie": 7,
+    "estado": "Registrado",
+    "fechaDesde": "2020-01-01",
+    "fechaHasta": "2020-12-31"
+  },
+  "note": "⚠️ FUNCIONALIDAD NO IMPLEMENTADA AÚN - Retorna 501 Not Implemented. Esta funcionalidad será agregada en una versión futura.",
+  "status": "TODO - Pendiente de implementación",
+  "requiredLibraries": [
+    "Apache POI",
+    "o similar para generación de Excel"
+  ],
+  "bodyStructure": {
+    "description": "Mismo formato que ConsultaRequest - todos los campos son opcionales",
+    "filters": "Ver estructura completa en consultas/01_consulta_avanzada.json"
+  },
+  "expectedResponseWhenImplemented": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": "attachment; filename=inventarios_YYYYMMDD_HHMMSS.xlsx"
+    },
+    "body": "Archivo Excel binario (.xlsx) con el reporte de inventarios"
+  },
+  "currentResponse": {
+    "statusCode": 501,
+    "body": {
+      "error": {
+        "message": "Exportación a Excel no implementada aún. Esta funcionalidad será agregada en una versión futura.",
+        "code": "EXCEL_EXPORT_NOT_IMPLEMENTED"
+      }
+    }
+  },
+  "examples": [
+    {
+      "description": "Exportar todos los inventarios",
+      "body": {}
+    },
+    {
+      "description": "Exportar inventarios por sección y serie",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7
+      }
+    },
+    {
+      "description": "Exportar inventarios por estado",
+      "body": {
+        "estado": "Aprobado"
+      }
+    },
+    {
+      "description": "Exportar inventarios por operador",
+      "body": {
+        "operador": "1234567890"
+      }
+    },
+    {
+      "description": "Exportar inventarios por rango de fechas",
+      "body": {
+        "fechaDesde": "2020-01-01",
+        "fechaHasta": "2020-12-31"
+      }
+    }
+  ],
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/reportes/exportar-excel' -H 'Content-Type: application/json' -H 'Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' -d '{\"idSeccion\":23}' --output reporte.xlsx",
+  "notes": [
+    "⚠️ Esta funcionalidad NO está implementada actualmente",
+    "Retorna código 501 (Not Implemented)",
+    "Se requiere implementar generación de Excel con librerías como Apache POI",
+    "El formato del body es el mismo que ConsultaRequest (ver consultas/01_consulta_avanzada.json)",
+    "Cuando se implemente, retornará un archivo Excel (.xlsx) descargable",
+    "El formato será .xlsx (Excel 2007+)"
+  ]
+}

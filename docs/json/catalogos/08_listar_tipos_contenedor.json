@@ -1,0 +1,61 @@
+{
+  "endpoint": "GET /api/v1/catalogos/tipos-contenedor",
+  "description": "Lista los valores del catálogo TIPO_CONTENEDOR (Caja, Carpeta, Legajo, Tomo)",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/tipos-contenedor",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "parameters": {},
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "codigo": "CAJA",
+          "descripcion": "Caja",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 5
+        },
+        {
+          "id": 2,
+          "codigo": "CARPETA",
+          "descripcion": "Carpeta",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 5
+        },
+        {
+          "id": 3,
+          "codigo": "LEGAJO",
+          "descripcion": "Legajo",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 5
+        },
+        {
+          "id": 4,
+          "codigo": "TOMO",
+          "descripcion": "Tomo",
+          "estado": "A",
+          "observacion": null,
+          "idCatalogo": 5
+        }
+      ],
+      "meta": {
+        "timestamp": "2025-01-XXT10:30:00",
+        "totalItems": 4
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/tipos-contenedor' -H 'Content-Type: application/json'",
+  "notes": [
+    "Endpoint de conveniencia para obtener tipos de contenedor",
+    "Equivalente a: GET /api/v1/catalogos/TIPO_CONTENEDOR/detalles",
+    "Retorna 4 valores: Caja, Carpeta, Legajo, Tomo"
+  ]
+}

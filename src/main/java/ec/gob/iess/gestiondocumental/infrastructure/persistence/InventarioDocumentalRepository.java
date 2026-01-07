@@ -4,6 +4,7 @@ import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
      * @return Lista de inventarios pendientes
      */
     public List<InventarioDocumental> findPendientesAprobacion() {
-        return find("estadoInventario IN (?1)", "Registrado", "Actualizado").list();
+        return find("estadoInventario IN (?1)", Arrays.asList("Registrado", "Actualizado")).list();
     }
 
     /**

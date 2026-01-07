@@ -1,0 +1,107 @@
+{
+  "endpoint": "GET /api/v1/subseries",
+  "description": "Lista todas las subseries documentales activas",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/subseries",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "queryParameters": {
+    "idSerie": {
+      "type": "Long",
+      "required": false,
+      "description": "Filtro opcional para listar subseries de una serie específica",
+      "example": "7"
+    }
+  },
+  "examples": [
+    {
+      "description": "Listar todas las subseries",
+      "url": "http://localhost:8080/api/v1/subseries",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 5,
+              "idSerie": 7,
+              "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+              "descripcion": "Subserie documental de prueba para trámites iniciales de pensiones de vejez",
+              "formatoDoc": "FISICO",
+              "seguridad": "CONFIDENCIAL",
+              "estado": "Creado"
+            },
+            {
+              "id": 6,
+              "idSerie": 7,
+              "nombreSubserie": "PRUEBA - Subserie Renovaciones Vejez",
+              "descripcion": "Subserie documental de prueba para renovaciones de pensiones de vejez",
+              "formatoDoc": "DIGITAL",
+              "seguridad": "PUBLICA",
+              "estado": "Creado"
+            },
+            {
+              "id": 7,
+              "idSerie": 8,
+              "nombreSubserie": "PRUEBA - Subserie Evaluaciones Médicas Invalidez",
+              "descripcion": "Subserie documental de prueba para evaluaciones médicas de invalidez",
+              "formatoDoc": "MIXTO",
+              "seguridad": "RESERVADA",
+              "estado": "Creado"
+            },
+            {
+              "id": 8,
+              "idSerie": 9,
+              "nombreSubserie": "PRUEBA - Subserie Subsidios Económicos",
+              "descripcion": "Subserie documental de prueba para subsidios económicos",
+              "formatoDoc": "FISICO",
+              "seguridad": "CONFIDENCIAL",
+              "estado": "Creado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T...",
+            "totalItems": 4
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "description": "Listar subseries filtradas por serie",
+      "url": "http://localhost:8080/api/v1/subseries?idSerie=7",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 5,
+              "idSerie": 7,
+              "nombreSubserie": "PRUEBA - Subserie Trámites Iniciales Vejez",
+              "estado": "Creado"
+            },
+            {
+              "id": 6,
+              "idSerie": 7,
+              "nombreSubserie": "PRUEBA - Subserie Renovaciones Vejez",
+              "estado": "Creado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T...",
+            "totalItems": 2
+          },
+          "error": null
+        }
+      }
+    }
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/subseries' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "curlExampleWithFilter": "curl -X GET 'http://localhost:8080/api/v1/subseries?idSerie=7' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Puedes filtrar por serie usando el parámetro query: ?idSerie=7",
+    "Retorna solo subseries activas",
+    "Las subseries de prueba tienen prefijo 'PRUEBA' o 'TEST'"
+  ]
+}

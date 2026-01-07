@@ -107,10 +107,11 @@ public class InventarioDocumentalUseCase {
                                                                         InventarioDocumentalRequest request, 
                                                                         String usuarioCedula) {
         return inventarioRepository.findByIdOptional(id).map(inventario -> {
-            // Validar que solo se puedan actualizar inventarios pendientes
-            if (!"Pendiente de Aprobación".equals(inventario.getEstadoInventario())) {
+            // Validar que solo se puedan actualizar inventarios en estado Registrado
+            // (dentro de los 5 días desde su creación)
+            if (!"Registrado".equals(inventario.getEstadoInventario())) {
                 throw new IllegalStateException(
-                    "Solo se pueden actualizar inventarios en estado 'Pendiente de Aprobación'. " +
+                    "Solo se pueden actualizar inventarios en estado 'Registrado'. " +
                     "Estado actual: " + inventario.getEstadoInventario()
                 );
             }
@@ -122,12 +123,17 @@ public class InventarioDocumentalUseCase {
                 );
             }
 
-            // Validar que no haya pasado más de 5 días desde el cambio de estado
-            if (inventario.getFechaCambioEstado() != null) {
+            // Validar que no haya pasado más de 5 días desde la creación
+            // Para inventarios en estado "Registrado", usar fecCreacion
+            LocalDateTime fechaReferencia = inventario.getFechaCambioEstado() != null 
+                ? inventario.getFechaCambioEstado() 
+                : inventario.getFecCreacion();
+            
+            if (fechaReferencia != null) {
                 LocalDateTime fechaLimite = LocalDateTime.now().minusDays(5);
-                if (inventario.getFechaCambioEstado().isBefore(fechaLimite)) {
+                if (fechaReferencia.isBefore(fechaLimite)) {
                     throw new IllegalStateException(
-                        "No se puede actualizar. Ha pasado más de 5 días calendario desde el cambio de estado"
+                        "No se puede actualizar. Ha pasado más de 5 días calendario desde la creación"
                     );
                 }
             }

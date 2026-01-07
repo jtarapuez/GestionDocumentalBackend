@@ -1,0 +1,76 @@
+{
+  "endpoint": "PUT /api/v1/inventarios/{id}/rechazar",
+  "description": "Rechaza un inventario documental (solo supervisores)",
+  "method": "PUT",
+  "url": "http://localhost:8080/api/v1/inventarios/1/rechazar",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "id": 1
+  },
+  "body": {
+    "observaciones": "El inventario presenta inconsistencias en los datos. Favor corregir y volver a enviar."
+  },
+  "note": "Solo se pueden rechazar inventarios en estado 'Registrado' o 'Actualizado'. Las observaciones son OBLIGATORIAS. Requiere rol SUPERVISOR_SDNGD.",
+  "requiredFields": [
+    "observaciones"
+  ],
+  "examples": [
+    {
+      "description": "Rechazar con observaciones detalladas",
+      "id": 1,
+      "body": {
+        "observaciones": "El inventario presenta inconsistencias en los datos. Favor corregir y volver a enviar."
+      }
+    },
+    {
+      "description": "Rechazar por falta de documentación",
+      "id": 1,
+      "body": {
+        "observaciones": "Falta documentación complementaria. Favor adjuntar los documentos faltantes."
+      }
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": {
+        "id": 1,
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-001",
+        "estadoInventario": "Pendiente",
+        "supervisor": "0987654321",
+        "fechaCambioEstado": "2026-01-07T...",
+        "cedulaUsuarioCambio": "0987654321",
+        "observaciones": "El inventario presenta inconsistencias en los datos. Favor corregir y volver a enviar."
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "errorResponse": {
+    "statusCode": 400,
+    "body": {
+      "data": null,
+      "meta": null,
+      "error": {
+        "message": "Las observaciones del rechazo son obligatorias",
+        "code": "RECHAZO_OBSERVACIONES_REQUIRED"
+      }
+    }
+  },
+  "curlExample": "curl -X PUT 'http://localhost:8080/api/v1/inventarios/1/rechazar' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"observaciones\":\"El inventario presenta inconsistencias\"}'",
+  "notes": [
+    "Requiere rol SUPERVISOR_SDNGD (actualmente temporal: '0987654321')",
+    "Solo se pueden rechazar inventarios en estado 'Registrado' o 'Actualizado'",
+    "El estado cambia a 'Pendiente'",
+    "Las observaciones son OBLIGATORIAS (no puede estar vacío)",
+    "El supervisor se obtiene del contexto de seguridad (temporal: '0987654321')"
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "endpoint": "GET /api/v1/inventarios",
+  "description": "Lista inventarios documentales con filtros opcionales",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/inventarios",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "queryParameters": {
+    "idSeccion": {
+      "type": "Long",
+      "required": false,
+      "description": "Filtro por sección",
+      "example": "23"
+    },
+    "idSerie": {
+      "type": "Long",
+      "required": false,
+      "description": "Filtro por serie",
+      "example": "7"
+    },
+    "idSubserie": {
+      "type": "Long",
+      "required": false,
+      "description": "Filtro por subserie",
+      "example": "5"
+    },
+    "numeroExpediente": {
+      "type": "String",
+      "required": false,
+      "description": "Filtro por número de expediente",
+      "example": "EXP-TEST-001"
+    },
+    "estado": {
+      "type": "String",
+      "required": false,
+      "description": "Filtro por estado (Registrado, Pendiente, Actualizado, Aprobado)",
+      "example": "Registrado"
+    }
+  },
+  "examples": [
+    {
+      "description": "Listar todos los inventarios",
+      "url": "http://localhost:8080/api/v1/inventarios",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "idSeccion": 23,
+              "idSerie": 7,
+              "idSubserie": 5,
+              "numeroExpediente": "EXP-TEST-001",
+              "numeroCedula": "1234567890",
+              "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+              "estadoInventario": "Registrado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T..."
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "description": "Filtrar por sección",
+      "url": "http://localhost:8080/api/v1/inventarios?idSeccion=23",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "idSeccion": 23,
+              "numeroExpediente": "EXP-TEST-001",
+              "estadoInventario": "Registrado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T..."
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "description": "Filtrar por número de expediente",
+      "url": "http://localhost:8080/api/v1/inventarios?numeroExpediente=EXP-TEST-001",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "numeroExpediente": "EXP-TEST-001",
+              "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+              "estadoInventario": "Registrado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T..."
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "description": "Filtrar por estado",
+      "url": "http://localhost:8080/api/v1/inventarios?estado=Registrado",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "numeroExpediente": "EXP-TEST-001",
+              "estadoInventario": "Registrado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T..."
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "description": "Filtros combinados",
+      "url": "http://localhost:8080/api/v1/inventarios?idSeccion=23&idSerie=7&estado=Registrado",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "idSeccion": 23,
+              "idSerie": 7,
+              "numeroExpediente": "EXP-TEST-001",
+              "estadoInventario": "Registrado"
+            }
+          ],
+          "meta": {
+            "timestamp": "2026-01-07T..."
+          },
+          "error": null
+        }
+      }
+    }
+  ],
+  "validEstados": [
+    "Registrado",
+    "Pendiente",
+    "Actualizado",
+    "Aprobado"
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/inventarios' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "curlExampleWithFilters": "curl -X GET 'http://localhost:8080/api/v1/inventarios?idSeccion=23&estado=Registrado' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "Todos los filtros son opcionales y se pueden combinar",
+    "Los inventarios de prueba tienen prefijo 'EXP-TEST-' o 'TEST-' en el número de expediente",
+    "Los estados válidos son: Registrado, Pendiente, Actualizado, Aprobado"
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "endpoint": "GET /api/v1/catalogos/{codigo}",
+  "description": "Obtiene un catálogo específico por su código",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/SECCIONES_DOC",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "codigo": "SECCIONES_DOC"
+  },
+  "examples": [
+    {
+      "codigo": "SECCIONES_DOC",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": {
+            "id": 7,
+            "codigo": "SECCIONES_DOC",
+            "descripcion": "Catálogo de secciones documentales - Áreas IESS",
+            "estado": "A",
+            "observacion": "Catálogo basado en ANEXO 1 del requerimiento funcional GTI-P02-F02"
+          },
+          "meta": {
+            "timestamp": "2025-01-XXT10:30:00"
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "codigo": "FORMATO",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": {
+            "id": 1,
+            "codigo": "FORMATO",
+            "descripcion": "Catálogo de formatos de documentos",
+            "estado": "A",
+            "observacion": "Formato del documento: Físico, Digital, Mixto"
+          },
+          "meta": {
+            "timestamp": "2025-01-XXT10:30:00"
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "codigo": "CATALOGO_INEXISTENTE",
+      "expectedResponse": {
+        "statusCode": 404,
+        "body": {
+          "data": null,
+          "meta": null,
+          "error": {
+            "message": "Catálogo no encontrado con código: CATALOGO_INEXISTENTE",
+            "code": "CATALOGO_NOT_FOUND",
+            "details": null
+          }
+        }
+      }
+    }
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/SECCIONES_DOC' -H 'Content-Type: application/json'",
+  "notes": [
+    "El código del catálogo es case-sensitive",
+    "Si el catálogo no existe, retorna 404",
+    "Códigos válidos: FORMATO, SEGURIDAD, ESTADO_SERIE, ESTADO_INVENTARIO, TIPO_CONTENEDOR, TIPO_ARCHIVO, SECCIONES_DOC"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "endpoint": "PUT /api/v1/inventarios/{id}",
+  "description": "Actualiza un inventario documental existente",
+  "method": "PUT",
+  "url": "http://localhost:8080/api/v1/inventarios/1",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "id": 1
+  },
+  "body": {
+    "numeroCedula": "1234567890",
+    "nombresApellidos": "JUAN PÉREZ GONZÁLEZ (Actualizado)",
+    "descripcionSerie": "Descripción actualizada del expediente",
+    "cantidadFojas": 100,
+    "observaciones": "Inventario actualizado para corrección de datos"
+  },
+  "note": "Solo se pueden actualizar inventarios en estado 'Registrado' y dentro de los 5 días calendario desde su creación. En PUT, solo envía los campos que quieres actualizar.",
+  "examples": [
+    {
+      "description": "Actualizar solo cantidad de fojas",
+      "id": 1,
+      "body": {
+        "cantidadFojas": 100
+      }
+    },
+    {
+      "description": "Actualizar datos del beneficiario",
+      "id": 1,
+      "body": {
+        "numeroCedula": "1234567890",
+        "nombresApellidos": "JUAN PÉREZ GONZÁLEZ (Actualizado)"
+      }
+    },
+    {
+      "description": "Actualización completa",
+      "id": 1,
+      "body": {
+        "nombresApellidos": "JUAN PÉREZ GONZÁLEZ (Actualizado)",
+        "descripcionSerie": "Descripción actualizada",
+        "cantidadFojas": 100,
+        "tipoContenedor": "Carpeta",
+        "numeroContenedor": 2,
+        "observaciones": "Inventario actualizado"
+      }
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": {
+        "id": 1,
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-001",
+        "numeroCedula": "1234567890",
+        "nombresApellidos": "JUAN PÉREZ GONZÁLEZ (Actualizado)",
+        "estadoInventario": "Actualizado",
+        "operador": "1234567890",
+        "usuCreacion": "1234567890",
+        "fecCreacion": "2026-01-07T..."
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "errorResponse": {
+    "statusCode": 400,
+    "body": {
+      "data": null,
+      "meta": null,
+      "error": {
+        "message": "No se puede actualizar: el inventario no está en estado 'Registrado' o ha vencido el plazo de 5 días",
+        "code": "INVENTARIO_UPDATE_VALIDATION_ERROR"
+      }
+    }
+  },
+  "curlExample": "curl -X PUT 'http://localhost:8080/api/v1/inventarios/1' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"cantidadFojas\":100,\"observaciones\":\"Actualizado\"}'",
+  "notes": [
+    "Solo se pueden actualizar inventarios en estado 'Registrado'",
+    "Debe estar dentro de los 5 días calendario desde su creación",
+    "El estado se actualiza automáticamente a 'Actualizado'",
+    "Requiere rol OPERADOR_SDNGD (actualmente temporal)",
+    "Solo envía los campos que quieres actualizar (no es necesario enviar todos)"
+  ]
+}

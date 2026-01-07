@@ -3,6 +3,7 @@ package ec.gob.iess.gestiondocumental.infrastructure.persistence;
 import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public class SubserieDocumentalRepository implements PanacheRepository<SubserieD
      * @return Lista de subseries activas
      */
     public List<SubserieDocumental> findActivas() {
-        return find("estado IN (?1)", "Creado", "Actualizado").list();
+        return find("estado IN (?1)", Arrays.asList("Creado", "Actualizado")).list();
     }
 
     /**

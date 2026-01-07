@@ -1,0 +1,109 @@
+{
+  "endpoint": "POST /api/v1/series",
+  "description": "Crea una nueva serie documental",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/series",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "idSeccion": 23,
+    "nombreSerie": "PRUEBA - Serie Pensiones de Vejez",
+    "descripcion": "Serie documental de prueba para pensiones de vejez. Incluye expedientes de trámites iniciales y renovaciones.",
+    "formatoDoc": "FISICO",
+    "seguridad": "CONFIDENCIAL",
+    "normativa": "Ley de Seguridad Social - Artículo 123",
+    "responsable": "1234567890",
+    "estado": "Creado",
+    "justificacion": "Serie creada para pruebas del sistema de gestión documental"
+  },
+  "requiredFields": [
+    "idSeccion",
+    "nombreSerie",
+    "descripcion",
+    "formatoDoc",
+    "seguridad"
+  ],
+  "optionalFields": [
+    "normativa",
+    "responsable",
+    "estado",
+    "justificacion"
+  ],
+  "validValues": {
+    "formatoDoc": ["FISICO", "DIGITAL", "MIXTO"],
+    "seguridad": ["PUBLICA", "CONFIDENCIAL", "RESERVADA"],
+    "estado": ["Creado", "Actualizado"]
+  },
+  "examples": [
+    {
+      "description": "Serie con formato físico y seguridad confidencial",
+      "body": {
+        "idSeccion": 23,
+        "nombreSerie": "PRUEBA - Serie Pensiones de Vejez",
+        "descripcion": "Serie documental de prueba para pensiones de vejez",
+        "formatoDoc": "FISICO",
+        "seguridad": "CONFIDENCIAL",
+        "normativa": "Ley de Seguridad Social",
+        "responsable": "1234567890",
+        "estado": "Creado",
+        "justificacion": "Serie de prueba"
+      }
+    },
+    {
+      "description": "Serie con formato digital y seguridad pública",
+      "body": {
+        "idSeccion": 24,
+        "nombreSerie": "PRUEBA - Serie Prestaciones Económicas",
+        "descripcion": "Serie documental de prueba para prestaciones económicas",
+        "formatoDoc": "DIGITAL",
+        "seguridad": "PUBLICA",
+        "normativa": "Reglamento de Prestaciones",
+        "responsable": "1234567890",
+        "estado": "Creado",
+        "justificacion": "Serie de prueba para desarrollo"
+      }
+    },
+    {
+      "description": "Serie mínima (solo campos requeridos)",
+      "body": {
+        "idSeccion": 23,
+        "nombreSerie": "PRUEBA - Serie Mínima",
+        "descripcion": "Serie con solo campos requeridos",
+        "formatoDoc": "MIXTO",
+        "seguridad": "PUBLICA"
+      }
+    }
+  ],
+  "expectedResponse": {
+    "statusCode": 201,
+    "body": {
+      "data": {
+        "id": 10,
+        "idSeccion": 23,
+        "nombreSerie": "PRUEBA - Serie Pensiones de Vejez",
+        "descripcion": "Serie documental de prueba para pensiones de vejez",
+        "formatoDoc": "FISICO",
+        "seguridad": "CONFIDENCIAL",
+        "normativa": "Ley de Seguridad Social - Artículo 123",
+        "responsable": "1234567890",
+        "estado": "Creado",
+        "justificacion": "Serie creada para pruebas del sistema de gestión documental",
+        "usuCreacion": "1234567890",
+        "fecCreacion": "2026-01-07T..."
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/series' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"idSeccion\":23,\"nombreSerie\":\"PRUEBA - Serie Pensiones de Vejez\",\"descripcion\":\"Serie documental de prueba\",\"formatoDoc\":\"FISICO\",\"seguridad\":\"CONFIDENCIAL\"}'",
+  "notes": [
+    "El campo 'estado' es opcional. Si no se envía, se asigna 'Creado' por defecto",
+    "El 'idSeccion' debe existir en la base de datos (IDs disponibles: 23, 24, 25)",
+    "Los valores de 'formatoDoc' y 'seguridad' deben coincidir con los códigos del catálogo",
+    "El 'responsable' es la cédula del usuario responsable"
+  ]
+}

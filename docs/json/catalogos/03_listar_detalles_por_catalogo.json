@@ -1,0 +1,115 @@
+{
+  "endpoint": "GET /api/v1/catalogos/{codigo}/detalles",
+  "description": "Lista todos los detalles/valores de un catálogo específico",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/catalogos/SECCIONES_DOC/detalles",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "codigo": "SECCIONES_DOC"
+  },
+  "examples": [
+    {
+      "codigo": "SECCIONES_DOC",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "codigo": "AI",
+              "descripcion": "AUDITORÍA INTERNA",
+              "estado": "A",
+              "observacion": "Sección documental - Área IESS",
+              "idCatalogo": 7
+            },
+            {
+              "id": 2,
+              "codigo": "CNA",
+              "descripcion": "COMISIÓN NACIONAL DE APELACIONES",
+              "estado": "A",
+              "observacion": "Sección documental - Área IESS",
+              "idCatalogo": 7
+            },
+            {
+              "id": 3,
+              "codigo": "SDNGD",
+              "descripcion": "SUBDIRECCIÓN NACIONAL DE GESTIÓN DOCUMENTAL",
+              "estado": "A",
+              "observacion": "Sección documental - Área IESS",
+              "idCatalogo": 7
+            }
+          ],
+          "meta": {
+            "timestamp": "2025-01-XXT10:30:00",
+            "totalItems": 110
+          },
+          "error": null
+        }
+      },
+      "notes": "Este catálogo contiene 110 áreas IESS. La respuesta muestra solo las primeras 3 como ejemplo."
+    },
+    {
+      "codigo": "FORMATO",
+      "expectedResponse": {
+        "statusCode": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "codigo": "FISICO",
+              "descripcion": "Físico",
+              "estado": "A",
+              "observacion": null,
+              "idCatalogo": 1
+            },
+            {
+              "id": 2,
+              "codigo": "DIGITAL",
+              "descripcion": "Digital",
+              "estado": "A",
+              "observacion": null,
+              "idCatalogo": 1
+            },
+            {
+              "id": 3,
+              "codigo": "MIXTO",
+              "descripcion": "Mixto",
+              "estado": "A",
+              "observacion": null,
+              "idCatalogo": 1
+            }
+          ],
+          "meta": {
+            "timestamp": "2025-01-XXT10:30:00",
+            "totalItems": 3
+          },
+          "error": null
+        }
+      }
+    },
+    {
+      "codigo": "CATALOGO_INEXISTENTE",
+      "expectedResponse": {
+        "statusCode": 404,
+        "body": {
+          "data": null,
+          "meta": null,
+          "error": {
+            "message": "Catálogo no encontrado con código: CATALOGO_INEXISTENTE",
+            "code": "CATALOGO_NOT_FOUND",
+            "details": null
+          }
+        }
+      }
+    }
+  ],
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/catalogos/SECCIONES_DOC/detalles' -H 'Content-Type: application/json'",
+  "notes": [
+    "Retorna todos los detalles activos del catálogo",
+    "Para SECCIONES_DOC, retorna 110 áreas IESS",
+    "Si el catálogo no existe, retorna 404"
+  ]
+}

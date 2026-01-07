@@ -22,7 +22,7 @@ import java.util.List;
  * Controlador REST para la gestión de inventarios documentales
  * Expone endpoints para crear, actualizar y consultar inventarios
  */
-@Path("/api/v1/inventarios")
+@Path("/v1/inventarios")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Inventarios Documentales", description = "API para gestión de inventarios documentales")

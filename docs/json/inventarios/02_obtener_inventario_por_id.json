@@ -1,0 +1,65 @@
+{
+  "endpoint": "GET /api/v1/inventarios/{id}",
+  "description": "Obtiene un inventario documental específico por su ID",
+  "method": "GET",
+  "url": "http://localhost:8080/api/v1/inventarios/1",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "pathParameters": {
+    "id": 1
+  },
+  "expectedResponse": {
+    "statusCode": 200,
+    "body": {
+      "data": {
+        "id": 1,
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-001",
+        "numeroCedula": "1234567890",
+        "nombresApellidos": "JUAN PÉREZ GONZÁLEZ",
+        "descripcionSerie": "Expediente de prueba para pensiones de vejez - Trámite inicial. [PRUEBA]",
+        "numeroExtremoDesde": 1,
+        "numeroExtremoHasta": 50,
+        "fechaDesde": "2020-01-15",
+        "fechaHasta": "2020-12-31",
+        "cantidadFojas": 75,
+        "tipoContenedor": "Caja",
+        "numeroContenedor": 1,
+        "soporte": "Físico",
+        "tipoArchivo": "Archivo activo",
+        "observaciones": "Inventario de prueba para desarrollo. [PRUEBA]",
+        "operador": "1234567890",
+        "supervisor": "0987654321",
+        "estadoInventario": "Registrado",
+        "fechaCambioEstado": "2026-01-07T...",
+        "cedulaUsuarioCambio": "1234567890",
+        "usuCreacion": "1234567890",
+        "fecCreacion": "2026-01-07T..."
+      },
+      "meta": {
+        "timestamp": "2026-01-07T..."
+      },
+      "error": null
+    }
+  },
+  "errorResponse": {
+    "statusCode": 404,
+    "body": {
+      "data": null,
+      "meta": null,
+      "error": {
+        "message": "Inventario no encontrado con ID: 999",
+        "code": "INVENTARIO_NOT_FOUND"
+      }
+    }
+  },
+  "curlExample": "curl -X GET 'http://localhost:8080/api/v1/inventarios/1' -H 'Content-Type: application/json' -H 'Accept: application/json'",
+  "notes": [
+    "El ID debe existir en la base de datos",
+    "IDs de prueba disponibles: consultar con GET /api/v1/inventarios primero"
+  ]
+}

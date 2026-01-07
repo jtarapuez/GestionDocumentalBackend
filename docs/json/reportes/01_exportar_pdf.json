@@ -1,0 +1,79 @@
+{
+  "endpoint": "POST /api/v1/reportes/exportar-pdf",
+  "description": "Exporta inventarios a PDF según los filtros proporcionados",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/reportes/exportar-pdf",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/pdf"
+  },
+  "body": {
+    "idSeccion": 23,
+    "idSerie": 7,
+    "estado": "Registrado",
+    "fechaDesde": "2020-01-01",
+    "fechaHasta": "2020-12-31"
+  },
+  "note": "⚠️ FUNCIONALIDAD NO IMPLEMENTADA AÚN - Retorna 501 Not Implemented. Esta funcionalidad será agregada en una versión futura.",
+  "status": "TODO - Pendiente de implementación",
+  "requiredLibraries": [
+    "iText",
+    "Apache PDFBox",
+    "o similar para generación de PDF"
+  ],
+  "bodyStructure": {
+    "description": "Mismo formato que ConsultaRequest - todos los campos son opcionales",
+    "filters": "Ver estructura completa en consultas/01_consulta_avanzada.json"
+  },
+  "expectedResponseWhenImplemented": {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment; filename=inventarios_YYYYMMDD_HHMMSS.pdf"
+    },
+    "body": "Archivo PDF binario con el reporte de inventarios"
+  },
+  "currentResponse": {
+    "statusCode": 501,
+    "body": {
+      "error": {
+        "message": "Exportación a PDF no implementada aún. Esta funcionalidad será agregada en una versión futura.",
+        "code": "PDF_EXPORT_NOT_IMPLEMENTED"
+      }
+    }
+  },
+  "examples": [
+    {
+      "description": "Exportar todos los inventarios",
+      "body": {}
+    },
+    {
+      "description": "Exportar inventarios por sección y serie",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7
+      }
+    },
+    {
+      "description": "Exportar inventarios por estado",
+      "body": {
+        "estado": "Aprobado"
+      }
+    },
+    {
+      "description": "Exportar inventarios por rango de fechas",
+      "body": {
+        "fechaDesde": "2020-01-01",
+        "fechaHasta": "2020-12-31"
+      }
+    }
+  ],
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/reportes/exportar-pdf' -H 'Content-Type: application/json' -H 'Accept: application/pdf' -d '{\"idSeccion\":23}' --output reporte.pdf",
+  "notes": [
+    "⚠️ Esta funcionalidad NO está implementada actualmente",
+    "Retorna código 501 (Not Implemented)",
+    "Se requiere implementar generación de PDF con librerías como iText o Apache PDFBox",
+    "El formato del body es el mismo que ConsultaRequest (ver consultas/01_consulta_avanzada.json)",
+    "Cuando se implemente, retornará un archivo PDF descargable"
+  ]
+}
