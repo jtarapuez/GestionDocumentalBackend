@@ -1,0 +1,565 @@
+-- ============================================
+-- Migración Flyway: Carga inicial de catálogos
+-- Sistema de Gestión Documental - IESS
+-- ============================================
+
+-- Insertar catálogos maestros
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOS_T (
+    ID_CATALOGO,
+    COD_CATALOGO,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO
+) VALUES (
+    DOCUMENTAL_OWNER.GDOC_CATALOGOS_S.NEXTVAL,
+    'FORMATO',
+    'Catálogo de formatos de documentos (Físico, Digital, Mixto)',
+    'A',
+    'Catálogo para identificar el tipo de soporte del documento',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1'
+);
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOS_T (
+    ID_CATALOGO,
+    COD_CATALOGO,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO
+) VALUES (
+    DOCUMENTAL_OWNER.GDOC_CATALOGOS_S.NEXTVAL,
+    'SEGURIDAD',
+    'Catálogo de niveles de seguridad de documentos',
+    'A',
+    'Catálogo para clasificar el nivel de confidencialidad del documento',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1'
+);
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOS_T (
+    ID_CATALOGO,
+    COD_CATALOGO,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO
+) VALUES (
+    DOCUMENTAL_OWNER.GDOC_CATALOGOS_S.NEXTVAL,
+    'ESTADO_SERIE',
+    'Catálogo de estados de series documentales',
+    'A',
+    'Catálogo para identificar el estado de una serie documental',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1'
+);
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOS_T (
+    ID_CATALOGO,
+    COD_CATALOGO,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO
+) VALUES (
+    DOCUMENTAL_OWNER.GDOC_CATALOGOS_S.NEXTVAL,
+    'ESTADO_INVENTARIO',
+    'Catálogo de estados del inventario documental',
+    'A',
+    'Catálogo para identificar el estado de un registro de inventario',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1'
+);
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOS_T (
+    ID_CATALOGO,
+    COD_CATALOGO,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO
+) VALUES (
+    DOCUMENTAL_OWNER.GDOC_CATALOGOS_S.NEXTVAL,
+    'TIPO_CONTENEDOR',
+    'Catálogo de tipos de contenedores físicos',
+    'A',
+    'Catálogo para identificar el tipo de contenedor donde se almacena el documento físico',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1'
+);
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOS_T (
+    ID_CATALOGO,
+    COD_CATALOGO,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO
+) VALUES (
+    DOCUMENTAL_OWNER.GDOC_CATALOGOS_S.NEXTVAL,
+    'TIPO_ARCHIVO',
+    'Catálogo de tipos de archivo (Activo, Pasivo)',
+    'A',
+    'Catálogo para clasificar documentos según su frecuencia de consulta',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1'
+);
+
+-- Insertar detalles del catálogo FORMATO
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'FISICO',
+    'Documento en soporte físico (papel)',
+    'A',
+    'Documento físico almacenado en formato papel',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'FORMATO';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'DIGITAL',
+    'Documento en soporte digital',
+    'A',
+    'Documento almacenado en formato digital',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'FORMATO';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'MIXTO',
+    'Documento en soporte físico y digital',
+    'A',
+    'Documento que existe tanto en formato físico como digital',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'FORMATO';
+
+-- Insertar detalles del catálogo SEGURIDAD
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'PUBLICA',
+    'Documento de acceso público',
+    'A',
+    'Documento sin restricciones de acceso',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'SEGURIDAD';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'CONFIDENCIAL',
+    'Documento confidencial',
+    'A',
+    'Documento con restricciones de acceso por confidencialidad',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'SEGURIDAD';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'RESERVADA',
+    'Documento de acceso reservado',
+    'A',
+    'Documento con máximo nivel de restricción de acceso',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'SEGURIDAD';
+
+-- Insertar detalles del catálogo ESTADO_SERIE
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'CREADO',
+    'Serie documental creada',
+    'A',
+    'Estado inicial de una serie documental recién creada',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'ESTADO_SERIE';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'ACTUALIZADO',
+    'Serie documental actualizada',
+    'A',
+    'Estado de una serie documental que ha sido modificada',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'ESTADO_SERIE';
+
+-- Insertar detalles del catálogo ESTADO_INVENTARIO
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'REGISTRADO',
+    'Inventario registrado',
+    'A',
+    'Estado inicial cuando un operador registra un inventario',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'ESTADO_INVENTARIO';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'PENDIENTE',
+    'Inventario pendiente de revisión',
+    'A',
+    'Estado cuando el inventario está pendiente de revisión por supervisor',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'ESTADO_INVENTARIO';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'ACTUALIZADO',
+    'Inventario actualizado',
+    'A',
+    'Estado cuando un operador actualiza un registro existente',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'ESTADO_INVENTARIO';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'APROBADO',
+    'Inventario aprobado',
+    'A',
+    'Estado cuando un supervisor aprueba el inventario',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'ESTADO_INVENTARIO';
+
+-- Insertar detalles del catálogo TIPO_CONTENEDOR
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'CAJA',
+    'Caja de almacenamiento',
+    'A',
+    'Contenedor tipo caja para almacenar documentos físicos',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'TIPO_CONTENEDOR';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'CARPETA',
+    'Carpeta de almacenamiento',
+    'A',
+    'Contenedor tipo carpeta para almacenar documentos físicos',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'TIPO_CONTENEDOR';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'LEGAJO',
+    'Legajo de almacenamiento',
+    'A',
+    'Contenedor tipo legajo para almacenar documentos físicos',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'TIPO_CONTENEDOR';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'TOMO',
+    'Tomo de almacenamiento',
+    'A',
+    'Contenedor tipo tomo para almacenar documentos físicos',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'TIPO_CONTENEDOR';
+
+-- Insertar detalles del catálogo TIPO_ARCHIVO
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'ACTIVO',
+    'Archivo activo',
+    'A',
+    'Documento con alta frecuencia de consulta',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'TIPO_ARCHIVO';
+
+INSERT INTO DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_T (
+    ID_CATALOGOSDET,
+    COD_CATALOGOSDET,
+    DESCRIPCION,
+    ESTADO,
+    OBSERVACION,
+    USU_CREACION,
+    FEC_CREACION,
+    IP_EQUIPO,
+    ID_CATALOGO
+) 
+SELECT 
+    DOCUMENTAL_OWNER.GDOC_CATALOGOSDET_S.NEXTVAL,
+    'PASIVO',
+    'Archivo pasivo',
+    'A',
+    'Documento con baja frecuencia de consulta',
+    'SYSTEM',
+    SYSDATE,
+    '127.0.0.1',
+    ID_CATALOGO
+FROM DOCUMENTAL_OWNER.GDOC_CATALOGOS_T
+WHERE COD_CATALOGO = 'TIPO_ARCHIVO';
+
+COMMIT;
