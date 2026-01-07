@@ -61,12 +61,19 @@ public class ConsultaController {
                 request.getIdSerie(),
                 request.getIdSubserie(),
                 request.getNumeroExpediente(),
-                request.getEstado()
+                request.getEstado(),
+                request.getNumeroCedula(),
+                request.getNumeroRuc(),
+                request.getOperador(),
+                request.getNombresApellidos(),
+                request.getRazonSocial(),
+                request.getDescripcionSerie(),
+                request.getTipoContenedor(),
+                request.getNumeroContenedor(),
+                request.getTipoArchivo(),
+                request.getFechaDesde(),
+                request.getFechaHasta()
             );
-
-            // Aplicar filtros adicionales si están presentes
-            // TODO: Implementar filtros adicionales en el repositorio (tipoContenedor, operador, cédula, etc.)
-            // Por ahora se aplican los filtros básicos
 
             ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
             return Response.ok(response).build();

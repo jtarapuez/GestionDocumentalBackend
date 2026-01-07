@@ -1,0 +1,28 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "Consulta inventarios por número de expediente",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "numeroExpediente": "EXP-TEST-001"
+  },
+  "examples": [
+    {
+      "description": "Búsqueda exacta por número de expediente",
+      "body": {
+        "numeroExpediente": "EXP-TEST-001"
+      }
+    },
+    {
+      "description": "Búsqueda parcial (contiene)",
+      "body": {
+        "numeroExpediente": "EXP-TEST"
+      }
+    }
+  ],
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/consultas' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"numeroExpediente\":\"EXP-TEST-001\"}'"
+}

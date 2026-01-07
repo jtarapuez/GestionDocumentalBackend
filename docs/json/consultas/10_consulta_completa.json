@@ -1,0 +1,63 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "Consulta completa con múltiples filtros combinados",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "idSeccion": 23,
+    "idSerie": 7,
+    "idSubserie": 5,
+    "numeroExpediente": "EXP-TEST-001",
+    "tipoContenedor": "Caja",
+    "tipoArchivo": "Archivo activo",
+    "operador": "1234567890",
+    "numeroCedula": "1234567890",
+    "estado": "Registrado",
+    "fechaDesde": "2020-01-01",
+    "fechaHasta": "2020-12-31"
+  },
+  "examples": [
+    {
+      "description": "Consulta completa con todos los filtros",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5,
+        "numeroExpediente": "EXP-TEST-001",
+        "tipoContenedor": "Caja",
+        "tipoArchivo": "Archivo activo",
+        "operador": "1234567890",
+        "numeroCedula": "1234567890",
+        "estado": "Registrado",
+        "fechaDesde": "2020-01-01",
+        "fechaHasta": "2020-12-31"
+      }
+    },
+    {
+      "description": "Consulta con filtros básicos",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7,
+        "estado": "Registrado"
+      }
+    },
+    {
+      "description": "Consulta con filtros de beneficiario",
+      "body": {
+        "numeroCedula": "1234567890",
+        "nombresApellidos": "JUAN",
+        "estado": "Aprobado"
+      }
+    },
+    {
+      "description": "Consulta vacía (retorna todos)",
+      "body": {}
+    }
+  ],
+  "note": "Puedes combinar cualquier cantidad de filtros. Todos son opcionales.",
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/consultas' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"idSeccion\":23,\"idSerie\":7,\"estado\":\"Registrado\"}'"
+}

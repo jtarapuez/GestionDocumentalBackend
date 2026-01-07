@@ -1,0 +1,37 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "Consulta inventarios por operador",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "operador": "1234567890"
+  },
+  "examples": [
+    {
+      "description": "Inventarios de un operador específico",
+      "body": {
+        "operador": "1234567890"
+      }
+    },
+    {
+      "description": "Inventarios de un operador con estado específico",
+      "body": {
+        "operador": "1234567890",
+        "estado": "Registrado"
+      }
+    },
+    {
+      "description": "Inventarios de un operador en una sección específica",
+      "body": {
+        "operador": "1234567890",
+        "idSeccion": 23
+      }
+    }
+  ],
+  "note": "⚠️ Este filtro puede estar marcado como TODO en el código",
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/consultas' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"operador\":\"1234567890\"}'"
+}

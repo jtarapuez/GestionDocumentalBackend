@@ -1,0 +1,43 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "Consulta inventarios por tipo de contenedor y/o número",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "tipoContenedor": "Caja",
+    "numeroContenedor": 1
+  },
+  "validTiposContenedor": [
+    "Caja",
+    "Carpeta",
+    "Legajo",
+    "Tomo"
+  ],
+  "examples": [
+    {
+      "description": "Por tipo de contenedor",
+      "body": {
+        "tipoContenedor": "Caja"
+      }
+    },
+    {
+      "description": "Por número de contenedor",
+      "body": {
+        "numeroContenedor": 1
+      }
+    },
+    {
+      "description": "Por tipo y número de contenedor",
+      "body": {
+        "tipoContenedor": "Caja",
+        "numeroContenedor": 1
+      }
+    }
+  ],
+  "note": "⚠️ Este filtro puede estar marcado como TODO en el código",
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/consultas' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"tipoContenedor\":\"Caja\"}'"
+}

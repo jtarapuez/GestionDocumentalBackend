@@ -1,0 +1,36 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "Consulta inventarios por nombres y apellidos o razón social",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "nombresApellidos": "JUAN PÉREZ"
+  },
+  "examples": [
+    {
+      "description": "Búsqueda por nombres y apellidos (búsqueda parcial)",
+      "body": {
+        "nombresApellidos": "JUAN PÉREZ"
+      }
+    },
+    {
+      "description": "Búsqueda por razón social (empresa)",
+      "body": {
+        "razonSocial": "EMPRESA"
+      }
+    },
+    {
+      "description": "Búsqueda por nombres con estado específico",
+      "body": {
+        "nombresApellidos": "JUAN",
+        "estado": "Registrado"
+      }
+    }
+  ],
+  "note": "⚠️ Este filtro realiza búsqueda parcial (LIKE) y puede estar marcado como TODO en el código",
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/consultas' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"nombresApellidos\":\"JUAN PÉREZ\"}'"
+}

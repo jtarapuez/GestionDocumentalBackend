@@ -19,7 +19,7 @@ POST /api/v1/consultas
 - **Descripción:** Realiza una consulta avanzada de inventarios con múltiples filtros opcionales
 - **Body:** `ConsultaRequest` (todos los campos opcionales)
 - **Estado:** ✅ **Implementado y funcionando**
-- **Archivo:** `01_consulta_avanzada.json`
+- **Archivos:** Separados por tipo de consulta (10 archivos)
 
 ### 2. **Exportar a PDF** (POST)
 ```
@@ -146,8 +146,17 @@ Todos los filtros son **opcionales** y se pueden combinar:
 
 ## 📁 Archivos JSON Disponibles
 
-### Consultas
-- `01_consulta_avanzada.json`
+### Consultas (Separadas por tipo)
+- `01_consulta_por_seccion_serie.json` - Por sección, serie y/o subserie
+- `02_consulta_por_expediente.json` - Por número de expediente
+- `03_consulta_por_estado.json` - Por estado (Registrado, Pendiente, etc.)
+- `04_consulta_por_operador.json` - Por operador
+- `05_consulta_por_cedula_ruc.json` - Por cédula o RUC
+- `06_consulta_por_nombres.json` - Por nombres o razón social
+- `07_consulta_por_fechas.json` - Por rango de fechas
+- `08_consulta_por_contenedor.json` - Por tipo y número de contenedor
+- `09_consulta_por_tipo_archivo.json` - Por tipo de archivo (activo/pasivo)
+- `10_consulta_completa.json` - Consulta con múltiples filtros combinados
 
 ### Reportes
 - `01_exportar_pdf.json`

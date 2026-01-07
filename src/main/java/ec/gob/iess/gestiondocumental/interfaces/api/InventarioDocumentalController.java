@@ -250,7 +250,8 @@ public class InventarioDocumentalController {
             @QueryParam("estado") String estado) {
         try {
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
-                idSeccion, idSerie, idSubserie, numeroExpediente, estado
+                idSeccion, idSerie, idSubserie, numeroExpediente, estado, 
+                null, null, null, null, null, null, null, null, null, null, null
             );
             ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
             return Response.ok(response).build();

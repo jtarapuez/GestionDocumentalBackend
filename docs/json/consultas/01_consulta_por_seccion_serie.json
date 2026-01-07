@@ -1,0 +1,44 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "Consulta inventarios por sección y/o serie",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "idSeccion": 23,
+    "idSerie": 7
+  },
+  "examples": [
+    {
+      "description": "Solo por sección",
+      "body": {
+        "idSeccion": 23
+      }
+    },
+    {
+      "description": "Solo por serie",
+      "body": {
+        "idSerie": 7
+      }
+    },
+    {
+      "description": "Por sección y serie",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7
+      }
+    },
+    {
+      "description": "Por sección, serie y subserie",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7,
+        "idSubserie": 5
+      }
+    }
+  ],
+  "curlExample": "curl -X POST 'http://localhost:8080/api/v1/consultas' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"idSeccion\":23,\"idSerie\":7}'"
+}

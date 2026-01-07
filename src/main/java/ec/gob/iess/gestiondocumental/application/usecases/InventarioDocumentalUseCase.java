@@ -252,11 +252,29 @@ public class InventarioDocumentalUseCase {
      * @param idSubserie Filtro por subserie
      * @param numeroExpediente Filtro por número de expediente
      * @param estado Filtro por estado
+     * @param numeroCedula Filtro por cédula
+     * @param numeroRuc Filtro por RUC
+     * @param operador Filtro por operador
+     * @param nombresApellidos Filtro por nombres y apellidos
+     * @param razonSocial Filtro por razón social
+     * @param descripcionSerie Filtro por descripción de serie
+     * @param tipoContenedor Filtro por tipo de contenedor
+     * @param numeroContenedor Filtro por número de contenedor
+     * @param tipoArchivo Filtro por tipo de archivo
+     * @param fechaDesde Filtro por fecha desde
+     * @param fechaHasta Filtro por fecha hasta
      * @return Lista de inventarios
      */
     public List<InventarioDocumentalResponse> listarConFiltros(Long idSeccion, Long idSerie, Long idSubserie,
-                                                                 String numeroExpediente, String estado) {
-        return inventarioRepository.buscarConFiltros(idSeccion, idSerie, idSubserie, numeroExpediente, estado)
+                                                                 String numeroExpediente, String estado,
+                                                                 String numeroCedula, String numeroRuc, String operador,
+                                                                 String nombresApellidos, String razonSocial, String descripcionSerie,
+                                                                 String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+                                                                 java.time.LocalDate fechaDesde, java.time.LocalDate fechaHasta) {
+        return inventarioRepository.buscarConFiltros(idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                                                      numeroCedula, numeroRuc, operador,
+                                                      nombresApellidos, razonSocial, descripcionSerie,
+                                                      tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
