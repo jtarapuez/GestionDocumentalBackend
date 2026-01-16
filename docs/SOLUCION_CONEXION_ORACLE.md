@@ -239,3 +239,4 @@ Si el problema persiste después de aplicar esta solución:
 **Última actualización:** 2026-01-05  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+

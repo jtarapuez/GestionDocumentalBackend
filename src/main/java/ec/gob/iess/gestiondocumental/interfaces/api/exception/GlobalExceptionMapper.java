@@ -62,3 +62,4 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
                 .build();
     }
 }
+

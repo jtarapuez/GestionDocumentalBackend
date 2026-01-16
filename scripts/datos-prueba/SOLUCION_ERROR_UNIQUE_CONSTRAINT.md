@@ -136,3 +136,4 @@ Esto evita errores de constraint único.
 
 **Última actualización:** 2026-01-06
 
+

@@ -39,3 +39,4 @@ public class CatalogoRepository implements PanacheRepository<Catalogo> {
         return count("codigo", codigo) > 0;
     }
 }
+

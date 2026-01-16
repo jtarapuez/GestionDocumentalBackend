@@ -8,7 +8,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,18 +29,12 @@ public class InventarioDocumentalUseCase {
      * @param usuarioCedula Cédula del usuario operador
      * @param ipEquipo IP del equipo
      * @return Inventario creado
-     * @throws IllegalStateException Si el operador tiene pendientes vencidos
      */
     @Transactional
     public InventarioDocumentalResponse registrarInventario(InventarioDocumentalRequest request, 
                                                               String usuarioCedula, String ipEquipo) {
-        // Validar que no haya pendientes vencidos
-        if (inventarioRepository.tienePendientesVencidos(usuarioCedula)) {
-            throw new IllegalStateException(
-                "No se puede registrar nuevo inventario. Tiene registros pendientes de aprobación vencidos (más de 5 días). " +
-                "Por favor actualice los registros pendientes primero."
-            );
-        }
+        // El registro de nuevos inventarios siempre se permite
+        // La validación de pendientes vencidos solo aplica al actualizar inventarios existentes
 
         InventarioDocumental inventario = new InventarioDocumental();
         inventario.setIdSeccion(request.getIdSeccion());
@@ -95,27 +88,20 @@ public class InventarioDocumentalUseCase {
     }
 
     /**
-     * Actualiza un inventario existente (solo si está en estado Pendiente de Aprobación)
+     * Actualiza un inventario existente
      * @param id ID del inventario a actualizar
      * @param request Datos actualizados
      * @param usuarioCedula Cédula del usuario operador
      * @return Inventario actualizado
-     * @throws IllegalStateException Si el inventario no está en estado Pendiente de Aprobación
+     * @throws IllegalStateException Si el inventario no está en estado válido para actualizar
      */
     @Transactional
     public Optional<InventarioDocumentalResponse> actualizarInventario(Long id, 
                                                                         InventarioDocumentalRequest request, 
                                                                         String usuarioCedula) {
         return inventarioRepository.findByIdOptional(id).map(inventario -> {
-            // Validar que solo se puedan actualizar inventarios en estado Registrado
-            // (dentro de los 5 días desde su creación)
-            if (!"Registrado".equals(inventario.getEstadoInventario())) {
-                throw new IllegalStateException(
-                    "Solo se pueden actualizar inventarios en estado 'Registrado'. " +
-                    "Estado actual: " + inventario.getEstadoInventario()
-                );
-            }
-
+            String estadoActual = inventario.getEstadoInventario();
+            
             // Validar que el operador sea el mismo que creó el inventario
             if (!usuarioCedula.equals(inventario.getOperador())) {
                 throw new IllegalStateException(
@@ -123,19 +109,40 @@ public class InventarioDocumentalUseCase {
                 );
             }
 
-            // Validar que no haya pasado más de 5 días desde la creación
-            // Para inventarios en estado "Registrado", usar fecCreacion
-            LocalDateTime fechaReferencia = inventario.getFechaCambioEstado() != null 
-                ? inventario.getFechaCambioEstado() 
-                : inventario.getFecCreacion();
+            // Validar estados permitidos para actualización
+            if ("Aprobado".equals(estadoActual) || "Aprobado con Modificaciones".equals(estadoActual)) {
+                throw new IllegalStateException(
+                    "Los inventarios aprobados no pueden ser modificados. " +
+                    "Estado actual: " + estadoActual
+                );
+            }
+
+            // Permitir actualizar "Pendiente de Aprobación" sin límite de días
+            // (es lo único que puede hacer cuando hay pendientes vencidos)
+            boolean esPendienteAprobacion = "Pendiente de Aprobación".equals(estadoActual);
             
-            if (fechaReferencia != null) {
-                LocalDateTime fechaLimite = LocalDateTime.now().minusDays(5);
-                if (fechaReferencia.isBefore(fechaLimite)) {
-                    throw new IllegalStateException(
-                        "No se puede actualizar. Ha pasado más de 5 días calendario desde la creación"
-                    );
+            // Para "Registrado", validar que no haya pasado más de 5 días
+            if (!esPendienteAprobacion && "Registrado".equals(estadoActual)) {
+                LocalDateTime fechaReferencia = inventario.getFechaCambioEstado() != null 
+                    ? inventario.getFechaCambioEstado() 
+                    : inventario.getFecCreacion();
+                
+                if (fechaReferencia != null) {
+                    LocalDateTime fechaLimite = LocalDateTime.now().minusDays(5);
+                    if (fechaReferencia.isBefore(fechaLimite)) {
+                        throw new IllegalStateException(
+                            "No se puede actualizar. Ha pasado más de 5 días calendario desde la creación"
+                        );
+                    }
                 }
+            }
+            
+            // Validar que el estado sea uno de los permitidos para actualización
+            if (!esPendienteAprobacion && !"Registrado".equals(estadoActual)) {
+                throw new IllegalStateException(
+                    "Solo se pueden actualizar inventarios en estado 'Registrado' o 'Pendiente de Aprobación'. " +
+                    "Estado actual: " + estadoActual
+                );
             }
 
             // Actualizar campos
@@ -412,4 +419,5 @@ public class InventarioDocumentalUseCase {
         });
     }
 }
+
 

@@ -381,3 +381,4 @@ quarkus.http.auth.proactive=true
 **Última actualización:** 2026-01-06  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+

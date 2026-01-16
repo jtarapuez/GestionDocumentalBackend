@@ -68,3 +68,4 @@ else
     echo "Por ahora solo se verificó la conectividad de red."
     exit 0
 fi
+

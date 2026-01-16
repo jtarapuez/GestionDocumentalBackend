@@ -387,3 +387,4 @@ Esta guía debe actualizarse cuando:
 **Última actualización:** 2026-01-07  
 **Versión:** 1.0
 
+

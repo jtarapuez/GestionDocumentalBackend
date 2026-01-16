@@ -416,3 +416,4 @@ Las validaciones de negocio están implementadas, pero faltan validaciones Bean 
 **Última actualización:** 2026-01-06  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+

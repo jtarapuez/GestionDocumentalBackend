@@ -49,3 +49,4 @@ public class CatalogoDetalleRepository implements PanacheRepository<CatalogoDeta
                     codigoCatalogo, "A").list();
     }
 }
+

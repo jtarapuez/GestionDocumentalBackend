@@ -142,3 +142,4 @@ Respuestas de error:
 **Última actualización:** 2025-01-XX  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+

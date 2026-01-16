@@ -237,3 +237,4 @@ Si aún no funciona, verifica que tu configuración en Postman se vea así:
 **Última actualización:** 2025-01-07  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+

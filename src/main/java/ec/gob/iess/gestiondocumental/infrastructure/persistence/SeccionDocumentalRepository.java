@@ -20,3 +20,4 @@ public class SeccionDocumentalRepository implements PanacheRepository<SeccionDoc
         return find("estadoRegistro IN (?1, ?2)", "Creado", "Actualizado").list();
     }
 }
+

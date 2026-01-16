@@ -99,3 +99,4 @@ else
     echo "Si el paso 1 fue exitoso, el puerto está abierto."
     exit 0
 fi
+

@@ -227,3 +227,4 @@ sqlplus ... @scripts/datos-prueba/05_insertar_catalogos_secciones.sql
 **Última actualización:** 2025-01-07  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+

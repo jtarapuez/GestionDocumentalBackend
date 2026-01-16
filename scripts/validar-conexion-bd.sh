@@ -58,3 +58,4 @@ echo "✅ Validación completada"
 echo "=========================================="
 echo "La aplicación puede intentar conectarse a la BD"
 echo ""
+

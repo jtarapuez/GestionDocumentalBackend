@@ -130,3 +130,4 @@ public class Catalogo {
         return "A".equalsIgnoreCase(estado);
     }
 }
+

@@ -261,3 +261,4 @@ quarkus.http.cors.methods=GET,POST,PUT,DELETE,OPTIONS,PATCH
 
 **Última actualización:** 2026-01-05  
 **Mantenido por:** Sistema de Gestión Documental - Backend Team
+

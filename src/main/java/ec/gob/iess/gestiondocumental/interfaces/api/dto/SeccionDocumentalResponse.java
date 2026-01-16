@@ -58,3 +58,4 @@ public class SeccionDocumentalResponse {
         this.estadoRegistro = estadoRegistro;
     }
 }
+

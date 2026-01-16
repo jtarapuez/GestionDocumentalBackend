@@ -142,3 +142,4 @@ public class CatalogoDetalle {
         return "A".equalsIgnoreCase(estado);
     }
 }
+

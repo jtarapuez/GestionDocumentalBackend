@@ -85,3 +85,4 @@ echo "  - 5 Inventarios"
 echo ""
 echo "Puedes verificar los datos con las consultas en README.md"
 
+

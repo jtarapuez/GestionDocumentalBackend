@@ -83,3 +83,4 @@ Para probar los endpoints, asegúrate de que:
 **Última actualización:** 2025-01-XX  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+

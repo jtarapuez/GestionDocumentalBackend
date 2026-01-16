@@ -90,6 +90,32 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 
 ---
 
+### 4.1. `02_corregir_nom_series.sql` ⚠️ **NUEVO**
+**Descripción:** Script de corrección para actualizar `NOM_SERIES` cuando tiene valores incorrectos (como "3" o números).
+
+**Cuándo usar:**
+- Cuando `NOM_SERIES` tiene valores numéricos en lugar de nombres descriptivos
+- Cuando los datos se insertaron incorrectamente y necesitan corrección
+- Después de detectar que el frontend muestra IDs en lugar de nombres
+
+**Qué hace:**
+- Identifica series con `NOM_SERIES = '3'` o valores numéricos
+- Actualiza `NOM_SERIES` basándose en `DESCR_SERIE` para generar nombres apropiados
+- Usa patrones inteligentes para reconocer tipos de series (Pensiones de Vejez, Invalidez, Prestaciones, etc.)
+- Genera nombres descriptivos cuando no hay coincidencia exacta
+
+**Ejecutar:**
+```sql
+@02_corregir_nom_series.sql
+```
+
+**⚠️ Importante:** 
+- Este script solo actualiza series que tienen valores numéricos en `NOM_SERIES`
+- Verifica los resultados antes de hacer COMMIT
+- Puedes hacer ROLLBACK si algo sale mal
+
+---
+
 ### 5. `03_insertar_subseries.sql`
 **Descripción:** Inserta 4 subseries documentales de prueba.
 
@@ -114,6 +140,33 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 - `EXP-TEST-005`: Estado "Aprobado"
 
 **Dependencias:** Requiere que existan subseries (ejecutar `03_insertar_subseries.sql` primero).
+
+---
+
+### 6.1. `04_limpiar_pendientes_vencidos.sql` ⚠️ **NUEVO**
+**Descripción:** Limpia inventarios de prueba en estado "Pendiente de Aprobación" vencidos (más de 5 días).
+
+**Cuándo usar:**
+- Cuando no se pueden registrar nuevos inventarios porque hay pendientes vencidos bloqueando
+- Cuando el sistema muestra error: "No se puede registrar nuevo inventario. Tiene registros pendientes de aprobación vencidos"
+- Después de que los inventarios de prueba hayan pasado más de 5 días en estado "Pendiente de Aprobación"
+
+**Qué hace:**
+- Identifica inventarios de prueba en estado "Pendiente de Aprobación" con más de 5 días
+- **OPCIÓN 1 (Recomendada):** Actualiza el estado a "Registrado" para que el operador pueda actualizarlos
+- **OPCIÓN 2:** Elimina los inventarios pendientes vencidos (comentada por defecto)
+
+**Ejecutar:**
+```sql
+@04_limpiar_pendientes_vencidos.sql
+```
+
+**⚠️ Importante:** 
+- Este script solo afecta datos de prueba (identificados por `EXP-TEST-`, `[PRUEBA]`, usuario `1234567890`)
+- Verifica los resultados antes de hacer COMMIT
+- Puedes hacer ROLLBACK si algo sale mal
+
+**Nota:** Según el requerimiento funcional, si un operador tiene inventarios pendientes vencidos (más de 5 días), no puede registrar nuevos inventarios hasta que actualice los pendientes. Este script ayuda a limpiar datos de prueba para permitir el desarrollo.
 
 ---
 
@@ -276,4 +329,5 @@ Estos scripts cumplen con las **reglas de seguridad** establecidas:
 
 **Última actualización:** 2026-01-06  
 **Mantenido por:** Equipo de Desarrollo Backend
+
 

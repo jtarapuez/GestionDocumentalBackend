@@ -222,3 +222,4 @@ curl -X GET 'http://localhost:8080/api/v1/catalogos/secciones' \
 **Última actualización:** 2025-01-XX  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+
