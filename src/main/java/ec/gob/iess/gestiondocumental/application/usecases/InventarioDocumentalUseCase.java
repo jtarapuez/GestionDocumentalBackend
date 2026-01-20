@@ -57,15 +57,27 @@ public class InventarioDocumentalUseCase {
         inventario.setTipoArchivo(request.getTipoArchivo());
         
         // Construir posición archivo pasivo si aplica
-        if ("Archivo pasivo".equals(request.getTipoArchivo()) && request.getNumeroRac() != null) {
-            String posicion = String.format("%02d.%02d.%02d.%02d.%02d",
-                request.getNumeroRac(),
-                request.getNumeroFila() != null ? request.getNumeroFila() : 0,
-                request.getNumeroColumna() != null ? request.getNumeroColumna() : 0,
-                request.getNumeroPosicion() != null ? request.getNumeroPosicion() : 0,
-                request.getBodega() != null ? request.getBodega() : 0
-            );
-            inventario.setPosicionPasivo(posicion);
+        // Aceptar tanto "PASIVO" (del frontend) como "Archivo pasivo" (legacy)
+        boolean esArchivoPasivo = "PASIVO".equals(request.getTipoArchivo()) 
+            || "Archivo pasivo".equals(request.getTipoArchivo());
+        
+        if (esArchivoPasivo && request.getNumeroRac() != null) {
+            // Si viene posicionPasivo del frontend, usarlo directamente
+            // Si no, construir desde los campos individuales
+            if (request.getPosicionPasivo() != null && !request.getPosicionPasivo().trim().isEmpty()) {
+                inventario.setPosicionPasivo(request.getPosicionPasivo());
+            } else {
+                String posicion = String.format("%02d.%02d.%02d.%02d.%02d",
+                    request.getNumeroRac(),
+                    request.getNumeroFila() != null ? request.getNumeroFila() : 0,
+                    request.getNumeroColumna() != null ? request.getNumeroColumna() : 0,
+                    request.getNumeroPosicion() != null ? request.getNumeroPosicion() : 0,
+                    request.getBodega() != null ? request.getBodega() : 0
+                );
+                inventario.setPosicionPasivo(posicion);
+            }
+            
+            // Guardar campos individuales
             inventario.setNumeroRac(request.getNumeroRac());
             inventario.setNumeroFila(request.getNumeroFila());
             inventario.setNumeroColumna(request.getNumeroColumna());
@@ -196,15 +208,27 @@ public class InventarioDocumentalUseCase {
             }
 
             // Actualizar posición archivo pasivo si aplica
-            if ("Archivo pasivo".equals(request.getTipoArchivo()) && request.getNumeroRac() != null) {
-                String posicion = String.format("%02d.%02d.%02d.%02d.%02d",
-                    request.getNumeroRac(),
-                    request.getNumeroFila() != null ? request.getNumeroFila() : 0,
-                    request.getNumeroColumna() != null ? request.getNumeroColumna() : 0,
-                    request.getNumeroPosicion() != null ? request.getNumeroPosicion() : 0,
-                    request.getBodega() != null ? request.getBodega() : 0
-                );
-                inventario.setPosicionPasivo(posicion);
+            // Aceptar tanto "PASIVO" (del frontend) como "Archivo pasivo" (legacy)
+            boolean esArchivoPasivo = "PASIVO".equals(request.getTipoArchivo()) 
+                || "Archivo pasivo".equals(request.getTipoArchivo());
+            
+            if (esArchivoPasivo && request.getNumeroRac() != null) {
+                // Si viene posicionPasivo del frontend, usarlo directamente
+                // Si no, construir desde los campos individuales
+                if (request.getPosicionPasivo() != null && !request.getPosicionPasivo().trim().isEmpty()) {
+                    inventario.setPosicionPasivo(request.getPosicionPasivo());
+                } else {
+                    String posicion = String.format("%02d.%02d.%02d.%02d.%02d",
+                        request.getNumeroRac(),
+                        request.getNumeroFila() != null ? request.getNumeroFila() : 0,
+                        request.getNumeroColumna() != null ? request.getNumeroColumna() : 0,
+                        request.getNumeroPosicion() != null ? request.getNumeroPosicion() : 0,
+                        request.getBodega() != null ? request.getBodega() : 0
+                    );
+                    inventario.setPosicionPasivo(posicion);
+                }
+                
+                // Guardar campos individuales
                 inventario.setNumeroRac(request.getNumeroRac());
                 inventario.setNumeroFila(request.getNumeroFila());
                 inventario.setNumeroColumna(request.getNumeroColumna());
