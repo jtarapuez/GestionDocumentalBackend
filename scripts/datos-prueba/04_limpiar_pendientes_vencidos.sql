@@ -78,3 +78,5 @@ WHERE ESTADO_INVENTARIO = 'Pendiente de Aprobación'
 
 COMMIT;
 
+
+

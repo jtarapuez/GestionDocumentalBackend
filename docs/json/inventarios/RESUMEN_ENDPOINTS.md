@@ -227,3 +227,5 @@ Todos los archivos están en: `docs/json/inventarios/`
 
 **Última actualización:** 2026-01-07
 
+
+

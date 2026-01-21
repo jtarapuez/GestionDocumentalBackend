@@ -228,3 +228,5 @@ sqlplus ... @scripts/datos-prueba/05_insertar_catalogos_secciones.sql
 **Mantenido por:** Equipo de Desarrollo Backend
 
 
+
+

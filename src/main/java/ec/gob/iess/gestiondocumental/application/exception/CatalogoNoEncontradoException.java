@@ -22,3 +22,5 @@ public class CatalogoNoEncontradoException extends RuntimeException {
     }
 }
 
+
+

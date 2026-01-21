@@ -120,3 +120,5 @@ COMMIT;
 -- 4. Si algo sale mal, puedes hacer ROLLBACK
 -- 5. Después de ejecutar este script, el frontend debería mostrar los nombres correctos
 
+
+

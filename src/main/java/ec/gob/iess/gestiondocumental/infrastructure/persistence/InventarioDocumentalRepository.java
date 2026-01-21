@@ -193,3 +193,5 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
 }
 
 
+
+

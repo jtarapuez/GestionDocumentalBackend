@@ -172,3 +172,5 @@ GET http://localhost:8080/api/v1/subseries/serie/7
 **Última actualización:** 2025-01-07  
 **Mantenido por:** Equipo de Desarrollo Backend
 
+
+

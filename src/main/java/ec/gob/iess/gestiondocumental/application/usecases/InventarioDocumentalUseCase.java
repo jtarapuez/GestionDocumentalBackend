@@ -236,6 +236,9 @@ public class InventarioDocumentalUseCase {
                 inventario.setBodega(request.getBodega());
             }
 
+            // ✅ Supervisor NO se actualiza - se mantiene el asignado originalmente al crear el inventario
+            // El campo supervisor del request se ignora intencionalmente según requerimiento funcional EF-2-2
+            
             // Cambiar estado a Actualizado
             inventario.setEstadoInventario("Actualizado");
             inventario.setFechaCambioEstado(LocalDateTime.now());
