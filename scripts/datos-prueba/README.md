@@ -170,6 +170,44 @@ Este directorio contiene scripts SQL para insertar datos de prueba en la base de
 
 ---
 
+### 6.2. `05_actualizar_operadores.sql` ⚠️ **NUEVO**
+**Descripción:** Actualiza el campo `OPERADOR` en `GDOC_INVENTARIO_T` de cédulas (ej: "1234567890", "1122334455") a IDs numéricos (ej: "1").
+
+**Cuándo usar:**
+- Cuando se implementa el sistema de operadores con IDs numéricos (similar a supervisores)
+- Para migrar datos de prueba de cédulas a IDs numéricos
+- Después de configurar Keycloak con el atributo `operadorId`
+
+**Qué hace:**
+- Muestra el estado actual de los valores de `OPERADOR` antes de actualizar
+- Actualiza registros con cédula `"1234567890"` → ID `"1"`
+- Actualiza registros con cédula `"1122334455"` → ID `"1"`
+- Muestra el estado después de la actualización
+- Hace COMMIT automático
+
+**Ejecutar:**
+```sql
+-- En DBeaver, SQL Developer o cualquier cliente SQL
+@05_actualizar_operadores.sql
+
+-- O copiar y pegar el contenido del archivo directamente
+```
+
+**⚠️ Importante:** 
+- Este script **SOLO actualiza datos de prueba** (cédulas conocidas de prueba)
+- Verifica los resultados mostrados en `DBMS_OUTPUT` antes de confirmar
+- Si algo sale mal, puedes hacer `ROLLBACK;` antes de que se ejecute el `COMMIT`
+- Ejecutar **SOLO en base de datos de desarrollo**
+
+**Mapeo aplicado:**
+- `"1234567890"` → `"1"` (legacy)
+- `"1122334455"` → `"1"` (operador.sdngd - Carlos Operador)
+- `"2233445566"` → `"2"` (operador2.sdngd - Ana Operadora)
+
+**Nota:** Este script es parte de la implementación del sistema de operadores con IDs numéricos, siguiendo el mismo patrón implementado para supervisores.
+
+---
+
 ## 🚀 Cómo Ejecutar
 
 ### Opción 1: Ejecutar todos los scripts en orden
