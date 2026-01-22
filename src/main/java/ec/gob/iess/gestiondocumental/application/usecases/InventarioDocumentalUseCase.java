@@ -304,11 +304,13 @@ public class InventarioDocumentalUseCase {
                                                                  String numeroCedula, String numeroRuc, String operador,
                                                                  String nombresApellidos, String razonSocial, String descripcionSerie,
                                                                  String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
-                                                                 java.time.LocalDate fechaDesde, java.time.LocalDate fechaHasta) {
+                                                                 java.time.LocalDate fechaDesde, java.time.LocalDate fechaHasta,
+                                                                 String supervisor) {
         return inventarioRepository.buscarConFiltros(idSeccion, idSerie, idSubserie, numeroExpediente, estado,
                                                       numeroCedula, numeroRuc, operador,
                                                       nombresApellidos, razonSocial, descripcionSerie,
-                                                      tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta)
+                                                      tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
+                                                      supervisor)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());

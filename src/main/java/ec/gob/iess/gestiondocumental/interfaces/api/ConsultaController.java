@@ -72,7 +72,8 @@ public class ConsultaController {
                 request.getNumeroContenedor(),
                 request.getTipoArchivo(),
                 request.getFechaDesde(),
-                request.getFechaHasta()
+                request.getFechaHasta(),
+                null // supervisor - no se filtra por supervisor en consultas avanzadas
             );
 
             ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);

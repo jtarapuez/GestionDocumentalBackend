@@ -97,7 +97,8 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
                                                          String numeroCedula, String numeroRuc, String operador,
                                                          String nombresApellidos, String razonSocial, String descripcionSerie,
                                                          String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
-                                                         LocalDate fechaDesde, LocalDate fechaHasta) {
+                                                         LocalDate fechaDesde, LocalDate fechaHasta,
+                                                         String supervisor) {
         StringBuilder query = new StringBuilder();
         List<Object> params = new ArrayList<>();
         int paramIndex = 1;
@@ -181,6 +182,17 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             query.append(query.length() == 0 ? "" : " AND ").append("fechaHasta <= ?").append(paramIndex);
             params.add(fechaHasta);
             paramIndex++;
+        }
+        if (supervisor != null && !supervisor.isEmpty()) {
+            // ✅ El frontend ahora envía directamente el ID ("1" o "2")
+            // Buscar directamente por ese ID en la base de datos
+            String supervisorValue = supervisor.trim();
+            query.append(query.length() == 0 ? "" : " AND ").append("supervisor = ?").append(paramIndex);
+            params.add(supervisorValue);
+            paramIndex++;
+            System.out.println("🔍 [DEBUG] buscarConFiltros - Filtro por supervisor: " + supervisorValue);
+        } else {
+            System.out.println("🔍 [DEBUG] buscarConFiltros - NO se aplicará filtro por supervisor (supervisor es null o vacío)");
         }
 
         if (query.length() > 0) {

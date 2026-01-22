@@ -247,11 +247,18 @@ public class InventarioDocumentalController {
             @QueryParam("idSerie") Long idSerie,
             @QueryParam("idSubserie") Long idSubserie,
             @QueryParam("numeroExpediente") String numeroExpediente,
-            @QueryParam("estado") String estado) {
+            @QueryParam("estado") String estado,
+            @QueryParam("supervisor") String supervisor) {
         try {
+            // ✅ DEBUG: Log temporal para verificar parámetro recibido
+            System.out.println("🔍 [DEBUG] listarInventarios - supervisor recibido: " + supervisor);
+            System.out.println("🔍 [DEBUG] listarInventarios - otros filtros: idSeccion=" + idSeccion + ", estado=" + estado);
+            System.out.println("🔍 [DEBUG] listarInventarios - todos los query params: idSeccion=" + idSeccion + ", idSerie=" + idSerie + ", idSubserie=" + idSubserie + ", numeroExpediente=" + numeroExpediente + ", estado=" + estado + ", supervisor=" + supervisor);
+            
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
                 idSeccion, idSerie, idSubserie, numeroExpediente, estado, 
-                null, null, null, null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, null, null, null,
+                supervisor
             );
             ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
             return Response.ok(response).build();
