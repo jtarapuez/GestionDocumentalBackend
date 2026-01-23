@@ -59,13 +59,20 @@ public class InventarioDocumentalController {
             schema = @Schema(implementation = ApiResponse.class)
         )
     )
-    public Response registrarInventario(InventarioDocumentalRequest request) {
+    public Response registrarInventario(InventarioDocumentalRequest request,
+                                        @HeaderParam("X-Operador-Id") String operadorIdHeader) {
         try {
-            // TODO: Obtener usuario y IP del contexto de seguridad
-            String usuarioCedula = "1234567890"; // Temporal hasta implementar Keycloak
+            // ✅ Obtener operadorId del header personalizado enviado por el frontend
+            // Si no viene en el header, usar fallback temporal (para compatibilidad)
+            String operadorId = operadorIdHeader != null && !operadorIdHeader.trim().isEmpty() 
+                ? operadorIdHeader.trim() 
+                : "1"; // Fallback temporal hasta que todos los clientes envíen el header
+            
+            System.out.println("🔍 [DEBUG] registrarInventario - operadorId recibido: " + operadorId);
+            
             String ipEquipo = "127.0.0.1"; // Temporal
             
-            InventarioDocumentalResponse inventario = inventarioUseCase.registrarInventario(request, usuarioCedula, ipEquipo);
+            InventarioDocumentalResponse inventario = inventarioUseCase.registrarInventario(request, operadorId, ipEquipo);
             ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario);
             return Response.status(Response.Status.CREATED).entity(response).build();
         } catch (IllegalStateException e) {
@@ -126,12 +133,19 @@ public class InventarioDocumentalController {
             schema = @Schema(implementation = ApiResponse.class)
         )
     )
-    public Response actualizarInventario(@PathParam("id") Long id, InventarioDocumentalRequest request) {
+    public Response actualizarInventario(@PathParam("id") Long id, 
+                                        InventarioDocumentalRequest request,
+                                        @HeaderParam("X-Operador-Id") String operadorIdHeader) {
         try {
-            // TODO: Obtener usuario del contexto de seguridad
-            String usuarioCedula = "1234567890"; // Temporal hasta implementar Keycloak
+            // ✅ Obtener operadorId del header personalizado enviado por el frontend
+            // Si no viene en el header, usar fallback temporal (para compatibilidad)
+            String operadorId = operadorIdHeader != null && !operadorIdHeader.trim().isEmpty() 
+                ? operadorIdHeader.trim() 
+                : "1"; // Fallback temporal hasta que todos los clientes envíen el header
             
-            return inventarioUseCase.actualizarInventario(id, request, usuarioCedula)
+            System.out.println("🔍 [DEBUG] actualizarInventario - operadorId recibido: " + operadorId);
+            
+            return inventarioUseCase.actualizarInventario(id, request, operadorId)
                     .map(inventario -> {
                         ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario);
                         return Response.ok(response).build();

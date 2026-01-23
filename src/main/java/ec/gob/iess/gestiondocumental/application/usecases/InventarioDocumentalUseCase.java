@@ -114,6 +114,12 @@ public class InventarioDocumentalUseCase {
         return inventarioRepository.findByIdOptional(id).map(inventario -> {
             String estadoActual = inventario.getEstadoInventario();
             
+            // ✅ LOG: Verificar valores de operador para debugging
+            System.out.println("🔍 [DEBUG] actualizarInventario - Comparando operadores:");
+            System.out.println("🔍 [DEBUG]   - operadorId recibido (usuarioCedula): '" + usuarioCedula + "'");
+            System.out.println("🔍 [DEBUG]   - operadorId en BD (inventario.getOperador()): '" + inventario.getOperador() + "'");
+            System.out.println("🔍 [DEBUG]   - ¿Son iguales?: " + usuarioCedula.equals(inventario.getOperador()));
+            
             // Validar que el operador sea el mismo que creó el inventario
             if (!usuarioCedula.equals(inventario.getOperador())) {
                 throw new IllegalStateException(
