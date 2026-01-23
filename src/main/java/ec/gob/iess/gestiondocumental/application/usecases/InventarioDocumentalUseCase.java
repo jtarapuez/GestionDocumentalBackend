@@ -135,9 +135,40 @@ public class InventarioDocumentalUseCase {
                 );
             }
 
-            // Permitir actualizar "Pendiente de Aprobación" sin límite de días
-            // (es lo único que puede hacer cuando hay pendientes vencidos)
+            // ✅ Validar 5 días para "Pendiente de Aprobación"
             boolean esPendienteAprobacion = "Pendiente de Aprobación".equals(estadoActual);
+            
+            if (esPendienteAprobacion) {
+                // Validar 5 días desde fechaCambioEstado cuando cambió a PENDIENTE
+                LocalDateTime fechaReferencia = inventario.getFechaCambioEstado() != null 
+                    ? inventario.getFechaCambioEstado() 
+                    : inventario.getFecCreacion();
+                
+                // ✅ LOG: Debug para validación de 5 días
+                System.out.println("🔍 [DEBUG] Validación 5 días PENDIENTE:");
+                System.out.println("🔍 [DEBUG]   - Estado actual: " + estadoActual);
+                System.out.println("🔍 [DEBUG]   - fechaCambioEstado: " + inventario.getFechaCambioEstado());
+                System.out.println("🔍 [DEBUG]   - fecCreacion: " + inventario.getFecCreacion());
+                System.out.println("🔍 [DEBUG]   - fechaReferencia usada: " + fechaReferencia);
+                
+                if (fechaReferencia != null) {
+                    LocalDateTime fechaLimite = LocalDateTime.now().minusDays(5);
+                    long diasTranscurridos = java.time.Duration.between(fechaReferencia, LocalDateTime.now()).toDays();
+                    System.out.println("🔍 [DEBUG]   - Fecha límite (hoy - 5 días): " + fechaLimite);
+                    System.out.println("🔍 [DEBUG]   - Días transcurridos: " + diasTranscurridos);
+                    System.out.println("🔍 [DEBUG]   - ¿Es antes del límite?: " + fechaReferencia.isBefore(fechaLimite));
+                    
+                    if (fechaReferencia.isBefore(fechaLimite)) {
+                        System.out.println("🔍 [DEBUG]   - ❌ BLOQUEADO: Pasaron más de 5 días");
+                        throw new IllegalStateException(
+                            "No se puede actualizar. Ha pasado más de 5 días calendario desde que fue marcado como Pendiente de Aprobación. " +
+                            "Por favor actualice este inventario antes de continuar."
+                        );
+                    } else {
+                        System.out.println("🔍 [DEBUG]   - ✅ PERMITIDO: Dentro de 5 días");
+                    }
+                }
+            }
             
             // Para "Registrado", validar que no haya pasado más de 5 días
             if (!esPendienteAprobacion && "Registrado".equals(estadoActual)) {
