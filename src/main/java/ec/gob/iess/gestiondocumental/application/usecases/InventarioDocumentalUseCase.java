@@ -33,8 +33,14 @@ public class InventarioDocumentalUseCase {
     @Transactional
     public InventarioDocumentalResponse registrarInventario(InventarioDocumentalRequest request, 
                                                               String usuarioCedula, String ipEquipo) {
-        // El registro de nuevos inventarios siempre se permite
-        // La validación de pendientes vencidos solo aplica al actualizar inventarios existentes
+        // ✅ Validar pendientes vencidos antes de permitir nuevo registro
+        // Si hay pendientes con más de 5 días, bloquear registro de nuevos inventarios
+        if (inventarioRepository.tienePendientesVencidos(usuarioCedula)) {
+            throw new IllegalStateException(
+                "No se puede registrar nuevo inventario. Tiene registros pendientes de aprobación vencidos (más de 5 días). " +
+                "Por favor actualice los registros pendientes primero."
+            );
+        }
 
         InventarioDocumental inventario = new InventarioDocumental();
         inventario.setIdSeccion(request.getIdSeccion());
@@ -135,40 +141,9 @@ public class InventarioDocumentalUseCase {
                 );
             }
 
-            // ✅ Validar 5 días para "Pendiente de Aprobación"
+            // ✅ Permitir actualizar "Pendiente de Aprobación" siempre (sin límite de días)
+            // El bloqueo de 5 días aplica solo para REGISTRAR nuevos inventarios, no para actualizar pendientes
             boolean esPendienteAprobacion = "Pendiente de Aprobación".equals(estadoActual);
-            
-            if (esPendienteAprobacion) {
-                // Validar 5 días desde fechaCambioEstado cuando cambió a PENDIENTE
-                LocalDateTime fechaReferencia = inventario.getFechaCambioEstado() != null 
-                    ? inventario.getFechaCambioEstado() 
-                    : inventario.getFecCreacion();
-                
-                // ✅ LOG: Debug para validación de 5 días
-                System.out.println("🔍 [DEBUG] Validación 5 días PENDIENTE:");
-                System.out.println("🔍 [DEBUG]   - Estado actual: " + estadoActual);
-                System.out.println("🔍 [DEBUG]   - fechaCambioEstado: " + inventario.getFechaCambioEstado());
-                System.out.println("🔍 [DEBUG]   - fecCreacion: " + inventario.getFecCreacion());
-                System.out.println("🔍 [DEBUG]   - fechaReferencia usada: " + fechaReferencia);
-                
-                if (fechaReferencia != null) {
-                    LocalDateTime fechaLimite = LocalDateTime.now().minusDays(5);
-                    long diasTranscurridos = java.time.Duration.between(fechaReferencia, LocalDateTime.now()).toDays();
-                    System.out.println("🔍 [DEBUG]   - Fecha límite (hoy - 5 días): " + fechaLimite);
-                    System.out.println("🔍 [DEBUG]   - Días transcurridos: " + diasTranscurridos);
-                    System.out.println("🔍 [DEBUG]   - ¿Es antes del límite?: " + fechaReferencia.isBefore(fechaLimite));
-                    
-                    if (fechaReferencia.isBefore(fechaLimite)) {
-                        System.out.println("🔍 [DEBUG]   - ❌ BLOQUEADO: Pasaron más de 5 días");
-                        throw new IllegalStateException(
-                            "No se puede actualizar. Ha pasado más de 5 días calendario desde que fue marcado como Pendiente de Aprobación. " +
-                            "Por favor actualice este inventario antes de continuar."
-                        );
-                    } else {
-                        System.out.println("🔍 [DEBUG]   - ✅ PERMITIDO: Dentro de 5 días");
-                    }
-                }
-            }
             
             // Para "Registrado", validar que no haya pasado más de 5 días
             if (!esPendienteAprobacion && "Registrado".equals(estadoActual)) {

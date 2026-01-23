@@ -230,3 +230,5 @@ sqlplus ... @scripts/datos-prueba/05_insertar_catalogos_secciones.sql
 
 
 
+
+

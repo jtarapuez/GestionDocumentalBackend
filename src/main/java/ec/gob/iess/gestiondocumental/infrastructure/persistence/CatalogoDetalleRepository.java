@@ -52,3 +52,5 @@ public class CatalogoDetalleRepository implements PanacheRepository<CatalogoDeta
 
 
 
+
+

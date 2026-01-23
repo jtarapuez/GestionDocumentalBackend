@@ -264,8 +264,9 @@ public class InventarioDocumentalController {
             @QueryParam("estado") String estado,
             @QueryParam("supervisor") String supervisor) {
         try {
-            // ✅ DEBUG: Log temporal para verificar parámetro recibido
+            // ✅ DEBUG: Log temporal para verificar parámetro recibido - DEBUG FILTRO ESTADO
             System.out.println("🔍 [DEBUG] listarInventarios - supervisor recibido: " + supervisor);
+            System.out.println("🔍 [DEBUG] listarInventarios - FILTRO ESTADO recibido: " + estado + " (tipo: " + (estado != null ? estado.getClass().getSimpleName() : "null") + ")");
             System.out.println("🔍 [DEBUG] listarInventarios - otros filtros: idSeccion=" + idSeccion + ", estado=" + estado);
             System.out.println("🔍 [DEBUG] listarInventarios - todos los query params: idSeccion=" + idSeccion + ", idSerie=" + idSerie + ", idSubserie=" + idSubserie + ", numeroExpediente=" + numeroExpediente + ", estado=" + estado + ", supervisor=" + supervisor);
             
@@ -342,12 +343,17 @@ public class InventarioDocumentalController {
             schema = @Schema(implementation = ApiResponse.class)
         )
     )
-    public Response listarPendientes() {
+    public Response listarPendientes(@HeaderParam("X-Operador-Id") String operadorIdHeader) {
         try {
-            // TODO: Obtener usuario del contexto de seguridad
-            String usuarioCedula = "1234567890"; // Temporal hasta implementar Keycloak
+            // ✅ Obtener operadorId del header personalizado enviado por el frontend
+            // Si no viene en el header, usar fallback temporal (para compatibilidad)
+            String operadorId = operadorIdHeader != null && !operadorIdHeader.trim().isEmpty() 
+                ? operadorIdHeader.trim() 
+                : "1"; // Fallback temporal hasta que todos los clientes envíen el header
             
-            List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarPendientesPorOperador(usuarioCedula);
+            System.out.println("🔍 [DEBUG] listarPendientes - operadorId recibido: " + operadorId);
+            
+            List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarPendientesPorOperador(operadorId);
             ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
             return Response.ok(response).build();
         } catch (Exception e) {

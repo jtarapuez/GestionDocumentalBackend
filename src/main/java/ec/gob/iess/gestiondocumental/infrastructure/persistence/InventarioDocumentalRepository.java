@@ -124,8 +124,12 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             paramIndex++;
         }
         if (estado != null && !estado.isEmpty()) {
+            // ✅ DEBUG: Log para verificar filtro de estado
+            System.out.println("🔍 [DEBUG] buscarConFiltros - Aplicando filtro estado: '" + estado + "'");
             query.append(query.length() == 0 ? "" : " AND ").append("estadoInventario = ?").append(paramIndex);
             params.add(estado);
+            System.out.println("🔍 [DEBUG] buscarConFiltros - Query construida hasta ahora: " + query.toString());
+            System.out.println("🔍 [DEBUG] buscarConFiltros - Parámetros hasta ahora: " + params);
             paramIndex++;
         }
         if (numeroCedula != null && !numeroCedula.isEmpty()) {
