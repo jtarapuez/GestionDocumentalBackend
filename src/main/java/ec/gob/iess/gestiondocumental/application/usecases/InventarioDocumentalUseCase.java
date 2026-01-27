@@ -1,7 +1,13 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
+import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
+import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
+import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
 import ec.gob.iess.gestiondocumental.infrastructure.persistence.InventarioDocumentalRepository;
+import ec.gob.iess.gestiondocumental.infrastructure.persistence.SeccionDocumentalRepository;
+import ec.gob.iess.gestiondocumental.infrastructure.persistence.SerieDocumentalRepository;
+import ec.gob.iess.gestiondocumental.infrastructure.persistence.SubserieDocumentalRepository;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,6 +28,15 @@ public class InventarioDocumentalUseCase {
 
     @Inject
     InventarioDocumentalRepository inventarioRepository;
+
+    @Inject
+    SeccionDocumentalRepository seccionRepository;
+
+    @Inject
+    SerieDocumentalRepository serieRepository;
+
+    @Inject
+    SubserieDocumentalRepository subserieRepository;
 
     /**
      * Registra un nuevo inventario documental
@@ -371,6 +386,38 @@ public class InventarioDocumentalUseCase {
         response.setCedulaUsuarioCambio(inventario.getCedulaUsuarioCambio());
         response.setUsuCreacion(inventario.getUsuCreacion());
         response.setFecCreacion(inventario.getFecCreacion());
+
+        // Enriquecer respuesta con nombres descriptivos (opcionales) para consultas/reportes
+        // Estos campos NO reemplazan a los IDs existentes, solo facilitan la visualización en el frontend.
+        if (inventario.getIdSeccion() != null) {
+            SeccionDocumental seccion = seccionRepository.findById(inventario.getIdSeccion());
+            if (seccion != null) {
+                response.setNombreSeccion(seccion.getNombre());
+            }
+        }
+
+        if (inventario.getIdSerie() != null) {
+            SerieDocumental serie = serieRepository.findByIdOptional(inventario.getIdSerie())
+                    .orElse(null);
+            if (serie != null) {
+                response.setNombreSerie(serie.getNombreSerie());
+            }
+        }
+
+        if (inventario.getIdSubserie() != null) {
+            SubserieDocumental subserie = subserieRepository.findByIdOptional(inventario.getIdSubserie())
+                    .orElse(null);
+            if (subserie != null) {
+                response.setNombreSubserie(subserie.getNombreSubserie());
+            }
+        }
+
+        // Por ahora, operador y supervisor se exponen tal como están almacenados.
+        // Si más adelante se integra con un catálogo de usuarios/Keycloak, estos campos
+        // podrán mapearse a nombres completos sin cambiar el contrato existente.
+        response.setOperadorNombre(inventario.getOperador());
+        response.setSupervisorNombre(inventario.getSupervisor());
+
         return response;
     }
 

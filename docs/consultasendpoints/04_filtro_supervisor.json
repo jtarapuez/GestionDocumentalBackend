@@ -1,0 +1,32 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "❌ PROBLEMA: Filtro por supervisor - Muestra valores hardcodeados en el filtro",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "supervisor": "1"
+  },
+  "examples": [
+    {
+      "description": "Buscar inventarios del supervisor con ID 1",
+      "body": {
+        "supervisor": "1"
+      },
+      "expectedResult": "Inventarios donde supervisor = '1'"
+    },
+    {
+      "description": "Buscar inventarios del supervisor con ID 2",
+      "body": {
+        "supervisor": "2"
+      },
+      "expectedResult": "Inventarios donde supervisor = '2'"
+    }
+  ],
+  "problema": "El frontend muestra valores hardcodeados en lugar de usar los valores reales desde Keycloak (supervisoresNombres)",
+  "solucion": "Usar supervisoresNombres (construido desde usuariosData/Keycloak) en lugar de getSupervisoresMock()",
+  "notas": "El backend espera el ID del supervisor como string (ej: '1', '2'). El frontend debe mostrar los nombres reales desde Keycloak pero enviar el ID al backend."
+}

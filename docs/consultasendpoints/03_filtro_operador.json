@@ -1,0 +1,32 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "❌ PROBLEMA: Filtro por operador - Muestra valores hardcodeados en el filtro",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "operador": "1"
+  },
+  "examples": [
+    {
+      "description": "Buscar inventarios del operador con ID 1",
+      "body": {
+        "operador": "1"
+      },
+      "expectedResult": "Inventarios donde operador = '1'"
+    },
+    {
+      "description": "Buscar inventarios del operador con ID 2",
+      "body": {
+        "operador": "2"
+      },
+      "expectedResult": "Inventarios donde operador = '2'"
+    }
+  ],
+  "problema": "El frontend muestra valores hardcodeados (Pedro González, Lucía Ramírez, etc.) en lugar de usar los valores reales desde Keycloak (operadoresNombres)",
+  "solucion": "Usar operadoresNombres (construido desde usuariosData/Keycloak) en lugar de getOperadoresMock()",
+  "notas": "El backend espera el ID del operador como string (ej: '1', '2'). El frontend debe mostrar los nombres reales desde Keycloak pero enviar el ID al backend."
+}

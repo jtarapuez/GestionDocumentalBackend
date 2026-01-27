@@ -1,0 +1,35 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "❌ PROBLEMA: Filtro por tipo de archivo - Cuando filtra 'pasivo' sale 'activo'",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "tipoArchivo": "Archivo pasivo"
+  },
+  "validTiposArchivo": [
+    "Archivo activo",
+    "Archivo pasivo"
+  ],
+  "examples": [
+    {
+      "description": "Buscar archivos pasivos (debería devolver solo pasivos)",
+      "body": {
+        "tipoArchivo": "Archivo pasivo"
+      },
+      "expectedResult": "Solo inventarios con tipoArchivo = 'Archivo pasivo'"
+    },
+    {
+      "description": "Buscar archivos activos",
+      "body": {
+        "tipoArchivo": "Archivo activo"
+      },
+      "expectedResult": "Solo inventarios con tipoArchivo = 'Archivo activo'"
+    }
+  ],
+  "problema": "El usuario reporta que cuando filtra por 'Archivo pasivo', le aparecen resultados con 'Archivo activo'",
+  "notas": "Verificar que el backend esté filtrando correctamente por tipoArchivo. El frontend envía el string 'Archivo pasivo' o 'Archivo activo'"
+}

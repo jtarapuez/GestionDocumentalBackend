@@ -44,6 +44,14 @@ public class InventarioDocumentalResponse {
     private String usuCreacion;
     private LocalDateTime fecCreacion;
 
+    // Campos descriptivos adicionales (opcionales) para enriquecer las consultas/reportes
+    // No reemplazan a los IDs ni a los códigos actuales, solo facilitan la visualización en el frontend.
+    private String nombreSeccion;
+    private String nombreSerie;
+    private String nombreSubserie;
+    private String operadorNombre;
+    private String supervisorNombre;
+
     // Constructores
     public InventarioDocumentalResponse() {
     }
@@ -312,7 +320,48 @@ public class InventarioDocumentalResponse {
     public void setFecCreacion(LocalDateTime fecCreacion) {
         this.fecCreacion = fecCreacion;
     }
+
+    public String getNombreSeccion() {
+        return nombreSeccion;
+    }
+
+    public void setNombreSeccion(String nombreSeccion) {
+        this.nombreSeccion = nombreSeccion;
+    }
+
+    public String getNombreSerie() {
+        return nombreSerie;
+    }
+
+    public void setNombreSerie(String nombreSerie) {
+        this.nombreSerie = nombreSerie;
+    }
+
+    public String getNombreSubserie() {
+        return nombreSubserie;
+    }
+
+    public void setNombreSubserie(String nombreSubserie) {
+        this.nombreSubserie = nombreSubserie;
+    }
+
+    public String getOperadorNombre() {
+        return operadorNombre;
+    }
+
+    public void setOperadorNombre(String operadorNombre) {
+        this.operadorNombre = operadorNombre;
+    }
+
+    public String getSupervisorNombre() {
+        return supervisorNombre;
+    }
+
+    public void setSupervisorNombre(String supervisorNombre) {
+        this.supervisorNombre = supervisorNombre;
+    }
 }
+
 
 
 

@@ -1,14 +1,17 @@
 package ec.gob.iess.gestiondocumental.infrastructure.persistence;
 
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
+import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Repositorio Panache para la entidad InventarioDocumental
@@ -16,6 +19,9 @@ import java.util.Optional;
  */
 @ApplicationScoped
 public class InventarioDocumentalRepository implements PanacheRepository<InventarioDocumental> {
+
+    @Inject
+    SubserieDocumentalRepository subserieRepository;
 
     /**
      * Busca un inventario por su ID
@@ -109,9 +115,34 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             paramIndex++;
         }
         if (idSerie != null) {
-            query.append(query.length() == 0 ? "" : " AND ").append("idSerie = ?").append(paramIndex);
-            params.add(idSerie);
-            paramIndex++;
+            // ✅ Buscar inventarios con la serie directamente O con subseries de esa serie
+            // Obtener todas las subseries de la serie
+            List<SubserieDocumental> subseries = subserieRepository.findBySerie(idSerie);
+            List<Long> idsSubseries = subseries.stream()
+                    .map(SubserieDocumental::getId)
+                    .collect(Collectors.toList());
+            
+            if (idsSubseries.isEmpty()) {
+                // Si no hay subseries, solo buscar por idSerie
+                query.append(query.length() == 0 ? "" : " AND ").append("idSerie = ?").append(paramIndex);
+                params.add(idSerie);
+                paramIndex++;
+            } else {
+                // Buscar por idSerie O por idSubserie en la lista de subseries
+                query.append(query.length() == 0 ? "" : " AND ").append("(idSerie = ?").append(paramIndex);
+                params.add(idSerie);
+                paramIndex++;
+                query.append(" OR idSubserie IN (");
+                for (int i = 0; i < idsSubseries.size(); i++) {
+                    if (i > 0) {
+                        query.append(", ");
+                    }
+                    query.append("?").append(paramIndex);
+                    params.add(idsSubseries.get(i));
+                    paramIndex++;
+                }
+                query.append("))");
+            }
         }
         if (idSubserie != null) {
             query.append(query.length() == 0 ? "" : " AND ").append("idSubserie = ?").append(paramIndex);

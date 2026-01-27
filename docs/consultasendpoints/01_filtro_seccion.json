@@ -1,0 +1,29 @@
+{
+  "endpoint": "POST /api/v1/consultas",
+  "description": "✅ FILTRO FUNCIONANDO CORRECTAMENTE - Consulta por sección",
+  "method": "POST",
+  "url": "http://localhost:8080/api/v1/consultas",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "body": {
+    "idSeccion": 23
+  },
+  "examples": [
+    {
+      "description": "Solo por sección",
+      "body": {
+        "idSeccion": 23
+      }
+    },
+    {
+      "description": "Por sección y serie",
+      "body": {
+        "idSeccion": 23,
+        "idSerie": 7
+      }
+    }
+  ],
+  "notas": "Este filtro está funcionando correctamente según el usuario"
+}
