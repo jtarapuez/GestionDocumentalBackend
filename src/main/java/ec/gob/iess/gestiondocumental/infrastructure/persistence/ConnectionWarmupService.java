@@ -7,6 +7,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
@@ -50,27 +51,30 @@ public class ConnectionWarmupService {
     }
     
     /**
-     * Pre-inicializa las conexiones del pool ejecutando queries simples
-     * Esto fuerza a Quarkus a crear las conexiones iniciales configuradas en initial-size
+     * Pre-inicializa UNA conexión y ejecuta el test de BD en la misma conexión.
+     * Solo hay una petición getConnection() al arranque para evitar que Agroal
+     * cree una segunda conexión en background (agroal-11), que provocaba
+     * ORA-17002 "Connection establishment interrupted externally".
      */
     private void warmupConnections() throws Exception {
-        // Obtener y liberar múltiples conexiones para pre-inicializar el pool
-        // El número de iteraciones debe ser igual o mayor a initial-size (3)
-        int warmupConnections = 3; // Coincide con initial-size configurado
-        
-        for (int i = 1; i <= warmupConnections; i++) {
-            try (Connection conn = dataSource.getConnection()) {
-                // Ejecutar query simple para validar la conexión
-                try (Statement stmt = conn.createStatement()) {
-                    stmt.executeQuery("SELECT 1 FROM DUAL");
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                try (ResultSet rs = stmt.executeQuery("SELECT 1 FROM DUAL")) {
+                    if (rs.next()) { /* consumir */ }
                 }
-                LOG.info("✅ Conexión " + i + "/" + warmupConnections + " pre-inicializada");
-            } catch (Exception e) {
-                LOG.warning("⚠️ Error al pre-inicializar conexión " + i + ": " + e.getMessage());
-                // Continuar con las demás conexiones
+                LOG.info("✅ Conexión 1/1 pre-inicializada");
+                try (ResultSet rs = stmt.executeQuery("SELECT 'OK' AS STATUS, SYSDATE FROM DUAL")) {
+                    if (rs.next()) {
+                        LOG.info("✅ Test Oracle: " + rs.getString(1) + " | Fecha servidor: " + rs.getTimestamp(2));
+                    }
+                }
+                try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS TOTAL FROM USER_TABLES WHERE TABLE_NAME LIKE 'GDOC_%'")) {
+                    if (rs.next()) {
+                        LOG.info("✅ Tablas GDOC_*: " + rs.getInt("TOTAL"));
+                    }
+                }
             }
         }
-        
         LOG.info("==========================================");
     }
 }

@@ -1,9 +1,7 @@
 package ec.gob.iess.gestiondocumental.infrastructure.persistence;
 
 import io.agroal.api.AgroalDataSource;
-import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
 import java.sql.Connection;
@@ -20,34 +18,10 @@ public class TestConexionBD {
     @Inject
     AgroalDataSource dataSource;
     
-    /**
-     * Se ejecuta automáticamente al iniciar la aplicación
-     */
-    void onStart(@Observes StartupEvent ev) {
-        // Esperar un poco para que el datasource esté listo
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        
-        System.out.println("\n");
-        System.out.println("==========================================");
-        System.out.println("TEST AUTOMÁTICO - Conexión Oracle");
-        System.out.println("==========================================");
-        
-        try {
-            testConexion();
-        } catch (Exception e) {
-            System.err.println("\n❌ ERROR AL INICIAR - Revisa la configuración de BD");
-            System.err.println("Error: " + e.getMessage());
-            if (e.getCause() != null) {
-                System.err.println("Causa: " + e.getCause().getMessage());
-            }
-            e.printStackTrace();
-        }
-    }
-    
+    // Observer StartupEvent quitado: evita segunda petición getConnection() al arranque
+    // que disparaba agroal-11 y ORA-17002. El test se hace en ConnectionWarmupService.
+    // Usar testConexion() manualmente o desde un endpoint de diagnóstico si se necesita.
+
     /**
      * Prueba la conexión a la base de datos Oracle
      */

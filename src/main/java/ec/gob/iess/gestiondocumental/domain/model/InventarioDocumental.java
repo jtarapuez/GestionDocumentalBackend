@@ -105,7 +105,8 @@ public class InventarioDocumental {
     @Column(name = "ID_SERIE", nullable = false)
     private Long idSerie;
 
-    @Column(name = "ID_SUBSERIE", nullable = false)
+    /** Opcional según regla de negocio; si la tabla Oracle tiene NOT NULL, ejecutar: ALTER TABLE DOCUMENTAL_OWNER.GDOC_INVENTARIO_T MODIFY ID_SUBSERIE NULL; */
+    @Column(name = "ID_SUBSERIE", nullable = true)
     private Long idSubserie;
 
     @Column(name = "USU_CREACION", length = 10, nullable = false)
