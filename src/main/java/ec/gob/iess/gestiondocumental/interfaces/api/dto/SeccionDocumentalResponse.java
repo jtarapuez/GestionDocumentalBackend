@@ -3,8 +3,8 @@ package ec.gob.iess.gestiondocumental.interfaces.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * DTO de respuesta para SeccionDocumental
- * Representa una sección documental en las respuestas de la API
+ * DTO de respuesta que representa una sección documental.
+ * Se usa en {@code GET /v1/catalogos/secciones} y en respuestas que incluyen estructura documental.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SeccionDocumentalResponse {
@@ -14,10 +14,17 @@ public class SeccionDocumentalResponse {
     private String descripcion;
     private String estadoRegistro;
 
-    // Constructores
+    /** Constructor por defecto. */
     public SeccionDocumentalResponse() {
     }
 
+    /**
+     * Constructor con campos principales.
+     * @param id identificador de la sección
+     * @param nombre nombre de la sección
+     * @param descripcion descripción
+     * @param estadoRegistro estado del registro
+     */
     public SeccionDocumentalResponse(Long id, String nombre, String descripcion, String estadoRegistro) {
         this.id = id;
         this.nombre = nombre;

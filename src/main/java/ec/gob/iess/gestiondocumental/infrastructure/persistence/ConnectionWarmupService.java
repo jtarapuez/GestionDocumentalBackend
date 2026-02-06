@@ -25,8 +25,10 @@ public class ConnectionWarmupService {
     AgroalDataSource dataSource;
     
     /**
-     * Se ejecuta automáticamente al iniciar la aplicación
-     * Pre-inicializa las conexiones del pool según initial-size configurado
+     * Se ejecuta automáticamente al iniciar la aplicación.
+     * Pre-inicializa una conexión del pool y ejecuta consultas de prueba para reducir
+     * la latencia en las primeras peticiones y evitar ORA-17002 por segunda conexión en arranque.
+     * @param ev evento de arranque de Quarkus (no utilizado)
      */
     void onStart(@Observes StartupEvent ev) {
         // Esperar un poco para que el datasource esté completamente listo
@@ -68,7 +70,8 @@ public class ConnectionWarmupService {
                         LOG.info("✅ Test Oracle: " + rs.getString(1) + " | Fecha servidor: " + rs.getTimestamp(2));
                     }
                 }
-                try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS TOTAL FROM USER_TABLES WHERE TABLE_NAME LIKE 'GDOC_%'")) {
+                try (ResultSet rs = stmt.executeQuery(
+                        "SELECT COUNT(*) AS TOTAL FROM USER_TABLES WHERE TABLE_NAME LIKE 'GDOC_%'")) {
                     if (rs.next()) {
                         LOG.info("✅ Tablas GDOC_*: " + rs.getInt("TOTAL"));
                     }

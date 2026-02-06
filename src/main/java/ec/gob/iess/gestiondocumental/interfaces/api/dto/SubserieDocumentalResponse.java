@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
 
 /**
- * DTO de respuesta para SubserieDocumental
+ * DTO de respuesta que representa una subserie documental.
+ * Se devuelve en {@code GET/POST/PUT /v1/subseries}, listados por serie y en consultas que exponen subseries.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubserieDocumentalResponse {
@@ -22,7 +23,7 @@ public class SubserieDocumentalResponse {
     private String usuCreacion;
     private LocalDateTime fecCreacion;
 
-    // Constructores
+    /** Constructor por defecto. */
     public SubserieDocumentalResponse() {
     }
 

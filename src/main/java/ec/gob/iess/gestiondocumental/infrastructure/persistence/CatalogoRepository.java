@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio Panache para la entidad Catalogo
- * Proporciona métodos de acceso a datos para GDOC_CATALOGOS_T
+ * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.Catalogo}.
+ * Persiste los catálogos maestros en GDOC_CATALOGOS_T.
+ * Criterios de búsqueda: por código, por estado activo; verificación de existencia por código.
  */
 @ApplicationScoped
 public class CatalogoRepository implements PanacheRepository<Catalogo> {

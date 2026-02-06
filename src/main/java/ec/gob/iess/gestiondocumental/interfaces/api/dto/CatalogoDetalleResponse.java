@@ -3,8 +3,9 @@ package ec.gob.iess.gestiondocumental.interfaces.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * DTO de respuesta para CatalogoDetalle
- * Representa un detalle/valor específico de un catálogo en las respuestas de la API
+ * DTO de respuesta que representa un detalle o valor de un catálogo (ej. un valor de FORMATO, SEGURIDAD).
+ * Se usa en listados de detalles por catálogo: {@code GET /v1/catalogos/{codigo}/detalles} y en
+ * endpoints derivados (formatos, seguridad, estados-serie, etc.).
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CatalogoDetalleResponse {
@@ -16,10 +17,18 @@ public class CatalogoDetalleResponse {
     private String observacion;
     private Long idCatalogo;
 
-    // Constructores
+    /** Constructor por defecto. */
     public CatalogoDetalleResponse() {
     }
 
+    /**
+     * Constructor con campos principales.
+     * @param id identificador del detalle
+     * @param codigo código del valor
+     * @param descripcion descripción
+     * @param estado estado del registro
+     * @param idCatalogo identificador del catálogo al que pertenece
+     */
     public CatalogoDetalleResponse(Long id, String codigo, String descripcion, String estado, Long idCatalogo) {
         this.id = id;
         this.codigo = codigo;

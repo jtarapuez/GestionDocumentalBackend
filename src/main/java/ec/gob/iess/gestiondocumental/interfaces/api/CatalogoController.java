@@ -5,6 +5,7 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoDetalleResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SeccionDocumentalResponse;
+import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -30,6 +31,9 @@ public class CatalogoController {
     @Inject
     CatalogoUseCase catalogoUseCase;
 
+    @Inject
+    RequestContext requestContext;
+
     /**
      * Lista todos los catálogos activos
      * 
@@ -51,12 +55,14 @@ public class CatalogoController {
     public Response listarCatalogos() {
         try {
             List<CatalogoResponse> catalogos = catalogoUseCase.listarCatalogos();
-            ApiResponse<List<CatalogoResponse>> response = ApiResponse.success(catalogos);
+            ApiResponse<List<CatalogoResponse>> response = ApiResponse.success(catalogos,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar catálogos: " + e.getMessage(),
-                "CATALOGOS_LIST_ERROR"
+                "CATALOGOS_LIST_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -96,13 +102,15 @@ public class CatalogoController {
         try {
             return catalogoUseCase.obtenerCatalogoPorCodigo(codigo)
                     .map(catalogo -> {
-                        ApiResponse<CatalogoResponse> response = ApiResponse.success(catalogo);
+                        ApiResponse<CatalogoResponse> response = ApiResponse.success(catalogo,
+                                requestContext.getPath(), requestContext.getRequestId());
                         return Response.ok(response).build();
                     })
                     .orElseGet(() -> {
                         ApiResponse<Object> errorResponse = ApiResponse.error(
                             "Catálogo no encontrado con código: " + codigo,
-                            "CATALOGO_NOT_FOUND"
+                            "CATALOGO_NOT_FOUND",
+                            requestContext.getPath(), requestContext.getRequestId()
                         );
                         return Response.status(Response.Status.NOT_FOUND)
                                 .entity(errorResponse)
@@ -111,7 +119,8 @@ public class CatalogoController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al obtener catálogo: " + e.getMessage(),
-                "CATALOGO_GET_ERROR"
+                "CATALOGO_GET_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -153,7 +162,8 @@ public class CatalogoController {
             if (catalogoUseCase.obtenerCatalogoPorCodigo(codigo).isEmpty()) {
                 ApiResponse<Object> errorResponse = ApiResponse.error(
                     "Catálogo no encontrado con código: " + codigo,
-                    "CATALOGO_NOT_FOUND"
+                    "CATALOGO_NOT_FOUND",
+                    requestContext.getPath(), requestContext.getRequestId()
                 );
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(errorResponse)
@@ -161,12 +171,14 @@ public class CatalogoController {
             }
 
             List<CatalogoDetalleResponse> detalles = catalogoUseCase.listarDetallesPorCatalogo(codigo);
-            ApiResponse<List<CatalogoDetalleResponse>> response = ApiResponse.success(detalles);
+            ApiResponse<List<CatalogoDetalleResponse>> response = ApiResponse.success(detalles,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar detalles del catálogo: " + e.getMessage(),
-                "CATALOGO_DETALLES_ERROR"
+                "CATALOGO_DETALLES_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -252,7 +264,8 @@ public class CatalogoController {
     @Path("/estados-inventario")
     @Operation(
         summary = "Listar estados de inventario",
-        description = "Retorna los valores del catálogo ESTADO_INVENTARIO (Registrado, Pendiente, Actualizado, Aprobado)"
+        description = "Retorna los valores del catálogo ESTADO_INVENTARIO "
+                + "(Registrado, Pendiente, Actualizado, Aprobado)"
     )
     @APIResponse(
         responseCode = "200",
@@ -334,12 +347,14 @@ public class CatalogoController {
     public Response listarSecciones() {
         try {
             List<SeccionDocumentalResponse> secciones = catalogoUseCase.listarSecciones();
-            ApiResponse<List<SeccionDocumentalResponse>> response = ApiResponse.success(secciones);
+            ApiResponse<List<SeccionDocumentalResponse>> response = ApiResponse.success(secciones,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar secciones: " + e.getMessage(),
-                "SECCIONES_LIST_ERROR"
+                "SECCIONES_LIST_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)

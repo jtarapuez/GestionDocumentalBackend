@@ -31,7 +31,8 @@ public class SubserieDocumentalUseCase {
      * @return Subserie creada
      */
     @Transactional
-    public SubserieDocumentalResponse crearSubserie(SubserieDocumentalRequest request, String usuarioCedula, String ipEquipo) {
+    public SubserieDocumentalResponse crearSubserie(
+            SubserieDocumentalRequest request, String usuarioCedula, String ipEquipo) {
         SubserieDocumental subserie = new SubserieDocumental();
         subserie.setIdSerie(request.getIdSerie());
         subserie.setNombreSubserie(request.getNombreSubserie());
@@ -58,7 +59,8 @@ public class SubserieDocumentalUseCase {
      * @return Subserie actualizada
      */
     @Transactional
-    public Optional<SubserieDocumentalResponse> actualizarSubserie(Long id, SubserieDocumentalRequest request, String usuarioCedula) {
+    public Optional<SubserieDocumentalResponse> actualizarSubserie(
+            Long id, SubserieDocumentalRequest request, String usuarioCedula) {
         return subserieRepository.findByIdOptional(id).map(subserie -> {
             if (request.getNombreSubserie() != null) {
                 subserie.setNombreSubserie(request.getNombreSubserie());

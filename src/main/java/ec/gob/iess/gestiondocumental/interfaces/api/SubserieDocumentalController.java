@@ -4,6 +4,7 @@ import ec.gob.iess.gestiondocumental.application.usecases.SubserieDocumentalUseC
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalResponse;
+import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -28,6 +29,9 @@ public class SubserieDocumentalController {
 
     @Inject
     SubserieDocumentalUseCase subserieUseCase;
+
+    @Inject
+    RequestContext requestContext;
 
     /**
      * Crea una nueva subserie documental
@@ -63,12 +67,14 @@ public class SubserieDocumentalController {
             String ipEquipo = "127.0.0.1"; // Temporal
             
             SubserieDocumentalResponse subserie = subserieUseCase.crearSubserie(request, usuarioCedula, ipEquipo);
-            ApiResponse<SubserieDocumentalResponse> response = ApiResponse.success(subserie);
+            ApiResponse<SubserieDocumentalResponse> response = ApiResponse.success(subserie,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.status(Response.Status.CREATED).entity(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al crear subserie: " + e.getMessage(),
-                "SUBSERIE_CREATE_ERROR"
+                "SUBSERIE_CREATE_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -112,13 +118,15 @@ public class SubserieDocumentalController {
             
             return subserieUseCase.actualizarSubserie(id, request, usuarioCedula)
                     .map(subserie -> {
-                        ApiResponse<SubserieDocumentalResponse> response = ApiResponse.success(subserie);
+                        ApiResponse<SubserieDocumentalResponse> response = ApiResponse.success(subserie,
+                                requestContext.getPath(), requestContext.getRequestId());
                         return Response.ok(response).build();
                     })
                     .orElseGet(() -> {
                         ApiResponse<Object> errorResponse = ApiResponse.error(
                             "Subserie no encontrada con ID: " + id,
-                            "SUBSERIE_NOT_FOUND"
+                            "SUBSERIE_NOT_FOUND",
+                            requestContext.getPath(), requestContext.getRequestId()
                         );
                         return Response.status(Response.Status.NOT_FOUND)
                                 .entity(errorResponse)
@@ -127,7 +135,8 @@ public class SubserieDocumentalController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al actualizar subserie: " + e.getMessage(),
-                "SUBSERIE_UPDATE_ERROR"
+                "SUBSERIE_UPDATE_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -162,12 +171,14 @@ public class SubserieDocumentalController {
             } else {
                 subseries = subserieUseCase.listarActivas();
             }
-            ApiResponse<List<SubserieDocumentalResponse>> response = ApiResponse.success(subseries);
+            ApiResponse<List<SubserieDocumentalResponse>> response = ApiResponse.success(subseries,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar subseries: " + e.getMessage(),
-                "SUBSERIES_LIST_ERROR"
+                "SUBSERIES_LIST_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -207,13 +218,15 @@ public class SubserieDocumentalController {
         try {
             return subserieUseCase.obtenerPorId(id)
                     .map(subserie -> {
-                        ApiResponse<SubserieDocumentalResponse> response = ApiResponse.success(subserie);
+                        ApiResponse<SubserieDocumentalResponse> response = ApiResponse.success(subserie,
+                                requestContext.getPath(), requestContext.getRequestId());
                         return Response.ok(response).build();
                     })
                     .orElseGet(() -> {
                         ApiResponse<Object> errorResponse = ApiResponse.error(
                             "Subserie no encontrada con ID: " + id,
-                            "SUBSERIE_NOT_FOUND"
+                            "SUBSERIE_NOT_FOUND",
+                            requestContext.getPath(), requestContext.getRequestId()
                         );
                         return Response.status(Response.Status.NOT_FOUND)
                                 .entity(errorResponse)
@@ -222,7 +235,8 @@ public class SubserieDocumentalController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al obtener subserie: " + e.getMessage(),
-                "SUBSERIE_GET_ERROR"
+                "SUBSERIE_GET_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -253,12 +267,14 @@ public class SubserieDocumentalController {
     public Response listarSubseriesPorSerie(@PathParam("idSerie") Long idSerie) {
         try {
             List<SubserieDocumentalResponse> subseries = subserieUseCase.listarPorSerie(idSerie);
-            ApiResponse<List<SubserieDocumentalResponse>> response = ApiResponse.success(subseries);
+            ApiResponse<List<SubserieDocumentalResponse>> response = ApiResponse.success(subseries,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar subseries: " + e.getMessage(),
-                "SUBSERIES_LIST_ERROR"
+                "SUBSERIES_LIST_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)

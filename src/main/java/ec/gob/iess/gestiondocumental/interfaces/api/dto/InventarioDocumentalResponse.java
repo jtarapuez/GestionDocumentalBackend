@@ -5,7 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * DTO de respuesta para InventarioDocumental
+ * DTO de respuesta que representa un inventario documental.
+ * Se devuelve en operaciones de alta, actualización, aprobación, rechazo, listados y consultas
+ * ({@code GET/POST/PUT /v1/inventarios}, {@code POST /v1/consultas}). Incluye datos de auditoría
+ * y nombres descriptivos opcionales (sección, serie, subserie, operador, supervisor).
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventarioDocumentalResponse {
@@ -52,7 +55,7 @@ public class InventarioDocumentalResponse {
     private String operadorNombre;
     private String supervisorNombre;
 
-    // Constructores
+    /** Constructor por defecto. */
     public InventarioDocumentalResponse() {
     }
 

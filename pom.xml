@@ -171,6 +171,20 @@
           <mainClass>ec.gob.iess.gestiondocumental.TestConexionOracle</mainClass>
         </configuration>
       </plugin>
+
+      <!-- Checkstyle: estilo y Javadoc (PAS-EST-043). Ejecutar: mvn checkstyle:check -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <configLocation>config/checkstyle.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+          <failOnViolation>false</failOnViolation>
+          <violationSeverity>warning</violationSeverity>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

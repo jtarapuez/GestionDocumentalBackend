@@ -3,6 +3,7 @@ package ec.gob.iess.gestiondocumental.interfaces.api;
 import ec.gob.iess.gestiondocumental.application.usecases.InventarioDocumentalUseCase;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ConsultaRequest;
+import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -25,6 +26,9 @@ public class ReporteController {
 
     @Inject
     InventarioDocumentalUseCase inventarioUseCase;
+
+    @Inject
+    RequestContext requestContext;
 
     /**
      * Exporta inventarios a PDF según los filtros proporcionados
@@ -59,7 +63,8 @@ public class ReporteController {
         // Requiere librerías como iText, Apache PDFBox, o similar
         ApiResponse<Object> errorResponse = ApiResponse.error(
             "Exportación a PDF no implementada aún. Esta funcionalidad será agregada en una versión futura.",
-            "PDF_EXPORT_NOT_IMPLEMENTED"
+            "PDF_EXPORT_NOT_IMPLEMENTED",
+            requestContext.getPath(), requestContext.getRequestId()
         );
         return Response.status(Response.Status.NOT_IMPLEMENTED)
                 .entity(errorResponse)
@@ -99,7 +104,8 @@ public class ReporteController {
         // Requiere librerías como Apache POI
         ApiResponse<Object> errorResponse = ApiResponse.error(
             "Exportación a Excel no implementada aún. Esta funcionalidad será agregada en una versión futura.",
-            "EXCEL_EXPORT_NOT_IMPLEMENTED"
+            "EXCEL_EXPORT_NOT_IMPLEMENTED",
+            requestContext.getPath(), requestContext.getRequestId()
         );
         return Response.status(Response.Status.NOT_IMPLEMENTED)
                 .entity(errorResponse)

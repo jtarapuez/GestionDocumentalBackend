@@ -3,8 +3,8 @@ package ec.gob.iess.gestiondocumental.interfaces.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * DTO de respuesta para Catalogo
- * Representa un catálogo maestro en las respuestas de la API
+ * DTO de respuesta que representa un catálogo maestro (ej. FORMATO, SEGURIDAD, ESTADO_INVENTARIO).
+ * Se usa en {@code GET /v1/catalogos} y en {@code GET /v1/catalogos/{codigo}}.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CatalogoResponse {
@@ -15,10 +15,17 @@ public class CatalogoResponse {
     private String estado;
     private String observacion;
 
-    // Constructores
+    /** Constructor por defecto. */
     public CatalogoResponse() {
     }
 
+    /**
+     * Constructor con campos principales.
+     * @param id identificador del catálogo
+     * @param codigo código del catálogo
+     * @param descripcion descripción
+     * @param estado estado del registro
+     */
     public CatalogoResponse(Long id, String codigo, String descripcion, String estado) {
         this.id = id;
         this.codigo = codigo;

@@ -6,8 +6,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 /**
- * Repositorio Panache para la entidad SeccionDocumental
- * Proporciona métodos de acceso a datos para GDOC_SECCIONES_TP
+ * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental}.
+ * Persiste las secciones documentales en GDOC_SECCIONES_TP.
+ * Criterios de búsqueda: por estado (activas: Creado, Actualizado).
  */
 @ApplicationScoped
 public class SeccionDocumentalRepository implements PanacheRepository<SeccionDocumental> {

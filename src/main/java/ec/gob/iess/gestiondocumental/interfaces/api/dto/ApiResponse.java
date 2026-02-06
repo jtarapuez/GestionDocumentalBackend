@@ -52,6 +52,41 @@ public class ApiResponse<T> {
         return new ApiResponse<>(new Error(message, code, details));
     }
 
+    /**
+     * Respuesta exitosa con meta de trazabilidad (PAS-EST-043: path y requestId).
+     */
+    public static <T> ApiResponse<T> success(T data, String path, String requestId) {
+        Meta m = new Meta();
+        m.setPath(path);
+        m.setRequestId(requestId);
+        return new ApiResponse<>(data, m);
+    }
+
+    /**
+     * Respuesta de error con meta de trazabilidad (path y requestId).
+     */
+    public static <T> ApiResponse<T> error(String message, String code, String path, String requestId) {
+        ApiResponse<T> r = new ApiResponse<>(new Error(message, code));
+        Meta m = new Meta();
+        m.setPath(path);
+        m.setRequestId(requestId);
+        r.setMeta(m);
+        return r;
+    }
+
+    /**
+     * Respuesta de error con detalles y meta de trazabilidad.
+     */
+    public static <T> ApiResponse<T> error(String message, String code, Map<String, Object> details,
+            String path, String requestId) {
+        ApiResponse<T> r = new ApiResponse<>(new Error(message, code, details));
+        Meta m = new Meta();
+        m.setPath(path);
+        m.setRequestId(requestId);
+        r.setMeta(m);
+        return r;
+    }
+
     // Getters y Setters
     public T getData() {
         return data;
@@ -87,9 +122,27 @@ public class ApiResponse<T> {
         private Integer totalPages;
         private Integer currentPage;
         private Integer pageSize;
+        private String path;
+        private String requestId;
 
         public Meta() {
             this.timestamp = LocalDateTime.now();
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public String getRequestId() {
+            return requestId;
+        }
+
+        public void setRequestId(String requestId) {
+            this.requestId = requestId;
         }
 
         public LocalDateTime getTimestamp() {

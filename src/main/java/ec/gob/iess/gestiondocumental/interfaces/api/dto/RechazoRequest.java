@@ -3,22 +3,25 @@ package ec.gob.iess.gestiondocumental.interfaces.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * DTO de request para rechazar un inventario (Pendiente de Aprobación)
+ * DTO de entrada para la operación de rechazo de un inventario documental.
+ * Se utiliza en {@code PUT /v1/inventarios/{id}/rechazar}. El campo observaciones es obligatorio.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RechazoRequest {
 
-    private String observaciones; // Obligatorio: observaciones del rechazo
+    /** Observaciones del rechazo (obligatorio). */
+    private String observaciones;
 
-    // Constructores
+    /** Constructor por defecto. */
     public RechazoRequest() {
     }
 
-    // Getters y Setters
+    /** @return observaciones del rechazo */
     public String getObservaciones() {
         return observaciones;
     }
 
+    /** @param observaciones observaciones del rechazo */
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }

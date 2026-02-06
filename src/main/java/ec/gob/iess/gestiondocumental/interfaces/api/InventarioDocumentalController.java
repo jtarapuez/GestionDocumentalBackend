@@ -6,6 +6,7 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.AprobacionRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.RechazoRequest;
+import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -30,6 +31,9 @@ public class InventarioDocumentalController {
 
     @Inject
     InventarioDocumentalUseCase inventarioUseCase;
+
+    @Inject
+    RequestContext requestContext;
 
     /**
      * Registra un nuevo inventario documental
@@ -72,13 +76,16 @@ public class InventarioDocumentalController {
             
             String ipEquipo = "127.0.0.1"; // Temporal
             
-            InventarioDocumentalResponse inventario = inventarioUseCase.registrarInventario(request, operadorId, ipEquipo);
-            ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario);
+            InventarioDocumentalResponse inventario = inventarioUseCase.registrarInventario(
+                    request, operadorId, ipEquipo);
+            ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.status(Response.Status.CREATED).entity(response).build();
         } catch (IllegalStateException e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 e.getMessage(),
-                "INVENTARIO_VALIDATION_ERROR"
+                "INVENTARIO_VALIDATION_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(errorResponse)
@@ -86,7 +93,8 @@ public class InventarioDocumentalController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al registrar inventario: " + e.getMessage(),
-                "INVENTARIO_CREATE_ERROR"
+                "INVENTARIO_CREATE_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -147,13 +155,15 @@ public class InventarioDocumentalController {
             
             return inventarioUseCase.actualizarInventario(id, request, operadorId)
                     .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario);
+                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
+                                requestContext.getPath(), requestContext.getRequestId());
                         return Response.ok(response).build();
                     })
                     .orElseGet(() -> {
                         ApiResponse<Object> errorResponse = ApiResponse.error(
                             "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND"
+                            "INVENTARIO_NOT_FOUND",
+                            requestContext.getPath(), requestContext.getRequestId()
                         );
                         return Response.status(Response.Status.NOT_FOUND)
                                 .entity(errorResponse)
@@ -162,7 +172,8 @@ public class InventarioDocumentalController {
         } catch (IllegalStateException e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 e.getMessage(),
-                "INVENTARIO_UPDATE_VALIDATION_ERROR"
+                "INVENTARIO_UPDATE_VALIDATION_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(errorResponse)
@@ -170,7 +181,8 @@ public class InventarioDocumentalController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al actualizar inventario: " + e.getMessage(),
-                "INVENTARIO_UPDATE_ERROR"
+                "INVENTARIO_UPDATE_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -210,13 +222,15 @@ public class InventarioDocumentalController {
         try {
             return inventarioUseCase.obtenerPorId(id)
                     .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario);
+                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
+                                requestContext.getPath(), requestContext.getRequestId());
                         return Response.ok(response).build();
                     })
                     .orElseGet(() -> {
                         ApiResponse<Object> errorResponse = ApiResponse.error(
                             "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND"
+                            "INVENTARIO_NOT_FOUND",
+                            requestContext.getPath(), requestContext.getRequestId()
                         );
                         return Response.status(Response.Status.NOT_FOUND)
                                 .entity(errorResponse)
@@ -225,7 +239,8 @@ public class InventarioDocumentalController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al obtener inventario: " + e.getMessage(),
-                "INVENTARIO_GET_ERROR"
+                "INVENTARIO_GET_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -266,21 +281,27 @@ public class InventarioDocumentalController {
         try {
             // ✅ DEBUG: Log temporal para verificar parámetro recibido - DEBUG FILTRO ESTADO
             System.out.println("🔍 [DEBUG] listarInventarios - supervisor recibido: " + supervisor);
-            System.out.println("🔍 [DEBUG] listarInventarios - FILTRO ESTADO recibido: " + estado + " (tipo: " + (estado != null ? estado.getClass().getSimpleName() : "null") + ")");
-            System.out.println("🔍 [DEBUG] listarInventarios - otros filtros: idSeccion=" + idSeccion + ", estado=" + estado);
-            System.out.println("🔍 [DEBUG] listarInventarios - todos los query params: idSeccion=" + idSeccion + ", idSerie=" + idSerie + ", idSubserie=" + idSubserie + ", numeroExpediente=" + numeroExpediente + ", estado=" + estado + ", supervisor=" + supervisor);
+            System.out.println("🔍 [DEBUG] listarInventarios - FILTRO ESTADO recibido: " + estado + " (tipo: "
+                    + (estado != null ? estado.getClass().getSimpleName() : "null") + ")");
+            System.out.println("🔍 [DEBUG] listarInventarios - otros filtros: idSeccion=" + idSeccion
+                    + ", estado=" + estado);
+            System.out.println("🔍 [DEBUG] listarInventarios - todos los query params: idSeccion=" + idSeccion
+                    + ", idSerie=" + idSerie + ", idSubserie=" + idSubserie + ", numeroExpediente=" + numeroExpediente
+                    + ", estado=" + estado + ", supervisor=" + supervisor);
             
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
                 idSeccion, idSerie, idSubserie, numeroExpediente, estado, 
                 null, null, null, null, null, null, null, null, null, null, null,
                 supervisor
             );
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
+            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar inventarios: " + e.getMessage(),
-                "INVENTARIOS_LIST_ERROR"
+                "INVENTARIOS_LIST_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -310,12 +331,14 @@ public class InventarioDocumentalController {
     public Response listarPendientesAprobacion() {
         try {
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarPendientesAprobacion();
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
+            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar inventarios pendientes: " + e.getMessage(),
-                "INVENTARIOS_PENDIENTES_ERROR"
+                "INVENTARIOS_PENDIENTES_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -354,12 +377,14 @@ public class InventarioDocumentalController {
             System.out.println("🔍 [DEBUG] listarPendientes - operadorId recibido: " + operadorId);
             
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarPendientesPorOperador(operadorId);
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
+            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al listar inventarios pendientes: " + e.getMessage(),
-                "INVENTARIOS_PENDIENTES_ERROR"
+                "INVENTARIOS_PENDIENTES_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -413,13 +438,15 @@ public class InventarioDocumentalController {
             return inventarioUseCase.aprobarInventario(id, usuarioCedula, 
                     request != null ? request.getObservaciones() : null)
                     .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario);
+                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
+                                requestContext.getPath(), requestContext.getRequestId());
                         return Response.ok(response).build();
                     })
                     .orElseGet(() -> {
                         ApiResponse<Object> errorResponse = ApiResponse.error(
                             "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND"
+                            "INVENTARIO_NOT_FOUND",
+                            requestContext.getPath(), requestContext.getRequestId()
                         );
                         return Response.status(Response.Status.NOT_FOUND)
                                 .entity(errorResponse)
@@ -428,7 +455,8 @@ public class InventarioDocumentalController {
         } catch (IllegalStateException e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 e.getMessage(),
-                "INVENTARIO_APROBACION_VALIDATION_ERROR"
+                "INVENTARIO_APROBACION_VALIDATION_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(errorResponse)
@@ -436,7 +464,8 @@ public class InventarioDocumentalController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al aprobar inventario: " + e.getMessage(),
-                "INVENTARIO_APROBACION_ERROR"
+                "INVENTARIO_APROBACION_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)
@@ -488,7 +517,8 @@ public class InventarioDocumentalController {
             if (request == null || request.getObservaciones() == null || request.getObservaciones().trim().isEmpty()) {
                 ApiResponse<Object> errorResponse = ApiResponse.error(
                     "Las observaciones del rechazo son obligatorias",
-                    "RECHAZO_OBSERVACIONES_REQUIRED"
+                    "RECHAZO_OBSERVACIONES_REQUIRED",
+                    requestContext.getPath(), requestContext.getRequestId()
                 );
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(errorResponse)
@@ -500,13 +530,15 @@ public class InventarioDocumentalController {
             
             return inventarioUseCase.rechazarInventario(id, usuarioCedula, request.getObservaciones())
                     .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario);
+                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
+                                requestContext.getPath(), requestContext.getRequestId());
                         return Response.ok(response).build();
                     })
                     .orElseGet(() -> {
                         ApiResponse<Object> errorResponse = ApiResponse.error(
                             "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND"
+                            "INVENTARIO_NOT_FOUND",
+                            requestContext.getPath(), requestContext.getRequestId()
                         );
                         return Response.status(Response.Status.NOT_FOUND)
                                 .entity(errorResponse)
@@ -515,7 +547,8 @@ public class InventarioDocumentalController {
         } catch (IllegalArgumentException e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 e.getMessage(),
-                "RECHAZO_VALIDATION_ERROR"
+                "RECHAZO_VALIDATION_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(errorResponse)
@@ -523,7 +556,8 @@ public class InventarioDocumentalController {
         } catch (IllegalStateException e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 e.getMessage(),
-                "INVENTARIO_RECHAZO_VALIDATION_ERROR"
+                "INVENTARIO_RECHAZO_VALIDATION_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(errorResponse)
@@ -531,7 +565,8 @@ public class InventarioDocumentalController {
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al rechazar inventario: " + e.getMessage(),
-                "INVENTARIO_RECHAZO_ERROR"
+                "INVENTARIO_RECHAZO_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
 
 /**
- * DTO de request para consultas avanzadas de inventarios
+ * DTO de entrada con filtros para consultas avanzadas de inventarios.
+ * Se utiliza en {@code POST /v1/consultas} y en exportaciones ({@code POST /v1/reportes/exportar-pdf},
+ * {@code POST /v1/reportes/exportar-excel}). Todos los campos son opcionales; se filtran por los no nulos.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsultaRequest {
@@ -26,7 +28,7 @@ public class ConsultaRequest {
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
 
-    // Constructores
+    /** Constructor por defecto. */
     public ConsultaRequest() {
     }
 

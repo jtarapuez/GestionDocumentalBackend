@@ -3,7 +3,9 @@ package ec.gob.iess.gestiondocumental.interfaces.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * DTO de request para crear/actualizar una subserie documental
+ * DTO de entrada para crear o actualizar una subserie documental.
+ * Se utiliza en {@code POST /v1/subseries} (crear) y {@code PUT /v1/subseries/{id}} (actualizar).
+ * Incluye serie padre, nombre, descripción, formato, seguridad, normativa, responsable y estado.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubserieDocumentalRequest {
@@ -18,7 +20,7 @@ public class SubserieDocumentalRequest {
     private String estado; // Creado, Actualizado
     private String justificacion;
 
-    // Constructores
+    /** Constructor por defecto. */
     public SubserieDocumentalRequest() {
     }
 

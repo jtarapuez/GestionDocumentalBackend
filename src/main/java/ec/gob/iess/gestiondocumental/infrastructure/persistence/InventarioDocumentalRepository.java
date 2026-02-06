@@ -14,8 +14,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Repositorio Panache para la entidad InventarioDocumental
- * Proporciona métodos de acceso a datos para GDOC_INVENTARIO_T
+ * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental}.
+ * Persiste los inventarios documentales en GDOC_INVENTARIO_T.
+ * Criterios: por ID, operador, estado, pendientes de aprobación, pendientes por operador,
+ * pendientes vencidos, y consultas con filtros múltiples (sección, serie, subserie, expediente, fechas, etc.).
  */
 @ApplicationScoped
 public class InventarioDocumentalRepository implements PanacheRepository<InventarioDocumental> {
@@ -98,13 +100,14 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
      * @param fechaHasta Filtro por fecha hasta
      * @return Lista de inventarios que cumplen los filtros
      */
-    public List<InventarioDocumental> buscarConFiltros(Long idSeccion, Long idSerie, Long idSubserie, 
-                                                         String numeroExpediente, String estado,
-                                                         String numeroCedula, String numeroRuc, String operador,
-                                                         String nombresApellidos, String razonSocial, String descripcionSerie,
-                                                         String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
-                                                         LocalDate fechaDesde, LocalDate fechaHasta,
-                                                         String supervisor) {
+    public List<InventarioDocumental> buscarConFiltros(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            LocalDate fechaDesde, LocalDate fechaHasta,
+            String supervisor) {
         StringBuilder query = new StringBuilder();
         List<Object> params = new ArrayList<>();
         int paramIndex = 1;
@@ -150,7 +153,8 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             paramIndex++;
         }
         if (numeroExpediente != null && !numeroExpediente.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("UPPER(numeroExpediente) LIKE UPPER(?").append(paramIndex).append(")");
+            query.append(query.length() == 0 ? "" : " AND ")
+                    .append("UPPER(numeroExpediente) LIKE UPPER(?").append(paramIndex).append(")");
             params.add("%" + numeroExpediente + "%");
             paramIndex++;
         }
@@ -179,17 +183,20 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             paramIndex++;
         }
         if (nombresApellidos != null && !nombresApellidos.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("UPPER(nombresApellidos) LIKE UPPER(?").append(paramIndex).append(")");
+            query.append(query.length() == 0 ? "" : " AND ")
+                    .append("UPPER(nombresApellidos) LIKE UPPER(?").append(paramIndex).append(")");
             params.add("%" + nombresApellidos + "%");
             paramIndex++;
         }
         if (razonSocial != null && !razonSocial.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("UPPER(razonSocial) LIKE UPPER(?").append(paramIndex).append(")");
+            query.append(query.length() == 0 ? "" : " AND ")
+                    .append("UPPER(razonSocial) LIKE UPPER(?").append(paramIndex).append(")");
             params.add("%" + razonSocial + "%");
             paramIndex++;
         }
         if (descripcionSerie != null && !descripcionSerie.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("UPPER(descripcionSerie) LIKE UPPER(?").append(paramIndex).append(")");
+            query.append(query.length() == 0 ? "" : " AND ")
+                    .append("UPPER(descripcionSerie) LIKE UPPER(?").append(paramIndex).append(")");
             params.add("%" + descripcionSerie + "%");
             paramIndex++;
         }
@@ -227,7 +234,8 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             paramIndex++;
             System.out.println("🔍 [DEBUG] buscarConFiltros - Filtro por supervisor: " + supervisorValue);
         } else {
-            System.out.println("🔍 [DEBUG] buscarConFiltros - NO se aplicará filtro por supervisor (supervisor es null o vacío)");
+            System.out.println("🔍 [DEBUG] buscarConFiltros - NO se aplicará filtro por supervisor "
+                    + "(supervisor es null o vacío)");
         }
 
         if (query.length() > 0) {

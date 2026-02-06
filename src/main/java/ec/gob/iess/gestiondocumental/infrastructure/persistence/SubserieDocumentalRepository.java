@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio Panache para la entidad SubserieDocumental
- * Proporciona métodos de acceso a datos para GDOC_SUBSERIES_T
+ * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental}.
+ * Persiste las subseries documentales en GDOC_SUBSERIES_T.
+ * Criterios de búsqueda: por ID, por serie, por serie y estado, y listado de activas (Creado/Actualizado).
  */
 @ApplicationScoped
 public class SubserieDocumentalRepository implements PanacheRepository<SubserieDocumental> {

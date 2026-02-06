@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio Panache para la entidad SerieDocumental
- * Proporciona métodos de acceso a datos para GDOC_SERIES_T
+ * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.SerieDocumental}.
+ * Persiste las series documentales en GDOC_SERIES_T.
+ * Criterios de búsqueda: por ID, por sección, por sección y estado, y listado de activas (Creado/Actualizado).
  */
 @ApplicationScoped
 public class SerieDocumentalRepository implements PanacheRepository<SerieDocumental> {

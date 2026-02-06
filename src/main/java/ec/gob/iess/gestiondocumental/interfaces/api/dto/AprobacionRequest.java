@@ -3,22 +3,26 @@ package ec.gob.iess.gestiondocumental.interfaces.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * DTO de request para aprobar un inventario
+ * DTO de entrada para la operación de aprobación de un inventario documental.
+ * Se utiliza en {@code PUT /v1/inventarios/{id}/aprobar}. Permite enviar observaciones
+ * opcionales de la aprobación.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AprobacionRequest {
 
-    private String observaciones; // Opcional: observaciones de la aprobación
+    /** Observaciones opcionales de la aprobación. */
+    private String observaciones;
 
-    // Constructores
+    /** Constructor por defecto. */
     public AprobacionRequest() {
     }
 
-    // Getters y Setters
+    /** @return observaciones opcionales de la aprobación */
     public String getObservaciones() {
         return observaciones;
     }
 
+    /** @param observaciones observaciones opcionales de la aprobación */
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }

@@ -9,8 +9,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 /**
- * Test automático de conexión a la base de datos Oracle
- * Se ejecuta al iniciar la aplicación para validar la conexión
+ * Servicio de prueba de conexión a la base de datos Oracle.
+ * No se ejecuta automáticamente al arranque (el test se realiza en {@link ConnectionWarmupService}).
+ * Útil para invocar manualmente o desde un endpoint de diagnóstico.
  */
 @ApplicationScoped
 public class TestConexionBD {
@@ -23,7 +24,9 @@ public class TestConexionBD {
     // Usar testConexion() manualmente o desde un endpoint de diagnóstico si se necesita.
 
     /**
-     * Prueba la conexión a la base de datos Oracle
+     * Prueba la conexión a la base de datos Oracle: obtiene una conexión, ejecuta
+     * una consulta contra DUAL y verifica la existencia de tablas GDOC_*.
+     * @throws Exception si la conexión o las consultas fallan
      */
     public void testConexion() throws Exception {
         System.out.println("Intentando conectar a Oracle...");

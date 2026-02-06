@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
 
 /**
- * DTO de request para crear/actualizar un inventario documental
+ * DTO de entrada para crear o actualizar un inventario documental.
+ * Se utiliza en {@code POST /v1/inventarios} (crear) y {@code PUT /v1/inventarios/{id}} (actualizar).
+ * Contiene los datos de clasificación, ubicación y metadatos del inventario.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventarioDocumentalRequest {
@@ -36,7 +38,7 @@ public class InventarioDocumentalRequest {
     private String observaciones;
     private String supervisor;
 
-    // Constructores
+    /** Constructor por defecto. */
     public InventarioDocumentalRequest() {
     }
 

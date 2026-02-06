@@ -52,8 +52,8 @@ public class InventarioDocumentalUseCase {
         // Si hay pendientes con más de 5 días, bloquear registro de nuevos inventarios
         if (inventarioRepository.tienePendientesVencidos(usuarioCedula)) {
             throw new IllegalStateException(
-                "No se puede registrar nuevo inventario. Tiene registros pendientes de aprobación vencidos (más de 5 días). " +
-                "Por favor actualice los registros pendientes primero."
+                "No se puede registrar nuevo inventario. Tiene registros pendientes de aprobación vencidos "
+                + "(más de 5 días). Por favor actualice los registros pendientes primero."
             );
         }
 
@@ -138,7 +138,8 @@ public class InventarioDocumentalUseCase {
             // ✅ LOG: Verificar valores de operador para debugging
             System.out.println("🔍 [DEBUG] actualizarInventario - Comparando operadores:");
             System.out.println("🔍 [DEBUG]   - operadorId recibido (usuarioCedula): '" + usuarioCedula + "'");
-            System.out.println("🔍 [DEBUG]   - operadorId en BD (inventario.getOperador()): '" + inventario.getOperador() + "'");
+            System.out.println("🔍 [DEBUG]   - operadorId en BD (inventario.getOperador()): '"
+                    + inventario.getOperador() + "'");
             System.out.println("🔍 [DEBUG]   - ¿Son iguales?: " + usuarioCedula.equals(inventario.getOperador()));
             
             // Validar que el operador sea el mismo que creó el inventario
@@ -326,18 +327,20 @@ public class InventarioDocumentalUseCase {
      * @param fechaHasta Filtro por fecha hasta
      * @return Lista de inventarios
      */
-    public List<InventarioDocumentalResponse> listarConFiltros(Long idSeccion, Long idSerie, Long idSubserie,
-                                                                 String numeroExpediente, String estado,
-                                                                 String numeroCedula, String numeroRuc, String operador,
-                                                                 String nombresApellidos, String razonSocial, String descripcionSerie,
-                                                                 String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
-                                                                 java.time.LocalDate fechaDesde, java.time.LocalDate fechaHasta,
-                                                                 String supervisor) {
-        return inventarioRepository.buscarConFiltros(idSeccion, idSerie, idSubserie, numeroExpediente, estado,
-                                                      numeroCedula, numeroRuc, operador,
-                                                      nombresApellidos, razonSocial, descripcionSerie,
-                                                      tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
-                                                      supervisor)
+    public List<InventarioDocumentalResponse> listarConFiltros(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            java.time.LocalDate fechaDesde, java.time.LocalDate fechaHasta,
+            String supervisor) {
+        return inventarioRepository.buscarConFiltros(
+                idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                numeroCedula, numeroRuc, operador,
+                nombresApellidos, razonSocial, descripcionSerie,
+                tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
+                supervisor)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -430,15 +433,16 @@ public class InventarioDocumentalUseCase {
      * @throws IllegalStateException Si el inventario no está en estado válido para aprobar
      */
     @Transactional
-    public Optional<InventarioDocumentalResponse> aprobarInventario(Long id, String usuarioCedula, String observaciones) {
+    public Optional<InventarioDocumentalResponse> aprobarInventario(
+            Long id, String usuarioCedula, String observaciones) {
         return inventarioRepository.findByIdOptional(id).map(inventario -> {
             String estadoActual = inventario.getEstadoInventario();
             
             // Validar que el estado permita aprobación
             if (!"Registrado".equals(estadoActual) && !"Actualizado".equals(estadoActual)) {
                 throw new IllegalStateException(
-                    "Solo se pueden aprobar inventarios en estado 'Registrado' o 'Actualizado'. " +
-                    "Estado actual: " + estadoActual
+                    "Solo se pueden aprobar inventarios en estado 'Registrado' o 'Actualizado'. "
+                    + "Estado actual: " + estadoActual
                 );
             }
 
@@ -476,7 +480,8 @@ public class InventarioDocumentalUseCase {
      * @throws IllegalStateException Si el inventario no está en estado válido para rechazar
      */
     @Transactional
-    public Optional<InventarioDocumentalResponse> rechazarInventario(Long id, String usuarioCedula, String observaciones) {
+    public Optional<InventarioDocumentalResponse> rechazarInventario(
+            Long id, String usuarioCedula, String observaciones) {
         if (observaciones == null || observaciones.trim().isEmpty()) {
             throw new IllegalArgumentException("Las observaciones del rechazo son obligatorias");
         }

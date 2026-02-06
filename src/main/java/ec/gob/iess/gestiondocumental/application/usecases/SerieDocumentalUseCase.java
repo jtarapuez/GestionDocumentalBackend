@@ -58,7 +58,8 @@ public class SerieDocumentalUseCase {
      * @return Serie actualizada
      */
     @Transactional
-    public Optional<SerieDocumentalResponse> actualizarSerie(Long id, SerieDocumentalRequest request, String usuarioCedula) {
+    public Optional<SerieDocumentalResponse> actualizarSerie(
+            Long id, SerieDocumentalRequest request, String usuarioCedula) {
         return serieRepository.findByIdOptional(id).map(serie -> {
             if (request.getNombreSerie() != null) {
                 serie.setNombreSerie(request.getNombreSerie());

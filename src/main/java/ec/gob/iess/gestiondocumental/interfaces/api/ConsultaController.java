@@ -4,6 +4,7 @@ import ec.gob.iess.gestiondocumental.application.usecases.InventarioDocumentalUs
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ConsultaRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
+import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -28,6 +29,9 @@ public class ConsultaController {
 
     @Inject
     InventarioDocumentalUseCase inventarioUseCase;
+
+    @Inject
+    RequestContext requestContext;
 
     /**
      * Realiza una consulta avanzada de inventarios con múltiples filtros
@@ -76,12 +80,14 @@ public class ConsultaController {
                 null // supervisor - no se filtra por supervisor en consultas avanzadas
             );
 
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios);
+            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
+                    requestContext.getPath(), requestContext.getRequestId());
             return Response.ok(response).build();
         } catch (Exception e) {
             ApiResponse<Object> errorResponse = ApiResponse.error(
                 "Error al realizar consulta: " + e.getMessage(),
-                "CONSULTA_ERROR"
+                "CONSULTA_ERROR",
+                requestContext.getPath(), requestContext.getRequestId()
             );
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(errorResponse)

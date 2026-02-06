@@ -6,8 +6,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 /**
- * Repositorio Panache para la entidad CatalogoDetalle
- * Proporciona métodos de acceso a datos para GDOC_CATALOGOSDET_T
+ * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.CatalogoDetalle}.
+ * Persiste los detalles/valores de catálogos en GDOC_CATALOGOSDET_T.
+ * Criterios de búsqueda: por ID de catálogo, por código de catálogo, y filtro por estado activo.
  */
 @ApplicationScoped
 public class CatalogoDetalleRepository implements PanacheRepository<CatalogoDetalle> {

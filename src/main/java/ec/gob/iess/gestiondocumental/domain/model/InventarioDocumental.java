@@ -91,7 +91,8 @@ public class InventarioDocumental {
     private String supervisor; // Cédula del supervisor
 
     @Column(name = "ESTADO_INVENTARIO", length = 30)
-    private String estadoInventario; // Registrado, Actualizado, Aprobado, Pendiente de Aprobación, Aprobado con Modificaciones
+    // Registrado, Actualizado, Aprobado, Pendiente de Aprobación, Aprobado con Modificaciones
+    private String estadoInventario;
 
     @Column(name = "FEC_CAMBIO_ESTADO")
     private LocalDateTime fechaCambioEstado;
@@ -105,7 +106,10 @@ public class InventarioDocumental {
     @Column(name = "ID_SERIE", nullable = false)
     private Long idSerie;
 
-    /** Opcional según regla de negocio; si la tabla Oracle tiene NOT NULL, ejecutar: ALTER TABLE DOCUMENTAL_OWNER.GDOC_INVENTARIO_T MODIFY ID_SUBSERIE NULL; */
+    /**
+     * Opcional según regla de negocio; si la tabla Oracle tiene NOT NULL, ejecutar:
+     * ALTER TABLE DOCUMENTAL_OWNER.GDOC_INVENTARIO_T MODIFY ID_SUBSERIE NULL;
+     */
     @Column(name = "ID_SUBSERIE", nullable = true)
     private Long idSubserie;
 
