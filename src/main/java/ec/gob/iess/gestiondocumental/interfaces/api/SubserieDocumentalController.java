@@ -1,6 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
-import ec.gob.iess.gestiondocumental.application.usecases.SubserieDocumentalUseCase;
+import ec.gob.iess.gestiondocumental.application.port.in.SubserieDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalResponse;
@@ -28,7 +28,7 @@ import java.util.List;
 public class SubserieDocumentalController {
 
     @Inject
-    SubserieDocumentalUseCase subserieUseCase;
+    SubserieDocumentalUseCasePort subserieUseCase;
 
     @Inject
     RequestContext requestContext;

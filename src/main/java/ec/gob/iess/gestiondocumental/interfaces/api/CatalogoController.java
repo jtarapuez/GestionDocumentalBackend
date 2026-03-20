@@ -1,6 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
-import ec.gob.iess.gestiondocumental.application.usecases.CatalogoUseCase;
+import ec.gob.iess.gestiondocumental.application.port.in.CatalogoUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoDetalleResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoResponse;
@@ -29,7 +29,7 @@ import java.util.List;
 public class CatalogoController {
 
     @Inject
-    CatalogoUseCase catalogoUseCase;
+    CatalogoUseCasePort catalogoUseCase;
 
     @Inject
     RequestContext requestContext;
@@ -241,7 +241,7 @@ public class CatalogoController {
     @Path("/estados-serie")
     @Operation(
         summary = "Listar estados de serie documental",
-        description = "Retorna los valores del catálogo ESTADO_SERIE (Creado, Actualizado)"
+        description = "Retorna los valores del catálogo ESTADO_SERIE (descripciones en catálogo; en tablas GDOC_* se persisten Creado / Actualizado)"
     )
     @APIResponse(
         responseCode = "200",

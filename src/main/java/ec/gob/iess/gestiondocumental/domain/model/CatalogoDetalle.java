@@ -1,62 +1,33 @@
 package ec.gob.iess.gestiondocumental.domain.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Entidad JPA que representa la tabla GDOC_CATALOGOSDET_T
- * Detalles/valores específicos de cada catálogo
+ * Entidad de dominio: detalle/valor de un catálogo.
+ * Sin dependencias de JPA ni infraestructura (PAS-GUI-047).
  */
-@Entity
-@Table(name = "GDOC_CATALOGOSDET_T", schema = "DOCUMENTAL_OWNER")
 public class CatalogoDetalle {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "catalogo_detalle_seq")
-    @SequenceGenerator(name = "catalogo_detalle_seq", sequenceName = "GDOC_CATALOGOSDET_S", allocationSize = 1)
-    @Column(name = "ID_CATALOGOSDET")
     private Long id;
-
-    @Column(name = "COD_CATALOGOSDET", length = 20, nullable = false)
     private String codigo;
-
-    @Column(name = "DESCRIPCION", length = 500, nullable = false)
     private String descripcion;
-
-    @Column(name = "ESTADO", length = 1, nullable = false)
     private String estado; // A = Activo, I = Inactivo
-
-    @Column(name = "OBSERVACION", length = 200)
     private String observacion;
-
-    @Column(name = "USU_CREACION", length = 10, nullable = false)
     private String usuCreacion;
-
-    @Column(name = "FEC_CREACION", nullable = false)
     private LocalDateTime fecCreacion;
-
-    @Column(name = "IP_EQUIPO", length = 40, nullable = false)
     private String ipEquipo;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_CATALOGO", nullable = false)
-    private Catalogo catalogo;
-
-    @Column(name = "ID_CATALOGO", insertable = false, updatable = false)
     private Long idCatalogo;
 
-    // Constructores
     public CatalogoDetalle() {
     }
 
-    public CatalogoDetalle(String codigo, String descripcion, String estado, Catalogo catalogo) {
+    public CatalogoDetalle(String codigo, String descripcion, String estado, Long idCatalogo) {
         this.codigo = codigo;
         this.descripcion = descripcion;
         this.estado = estado;
-        this.catalogo = catalogo;
+        this.idCatalogo = idCatalogo;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -121,30 +92,15 @@ public class CatalogoDetalle {
         this.ipEquipo = ipEquipo;
     }
 
-    public Catalogo getCatalogo() {
-        return catalogo;
-    }
-
-    public void setCatalogo(Catalogo catalogo) {
-        this.catalogo = catalogo;
-    }
-
     public Long getIdCatalogo() {
-        return idCatalogo != null ? idCatalogo : (catalogo != null ? catalogo.getId() : null);
+        return idCatalogo;
     }
 
     public void setIdCatalogo(Long idCatalogo) {
         this.idCatalogo = idCatalogo;
     }
 
-    // Métodos de utilidad
     public boolean isActivo() {
         return "A".equalsIgnoreCase(estado);
     }
 }
-
-
-
-
-
-

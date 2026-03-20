@@ -1,58 +1,32 @@
 package ec.gob.iess.gestiondocumental.infrastructure.persistence;
 
-import ec.gob.iess.gestiondocumental.domain.model.CatalogoDetalle;
+import ec.gob.iess.gestiondocumental.infrastructure.persistence.entity.CatalogoDetalleEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.List;
 
 /**
- * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.CatalogoDetalle}.
- * Persiste los detalles/valores de catálogos en GDOC_CATALOGOSDET_T.
- * Criterios de búsqueda: por ID de catálogo, por código de catálogo, y filtro por estado activo.
+ * Repositorio Panache para {@link CatalogoDetalleEntity}.
+ * Usado por el adaptador de persistencia; la aplicación usa {@link ec.gob.iess.gestiondocumental.application.port.out.CatalogoDetalleRepositoryPort}.
  */
 @ApplicationScoped
-public class CatalogoDetalleRepository implements PanacheRepository<CatalogoDetalle> {
+public class CatalogoDetalleRepository implements PanacheRepository<CatalogoDetalleEntity> {
 
-    /**
-     * Busca todos los detalles de un catálogo por su ID
-     * @param idCatalogo ID del catálogo
-     * @return Lista de detalles del catálogo
-     */
-    public List<CatalogoDetalle> findByCatalogoId(Long idCatalogo) {
+    public List<CatalogoDetalleEntity> findByCatalogoId(Long idCatalogo) {
         return find("idCatalogo", idCatalogo).list();
     }
 
-    /**
-     * Busca todos los detalles activos de un catálogo por su ID
-     * @param idCatalogo ID del catálogo
-     * @return Lista de detalles activos del catálogo
-     */
-    public List<CatalogoDetalle> findActivosByCatalogoId(Long idCatalogo) {
+    public List<CatalogoDetalleEntity> findActivosByCatalogoId(Long idCatalogo) {
         return find("idCatalogo = ?1 AND estado = ?2", idCatalogo, "A").list();
     }
 
-    /**
-     * Busca todos los detalles de un catálogo por su código
-     * @param codigoCatalogo Código del catálogo (ej: "FORMATO", "SEGURIDAD")
-     * @return Lista de detalles del catálogo
-     */
-    public List<CatalogoDetalle> findByCodigoCatalogo(String codigoCatalogo) {
-        return find("SELECT d FROM CatalogoDetalle d JOIN d.catalogo c WHERE c.codigo = ?1", codigoCatalogo).list();
+    public List<CatalogoDetalleEntity> findByCodigoCatalogo(String codigoCatalogo) {
+        return find("SELECT d FROM CatalogoDetalleEntity d JOIN d.catalogo c WHERE c.codigo = ?1", codigoCatalogo).list();
     }
 
-    /**
-     * Busca todos los detalles activos de un catálogo por su código
-     * @param codigoCatalogo Código del catálogo
-     * @return Lista de detalles activos del catálogo
-     */
-    public List<CatalogoDetalle> findActivosByCodigoCatalogo(String codigoCatalogo) {
-        return find("SELECT d FROM CatalogoDetalle d JOIN d.catalogo c WHERE c.codigo = ?1 AND d.estado = ?2", 
-                    codigoCatalogo, "A").list();
+    public List<CatalogoDetalleEntity> findActivosByCodigoCatalogo(String codigoCatalogo) {
+        return find("SELECT d FROM CatalogoDetalleEntity d JOIN d.catalogo c WHERE c.codigo = ?1 AND d.estado = ?2",
+                codigoCatalogo, "A").list();
     }
 }
-
-
-
-
-
-

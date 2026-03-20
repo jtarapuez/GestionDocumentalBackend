@@ -1,6 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
-import ec.gob.iess.gestiondocumental.application.usecases.InventarioDocumentalUseCase;
+import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ConsultaRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
@@ -28,7 +28,7 @@ import java.util.List;
 public class ConsultaController {
 
     @Inject
-    InventarioDocumentalUseCase inventarioUseCase;
+    InventarioDocumentalUseCasePort inventarioUseCase;
 
     @Inject
     RequestContext requestContext;

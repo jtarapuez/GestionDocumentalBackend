@@ -74,7 +74,7 @@ Se usan los endpoints de **reportes** (exportar PDF/Excel) porque devuelven **50
 
 ```bash
 cd gestion-documental-backend
-mvn test -Dtest=PasEst043MetaTest
+mvn test -Dtest=ApiMetaRequestIdTest
 ```
 
 Los tests verifican:
@@ -338,6 +338,6 @@ Luego abre en el navegador el archivo: **`target/site/checkstyle.html`**
 
 | Objetivo | Comando |
 |----------|---------|
-| Tests de meta (path/requestId) | `mvn test -Dtest=PasEst043MetaTest` |
+| Tests de meta (path/requestId) | `mvn test -Dtest=ApiMetaRequestIdTest` |
 | Todos los tests del backend | `mvn test` |
 | Checkstyle | `mvn checkstyle:check` |

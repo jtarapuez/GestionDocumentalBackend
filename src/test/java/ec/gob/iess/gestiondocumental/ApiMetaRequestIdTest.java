@@ -9,13 +9,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 /**
- * Pruebas de cumplimiento PAS-EST-043: meta con path y requestId en respuestas.
+ * Pruebas del contrato de API: meta con path y requestId en respuestas.
  * Valida que las respuestas de error incluyan meta.path y meta.requestId,
  * y que el header X-Request-Id se propague a meta.requestId.
- * Quarkus configura Rest Assured con el puerto de test automáticamente.
  */
 @QuarkusTest
-class PasEst043MetaTest {
+class ApiMetaRequestIdTest {
 
     @Test
     void metaEnRespuestaErrorIncluyePathYRequestId() {

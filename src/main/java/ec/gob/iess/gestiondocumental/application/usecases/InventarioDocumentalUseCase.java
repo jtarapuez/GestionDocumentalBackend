@@ -4,10 +4,11 @@ import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
-import ec.gob.iess.gestiondocumental.infrastructure.persistence.InventarioDocumentalRepository;
-import ec.gob.iess.gestiondocumental.infrastructure.persistence.SeccionDocumentalRepository;
-import ec.gob.iess.gestiondocumental.infrastructure.persistence.SerieDocumentalRepository;
-import ec.gob.iess.gestiondocumental.infrastructure.persistence.SubserieDocumentalRepository;
+import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
+import ec.gob.iess.gestiondocumental.application.port.out.InventarioDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.port.out.SubserieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,19 +25,19 @@ import java.util.stream.Collectors;
  * Contiene la lógica de negocio para operaciones con inventarios
  */
 @ApplicationScoped
-public class InventarioDocumentalUseCase {
+public class InventarioDocumentalUseCase implements InventarioDocumentalUseCasePort {
 
     @Inject
-    InventarioDocumentalRepository inventarioRepository;
+    InventarioDocumentalRepositoryPort inventarioRepositoryPort;
 
     @Inject
-    SeccionDocumentalRepository seccionRepository;
+    SeccionDocumentalRepositoryPort seccionRepositoryPort;
 
     @Inject
-    SerieDocumentalRepository serieRepository;
+    SerieDocumentalRepositoryPort serieRepositoryPort;
 
     @Inject
-    SubserieDocumentalRepository subserieRepository;
+    SubserieDocumentalRepositoryPort subserieRepositoryPort;
 
     /**
      * Registra un nuevo inventario documental
@@ -50,7 +51,7 @@ public class InventarioDocumentalUseCase {
                                                               String usuarioCedula, String ipEquipo) {
         // ✅ Validar pendientes vencidos antes de permitir nuevo registro
         // Si hay pendientes con más de 5 días, bloquear registro de nuevos inventarios
-        if (inventarioRepository.tienePendientesVencidos(usuarioCedula)) {
+        if (inventarioRepositoryPort.tienePendientesVencidos(usuarioCedula)) {
             throw new IllegalStateException(
                 "No se puede registrar nuevo inventario. Tiene registros pendientes de aprobación vencidos "
                 + "(más de 5 días). Por favor actualice los registros pendientes primero."
@@ -116,7 +117,7 @@ public class InventarioDocumentalUseCase {
         inventario.setFecCreacion(LocalDateTime.now());
         inventario.setIpEquipo(ipEquipo);
 
-        inventarioRepository.persist(inventario);
+        inventarioRepositoryPort.persist(inventario);
         return toResponse(inventario);
     }
 
@@ -132,7 +133,7 @@ public class InventarioDocumentalUseCase {
     public Optional<InventarioDocumentalResponse> actualizarInventario(Long id, 
                                                                         InventarioDocumentalRequest request, 
                                                                         String usuarioCedula) {
-        return inventarioRepository.findByIdOptional(id).map(inventario -> {
+        return inventarioRepositoryPort.findByIdOptional(id).map(inventario -> {
             String estadoActual = inventario.getEstadoInventario();
             
             // ✅ LOG: Verificar valores de operador para debugging
@@ -272,7 +273,7 @@ public class InventarioDocumentalUseCase {
             inventario.setFechaCambioEstado(LocalDateTime.now());
             inventario.setCedulaUsuarioCambio(usuarioCedula);
 
-            inventarioRepository.persist(inventario);
+            inventarioRepositoryPort.persist(inventario);
             return toResponse(inventario);
         });
     }
@@ -283,7 +284,7 @@ public class InventarioDocumentalUseCase {
      * @return Optional con el inventario encontrado
      */
     public Optional<InventarioDocumentalResponse> obtenerPorId(Long id) {
-        return inventarioRepository.findByIdOptional(id).map(this::toResponse);
+        return inventarioRepositoryPort.findByIdOptional(id).map(this::toResponse);
     }
 
     /**
@@ -291,7 +292,7 @@ public class InventarioDocumentalUseCase {
      * @return Lista de inventarios pendientes
      */
     public List<InventarioDocumentalResponse> listarPendientesAprobacion() {
-        return inventarioRepository.findPendientesAprobacion().stream()
+        return inventarioRepositoryPort.findPendientesAprobacion().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -302,7 +303,7 @@ public class InventarioDocumentalUseCase {
      * @return Lista de inventarios pendientes
      */
     public List<InventarioDocumentalResponse> listarPendientesPorOperador(String operador) {
-        return inventarioRepository.findPendientesByOperador(operador).stream()
+        return inventarioRepositoryPort.findPendientesByOperador(operador).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -335,12 +336,12 @@ public class InventarioDocumentalUseCase {
             String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
             java.time.LocalDate fechaDesde, java.time.LocalDate fechaHasta,
             String supervisor) {
-        return inventarioRepository.buscarConFiltros(
+        return inventarioRepositoryPort.buscarConFiltros(
                 idSeccion, idSerie, idSubserie, numeroExpediente, estado,
                 numeroCedula, numeroRuc, operador,
                 nombresApellidos, razonSocial, descripcionSerie,
                 tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
-                supervisor)
+                supervisor, null)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -393,23 +394,21 @@ public class InventarioDocumentalUseCase {
         // Enriquecer respuesta con nombres descriptivos (opcionales) para consultas/reportes
         // Estos campos NO reemplazan a los IDs existentes, solo facilitan la visualización en el frontend.
         if (inventario.getIdSeccion() != null) {
-            SeccionDocumental seccion = seccionRepository.findById(inventario.getIdSeccion());
+            SeccionDocumental seccion = seccionRepositoryPort.findById(inventario.getIdSeccion()).orElse(null);
             if (seccion != null) {
                 response.setNombreSeccion(seccion.getNombre());
             }
         }
 
         if (inventario.getIdSerie() != null) {
-            SerieDocumental serie = serieRepository.findByIdOptional(inventario.getIdSerie())
-                    .orElse(null);
+            SerieDocumental serie = serieRepositoryPort.findByIdOptional(inventario.getIdSerie()).orElse(null);
             if (serie != null) {
                 response.setNombreSerie(serie.getNombreSerie());
             }
         }
 
         if (inventario.getIdSubserie() != null) {
-            SubserieDocumental subserie = subserieRepository.findByIdOptional(inventario.getIdSubserie())
-                    .orElse(null);
+            SubserieDocumental subserie = subserieRepositoryPort.findByIdOptional(inventario.getIdSubserie()).orElse(null);
             if (subserie != null) {
                 response.setNombreSubserie(subserie.getNombreSubserie());
             }
@@ -435,7 +434,7 @@ public class InventarioDocumentalUseCase {
     @Transactional
     public Optional<InventarioDocumentalResponse> aprobarInventario(
             Long id, String usuarioCedula, String observaciones) {
-        return inventarioRepository.findByIdOptional(id).map(inventario -> {
+        return inventarioRepositoryPort.findByIdOptional(id).map(inventario -> {
             String estadoActual = inventario.getEstadoInventario();
             
             // Validar que el estado permita aprobación
@@ -466,7 +465,7 @@ public class InventarioDocumentalUseCase {
                 inventario.setObservaciones(nuevasObs);
             }
 
-            inventarioRepository.persist(inventario);
+            inventarioRepositoryPort.persist(inventario);
             return toResponse(inventario);
         });
     }
@@ -486,7 +485,7 @@ public class InventarioDocumentalUseCase {
             throw new IllegalArgumentException("Las observaciones del rechazo son obligatorias");
         }
 
-        return inventarioRepository.findByIdOptional(id).map(inventario -> {
+        return inventarioRepositoryPort.findByIdOptional(id).map(inventario -> {
             String estadoActual = inventario.getEstadoInventario();
             
             // Validar que el estado permita rechazo
@@ -507,7 +506,7 @@ public class InventarioDocumentalUseCase {
                               "[RECHAZO] " + observaciones;
             inventario.setObservaciones(nuevasObs);
 
-            inventarioRepository.persist(inventario);
+            inventarioRepositoryPort.persist(inventario);
             return toResponse(inventario);
         });
     }

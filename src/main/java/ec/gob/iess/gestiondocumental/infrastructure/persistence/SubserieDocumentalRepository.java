@@ -1,60 +1,32 @@
 package ec.gob.iess.gestiondocumental.infrastructure.persistence;
 
-import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
+import ec.gob.iess.gestiondocumental.infrastructure.persistence.entity.SubserieDocumentalEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio Panache para la entidad {@link ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental}.
- * Persiste las subseries documentales en GDOC_SUBSERIES_T.
- * Criterios de búsqueda: por ID, por serie, por serie y estado, y listado de activas (Creado/Actualizado).
+ * Repositorio Panache para {@link SubserieDocumentalEntity}. Usado por el adaptador (PAS-GUI-047).
  */
 @ApplicationScoped
-public class SubserieDocumentalRepository implements PanacheRepository<SubserieDocumental> {
+public class SubserieDocumentalRepository implements PanacheRepository<SubserieDocumentalEntity> {
 
-    /**
-     * Busca una subserie por su ID
-     * @param id ID de la subserie
-     * @return Optional con la subserie encontrada
-     */
-    public Optional<SubserieDocumental> findByIdOptional(Long id) {
+    public Optional<SubserieDocumentalEntity> findByIdOptional(Long id) {
         return find("id", id).firstResultOptional();
     }
 
-    /**
-     * Busca todas las subseries de una serie
-     * @param idSerie ID de la serie
-     * @return Lista de subseries de la serie
-     */
-    public List<SubserieDocumental> findBySerie(Long idSerie) {
+    public List<SubserieDocumentalEntity> findBySerie(Long idSerie) {
         return find("idSerie", idSerie).list();
     }
 
-    /**
-     * Busca todas las subseries activas (estado Creado o Actualizado)
-     * @return Lista de subseries activas
-     */
-    public List<SubserieDocumental> findActivas() {
+    public List<SubserieDocumentalEntity> findActivas() {
         return find("estado IN (?1)", Arrays.asList("Creado", "Actualizado")).list();
     }
 
-    /**
-     * Busca subseries por serie y estado
-     * @param idSerie ID de la serie
-     * @param estado Estado de la subserie
-     * @return Lista de subseries
-     */
-    public List<SubserieDocumental> findBySerieAndEstado(Long idSerie, String estado) {
+    public List<SubserieDocumentalEntity> findBySerieAndEstado(Long idSerie, String estado) {
         return find("idSerie = ?1 AND estado = ?2", idSerie, estado).list();
     }
 }
-
-
-
-
-
-
-

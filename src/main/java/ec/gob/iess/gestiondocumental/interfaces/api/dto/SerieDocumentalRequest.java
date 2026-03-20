@@ -17,7 +17,12 @@ public class SerieDocumentalRequest {
     private String seguridad; // Pública, Confidencial, Reservada
     private String normativa;
     private String responsable; // Cédula del usuario responsable
-    private String estado; // Creado, Actualizado
+    /**
+     * Estado: en BD y respuestas del API solo {@code Creado} o {@code Actualizado}.
+     * Si el front envía la descripción larga del catálogo, el backend la convierte a esos valores.
+     * Creación: vacío → {@code Creado}. Actualización: sin campo → no se modifica el estado guardado.
+     */
+    private String estado;
     private String justificacion;
 
     /** Constructor por defecto. */

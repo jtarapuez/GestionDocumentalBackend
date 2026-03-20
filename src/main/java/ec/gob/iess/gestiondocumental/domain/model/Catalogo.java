@@ -1,48 +1,24 @@
 package ec.gob.iess.gestiondocumental.domain.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Entidad JPA que representa la tabla GDOC_CATALOGOS_T
- * Catálogos maestros del sistema de gestión documental
+ * Entidad de dominio: Catálogo maestro.
+ * Sin dependencias de JPA ni infraestructura (PAS-GUI-047).
  */
-@Entity
-@Table(name = "GDOC_CATALOGOS_T", schema = "DOCUMENTAL_OWNER")
 public class Catalogo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "catalogo_seq")
-    @SequenceGenerator(name = "catalogo_seq", sequenceName = "GDOC_CATALOGOS_S", allocationSize = 1)
-    @Column(name = "ID_CATALOGO")
     private Long id;
-
-    @Column(name = "COD_CATALOGO", length = 20, nullable = false, unique = true)
     private String codigo;
-
-    @Column(name = "DESCRIPCION", length = 500, nullable = false)
     private String descripcion;
-
-    @Column(name = "ESTADO", length = 1, nullable = false)
     private String estado; // A = Activo, I = Inactivo
-
-    @Column(name = "OBSERVACION", length = 200)
     private String observacion;
-
-    @Column(name = "USU_CREACION", length = 10, nullable = false)
     private String usuCreacion;
-
-    @Column(name = "FEC_CREACION", nullable = false)
     private LocalDateTime fecCreacion;
-
-    @Column(name = "IP_EQUIPO", length = 40, nullable = false)
     private String ipEquipo;
-
-    @OneToMany(mappedBy = "catalogo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CatalogoDetalle> detalles;
 
-    // Constructores
     public Catalogo() {
     }
 
@@ -52,7 +28,6 @@ public class Catalogo {
         this.estado = estado;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -125,14 +100,7 @@ public class Catalogo {
         this.detalles = detalles;
     }
 
-    // Métodos de utilidad
     public boolean isActivo() {
         return "A".equalsIgnoreCase(estado);
     }
 }
-
-
-
-
-
-
