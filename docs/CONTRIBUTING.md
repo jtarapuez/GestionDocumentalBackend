@@ -1,13 +1,16 @@
 # Contribución y gobernanza – Backend Gestión Documental
 
-**Copia de conveniencia (misma información):** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — útil si solo abres la carpeta `docs/`.
+> **Copia de conveniencia** (misma carpeta `docs/` que el resto de la documentación técnica).  
+> **Convención GitHub:** el archivo canónico sigue siendo [`CONTRIBUTING.md`](../CONTRIBUTING.md) en la **raíz del repositorio**. Si cambias reglas, actualiza **ambos** para que no diverjan.
+
+---
 
 Este documento cierra la **Fase 0** (baseline): reglas comunes antes de refactor y nuevas features.
 
 ## Mejoras por fases (hexagonal / calidad)
 
-- **Plan detallado:** [docs/mejoras-hexagonal/PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md](docs/mejoras-hexagonal/PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md)
-- **Checklist operativo:** [docs/mejoras-hexagonal/TAREAS_CONCRETAS_POR_FASE.md](docs/mejoras-hexagonal/TAREAS_CONCRETAS_POR_FASE.md)
+- **Plan detallado:** [mejoras-hexagonal/PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md](./mejoras-hexagonal/PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md)
+- **Checklist operativo:** [mejoras-hexagonal/TAREAS_CONCRETAS_POR_FASE.md](./mejoras-hexagonal/TAREAS_CONCRETAS_POR_FASE.md)
 
 Si trabajas también con el monorepo IESS que incluye `Documentacion/`, mantén alineadas las copias al hacer cambios normativos.
 
@@ -50,7 +53,7 @@ git remote set-url origin git@github.com:jtarapuez/GestionDocumentalBackend.git
 
 3. Autenticarse con **credential helper**, **gh CLI** o **SSH key**.
 
-Más detalle: [docs/SEGURIDAD_GIT_REMOTO.md](docs/SEGURIDAD_GIT_REMOTO.md).
+Más detalle: [SEGURIDAD_GIT_REMOTO.md](./SEGURIDAD_GIT_REMOTO.md).
 
 ## Línea base de tests (Fase 0)
 

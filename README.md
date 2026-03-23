@@ -9,7 +9,8 @@
 
 ## Gobernanza y plan de mejoras (Fase 0)
 
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — ramas, DoD por PR, Git seguro.
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — ramas, DoD por PR, Git seguro (convención GitHub en la raíz).
+- **Misma guía dentro de `docs/`:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — para encontrarla rápido junto al resto de documentación.
 - **Plan hexagonal / calidad:** [docs/mejoras-hexagonal/](docs/mejoras-hexagonal/) (plan + checklist por fases).
 - **PR:** al abrir un pull request en GitHub se usa la plantilla con checklist DoD (`.github/pull_request_template.md`).
 

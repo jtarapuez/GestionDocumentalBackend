@@ -8,6 +8,11 @@
 
 ## 📋 Índice de Documentación
 
+### 🤝 Contribución y plan de mejoras
+
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — DoD por PR, ramas, Git seguro (copia alineada con `CONTRIBUTING.md` en la raíz del repo).
+- **[mejoras-hexagonal/](./mejoras-hexagonal/)** — Plan por fases y checklist (Fase 0–6).
+
 ### 🔧 Configuración y Arreglos
 
 1. **[CONFIGURACION_QUARKUS.md](./CONFIGURACION_QUARKUS.md)**
