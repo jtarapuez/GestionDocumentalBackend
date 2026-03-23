@@ -10,8 +10,9 @@
 
 ### 🤝 Contribución y plan de mejoras
 
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — DoD por PR, ramas, Git seguro (copia alineada con `CONTRIBUTING.md` en la raíz del repo).
-- **[mejoras-hexagonal/](./mejoras-hexagonal/)** — Plan por fases y checklist (Fase 0–6).
+- **[CONTRIBUTING.md](../CONTRIBUTING.md)** (raíz del repo) — DoD por PR, ramas, Git seguro.
+- **Copia en workspace IESS:** `Documentacion/backend/Mejoras Hexagonal/CONTRIBUTING.md` (misma carpeta que PLAN y TAREAS en tu máquina).
+- **[mejoras-hexagonal/](./mejoras-hexagonal/)** — Plan por fases y checklist (Fase 0–6) en este repositorio.
 
 ### 🔧 Configuración y Arreglos
 

@@ -1,6 +1,9 @@
 # Contribución y gobernanza – Backend Gestión Documental
 
-**Copia de conveniencia (misma información):** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — útil si solo abres la carpeta `docs/`.
+**Misma guía junto al plan (workspace IESS):** desde la carpeta del proyecto completo, abre  
+`Documentacion/backend/Mejoras Hexagonal/CONTRIBUTING.md` — allí está la copia alineada con PLAN y TAREAS.
+
+Este archivo en la **raíz del repo** es el que GitHub suele enlazar como guía de contribución cuando alguien clona **solo** el repositorio del backend.
 
 Este documento cierra la **Fase 0** (baseline): reglas comunes antes de refactor y nuevas features.
 
@@ -9,7 +12,7 @@ Este documento cierra la **Fase 0** (baseline): reglas comunes antes de refactor
 - **Plan detallado:** [docs/mejoras-hexagonal/PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md](docs/mejoras-hexagonal/PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md)
 - **Checklist operativo:** [docs/mejoras-hexagonal/TAREAS_CONCRETAS_POR_FASE.md](docs/mejoras-hexagonal/TAREAS_CONCRETAS_POR_FASE.md)
 
-Si trabajas también con el monorepo IESS que incluye `Documentacion/`, mantén alineadas las copias al hacer cambios normativos.
+Si trabajas también con el monorepo IESS que incluye `Documentacion/`, mantén alineados **este archivo** y **`Documentacion/backend/Mejoras Hexagonal/CONTRIBUTING.md`**.
 
 ## Estrategia de ramas (Fase 0.3)
 

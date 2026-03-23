@@ -9,9 +9,9 @@
 
 ## Gobernanza y plan de mejoras (Fase 0)
 
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — ramas, DoD por PR, Git seguro (convención GitHub en la raíz).
-- **Misma guía dentro de `docs/`:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — para encontrarla rápido junto al resto de documentación.
-- **Plan hexagonal / calidad:** [docs/mejoras-hexagonal/](docs/mejoras-hexagonal/) (plan + checklist por fases).
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — ramas, DoD por PR, Git seguro (convención GitHub en la raíz del repo).
+- **Misma guía en el workspace IESS:** `Documentacion/backend/Mejoras Hexagonal/CONTRIBUTING.md` (junto al plan y checklist; no forma parte del clon solo-Git del backend).
+- **Plan hexagonal / calidad:** [docs/mejoras-hexagonal/](docs/mejoras-hexagonal/) (plan + checklist versionados en este repo).
 - **PR:** al abrir un pull request en GitHub se usa la plantilla con checklist DoD (`.github/pull_request_template.md`).
 
 ---
