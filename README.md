@@ -7,6 +7,14 @@
 
 ---
 
+## Gobernanza y plan de mejoras (Fase 0)
+
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — ramas, DoD por PR, Git seguro.
+- **Plan hexagonal / calidad:** [docs/mejoras-hexagonal/](docs/mejoras-hexagonal/) (plan + checklist por fases).
+- **PR:** al abrir un pull request en GitHub se usa la plantilla con checklist DoD (`.github/pull_request_template.md`).
+
+---
+
 ## 📋 Descripción
 
 Backend del Sistema de Gestión Documental del IESS desarrollado con Quarkus siguiendo el estándar **PAS-EST-043**.
