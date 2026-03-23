@@ -57,7 +57,7 @@ Más detalle: [docs/SEGURIDAD_GIT_REMOTO.md](docs/SEGURIDAD_GIT_REMOTO.md).
 
 ## Línea base de tests (Fase 0)
 
-Última corrida registrada: **2026-03-23** — `mvn test` en la raíz del backend **exit 0** (incluye Testcontainers/Oracle en entorno local con Docker). Repetir antes de cerrar cada fase del plan de mejoras.
+Última corrida registrada: **2026-03-23** (post Fase 1) — `mvn test` **exit 0**. Repetir antes de cerrar cada fase del plan de mejoras.
 
 ## Mensajes de commit sugeridos
 
