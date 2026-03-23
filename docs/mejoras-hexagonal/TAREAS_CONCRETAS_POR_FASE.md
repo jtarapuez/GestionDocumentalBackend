@@ -37,16 +37,16 @@
 |------|----------------|-------|-------------|-------|
 | 0.1 | Equipo leyó [PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md](./PLAN_MEJORA_CALIDAD_BACKEND_DETALLADO.md) y este checklist | [ ] | | |
 | ↳ | **Tras 0.1:** anotar dudas/bloqueos en reunión o issue; no hace falta `mvn test` (solo lectura). | [ ] | | |
-| 0.2 | Plan versionado en Git (commit con mensaje tipo `docs: plan mejoras hexagonal`) | [x] | | |
+| 0.2 | Plan versionado en Git (commit con mensaje tipo `docs: plan mejoras hexagonal`) | [x] | | Repo: `gestion-documental-backend` commit fase 0 |
 | ↳ | **Tras 0.2:** en `gestion-documental-backend/`, ejecutar `mvn test` una vez para **línea base verde** (documentar si ya fallaba algo antes). | [x] | | 2026-03-23 |
-| 0.3 | Acordar rama: `main` directo **o** `feature/mejoras-mantenibilidad` + PR | [x] | | |
+| 0.3 | Acordar rama: `main` directo **o** `feature/mejoras-mantenibilidad` + PR | [x] | | Ver `CONTRIBUTING.md` en repo backend |
 | ↳ | **Tras 0.3:** si abren rama nueva, hacer **push** y (opcional) PR solo de docs o vacío para ver que el flujo/CI (si existe) corre; corregir antes de seguir. | [ ] | | |
-| 0.4 | Definir **DoD por PR**: `mvn test` OK; sin nuevos `System.out` en `src/main`; sin secretos | [x] | | |
+| 0.4 | Definir **DoD por PR**: `mvn test` OK; sin nuevos `System.out` en `src/main`; sin secretos | [x] | | `CONTRIBUTING.md` |
 | ↳ | **Tras 0.4:** correr otra vez `mvn test` y dejar constancia (“baseline DoD = verde en commit ___”). | [x] | | 2026-03-23 |
-| 0.5 | (Opcional) Plantilla de PR con checklist DoD | [x] | | |
+| 0.5 | (Opcional) Plantilla de PR con checklist DoD | [x] | | `.github/pull_request_template.md` |
 | ↳ | **Tras 0.5:** probar la plantilla en un PR real o de prueba (marca ítems, revisión rápida). | [ ] | | |
-| 0.6 | `git remote -v` sin usuario/contraseña/token en URL | [x] | | |
-| ↳ | **Tras 0.6:** si hubo que cambiar remoto, `git fetch` y un pull/push de prueba a rama de trabajo. | [x] | | `git fetch origin` OK 2026-03-23 |
+| 0.6 | `git remote -v` sin usuario/contraseña/token en URL | [x] | | URL HTTPS sin token |
+| ↳ | **Tras 0.6:** si hubo que cambiar remoto, `git fetch` y un pull/push de prueba a rama de trabajo. | [x] | | `git fetch origin` OK |
 
 **Criterio de salida fase:** 0.2–0.4 y 0.6 cumplidos (0.5 opcional); **además** al menos una corrida de `mvn test` **después** del commit de documentación (0.2) para tener baseline explícito.
 
@@ -63,7 +63,7 @@
 | 1.3 | Idem en `InventarioDocumentalUseCase.java` (y cualquier otra clase `main` afectada) | [x] | | incl. `TestConexionBD` |
 | 1.4 | Revisar niveles: `debug`/`trace` para diagnóstico; **no** loguear PII completa | [x] | | DEBUG sin cédulas completas |
 | 1.5 | Ajustar `application.properties` / `application-dev.properties` / prod: paquete `ec.gob.iess.gestiondocumental` → dev `DEBUG`, prod `INFO` por defecto | [x] | | prod: categoría `WARN` |
-| 1.6 | Decidir destino de `infrastructure/persistence/TestConexionBD.java`: mover a `src/test`, eliminar del JAR, o documentar exclusión | [x] | | Permanece en `main`; Javadoc Fase 1 |
+| 1.6 | Decidir destino de `infrastructure/persistence/TestConexionBD.java`: mover a `src/test`, eliminar del JAR, o documentar exclusión | [x] | | Permanece en `main`; Javadoc |
 | 1.7 | Si queda en `main`: sin credenciales/URLs sensibles sin perfil; alinear con tests existentes `TestConexionOracle*.java` | [x] | | Sin URL/usuario en stdout |
 | 1.8 | Ejecutar `mvn test` en raíz del backend y corregir regresiones | [x] | | 2026-03-23 |
 
