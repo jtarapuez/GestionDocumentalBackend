@@ -14,6 +14,7 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResp
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +27,8 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class InventarioDocumentalUseCase implements InventarioDocumentalUseCasePort {
+
+    private static final Logger LOG = Logger.getLogger(InventarioDocumentalUseCase.class);
 
     @Inject
     InventarioDocumentalRepositoryPort inventarioRepositoryPort;
@@ -136,12 +139,11 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
         return inventarioRepositoryPort.findByIdOptional(id).map(inventario -> {
             String estadoActual = inventario.getEstadoInventario();
             
-            // ✅ LOG: Verificar valores de operador para debugging
-            System.out.println("🔍 [DEBUG] actualizarInventario - Comparando operadores:");
-            System.out.println("🔍 [DEBUG]   - operadorId recibido (usuarioCedula): '" + usuarioCedula + "'");
-            System.out.println("🔍 [DEBUG]   - operadorId en BD (inventario.getOperador()): '"
-                    + inventario.getOperador() + "'");
-            System.out.println("🔍 [DEBUG]   - ¿Son iguales?: " + usuarioCedula.equals(inventario.getOperador()));
+            LOG.debug(String.format(
+                    "actualizarInventario: comparación operador, len solicitud=%d, len registro=%d, coincide=%s",
+                    usuarioCedula != null ? usuarioCedula.length() : 0,
+                    inventario.getOperador() != null ? inventario.getOperador().length() : 0,
+                    usuarioCedula != null && usuarioCedula.equals(inventario.getOperador())));
             
             // Validar que el operador sea el mismo que creó el inventario
             if (!usuarioCedula.equals(inventario.getOperador())) {

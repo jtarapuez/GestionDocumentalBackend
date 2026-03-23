@@ -16,6 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.logging.Logger;
 
 import java.util.List;
 
@@ -28,6 +29,8 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Inventarios Documentales", description = "API para gestión de inventarios documentales")
 public class InventarioDocumentalController {
+
+    private static final Logger LOG = Logger.getLogger(InventarioDocumentalController.class);
 
     @Inject
     InventarioDocumentalUseCasePort inventarioUseCase;
@@ -72,7 +75,8 @@ public class InventarioDocumentalController {
                 ? operadorIdHeader.trim() 
                 : "1"; // Fallback temporal hasta que todos los clientes envíen el header
             
-            System.out.println("🔍 [DEBUG] registrarInventario - operadorId recibido: " + operadorId);
+            LOG.debugf("registrarInventario: longitud operadorId=%d",
+                    operadorId != null ? operadorId.length() : 0);
             
             String ipEquipo = "127.0.0.1"; // Temporal
             
@@ -151,7 +155,8 @@ public class InventarioDocumentalController {
                 ? operadorIdHeader.trim() 
                 : "1"; // Fallback temporal hasta que todos los clientes envíen el header
             
-            System.out.println("🔍 [DEBUG] actualizarInventario - operadorId recibido: " + operadorId);
+            LOG.debugf("actualizarInventario: longitud operadorId=%d",
+                    operadorId != null ? operadorId.length() : 0);
             
             return inventarioUseCase.actualizarInventario(id, request, operadorId)
                     .map(inventario -> {
@@ -279,15 +284,12 @@ public class InventarioDocumentalController {
             @QueryParam("estado") String estado,
             @QueryParam("supervisor") String supervisor) {
         try {
-            // ✅ DEBUG: Log temporal para verificar parámetro recibido - DEBUG FILTRO ESTADO
-            System.out.println("🔍 [DEBUG] listarInventarios - supervisor recibido: " + supervisor);
-            System.out.println("🔍 [DEBUG] listarInventarios - FILTRO ESTADO recibido: " + estado + " (tipo: "
-                    + (estado != null ? estado.getClass().getSimpleName() : "null") + ")");
-            System.out.println("🔍 [DEBUG] listarInventarios - otros filtros: idSeccion=" + idSeccion
-                    + ", estado=" + estado);
-            System.out.println("🔍 [DEBUG] listarInventarios - todos los query params: idSeccion=" + idSeccion
-                    + ", idSerie=" + idSerie + ", idSubserie=" + idSubserie + ", numeroExpediente=" + numeroExpediente
-                    + ", estado=" + estado + ", supervisor=" + supervisor);
+            LOG.debug(String.format(
+                    "listarInventarios: idSeccion=%s, idSerie=%s, idSubserie=%s, estado=%s, "
+                            + "filtro expediente presente=%s, supervisor presente=%s",
+                    idSeccion, idSerie, idSubserie, estado,
+                    numeroExpediente != null && !numeroExpediente.isBlank(),
+                    supervisor != null && !supervisor.isBlank()));
             
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
                 idSeccion, idSerie, idSubserie, numeroExpediente, estado, 
@@ -374,7 +376,8 @@ public class InventarioDocumentalController {
                 ? operadorIdHeader.trim() 
                 : "1"; // Fallback temporal hasta que todos los clientes envíen el header
             
-            System.out.println("🔍 [DEBUG] listarPendientes - operadorId recibido: " + operadorId);
+            LOG.debugf("listarPendientes: longitud operadorId=%d",
+                    operadorId != null ? operadorId.length() : 0);
             
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarPendientesPorOperador(operadorId);
             ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,

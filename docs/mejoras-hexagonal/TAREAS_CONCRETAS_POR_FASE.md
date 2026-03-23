@@ -58,14 +58,14 @@
 
 | # | Tarea concreta | Hecho | Responsable | Fecha |
 |---|----------------|-------|-------------|-------|
-| 1.1 | Buscar `System.out` en `gestion-documental-backend/src/main/java`: `grep -r "System.out" src/main/java` | [ ] | | |
-| 1.2 | Sustituir por `Logger` (`org.jboss.logging.Logger` o SLF4J) en `InventarioDocumentalController.java` | [ ] | | |
-| 1.3 | Idem en `InventarioDocumentalUseCase.java` (y cualquier otra clase `main` afectada) | [ ] | | |
-| 1.4 | Revisar niveles: `debug`/`trace` para diagnóstico; **no** loguear PII completa | [ ] | | |
-| 1.5 | Ajustar `application.properties` / `application-dev.properties` / prod: paquete `ec.gob.iess.gestiondocumental` → dev `DEBUG`, prod `INFO` por defecto | [ ] | | |
-| 1.6 | Decidir destino de `infrastructure/persistence/TestConexionBD.java`: mover a `src/test`, eliminar del JAR, o documentar exclusión | [ ] | | |
-| 1.7 | Si queda en `main`: sin credenciales/URLs sensibles sin perfil; alinear con tests existentes `TestConexionOracle*.java` | [ ] | | |
-| 1.8 | Ejecutar `mvn test` en raíz del backend y corregir regresiones | [ ] | | |
+| 1.1 | Buscar `System.out` en `gestion-documental-backend/src/main/java`: `grep -r "System.out" src/main/java` | [x] | | 2026-03-23 |
+| 1.2 | Sustituir por `Logger` (`org.jboss.logging.Logger` o SLF4J) en `InventarioDocumentalController.java` | [x] | | 2026-03-23 |
+| 1.3 | Idem en `InventarioDocumentalUseCase.java` (y cualquier otra clase `main` afectada) | [x] | | incl. `TestConexionBD` |
+| 1.4 | Revisar niveles: `debug`/`trace` para diagnóstico; **no** loguear PII completa | [x] | | DEBUG sin cédulas completas |
+| 1.5 | Ajustar `application.properties` / `application-dev.properties` / prod: paquete `ec.gob.iess.gestiondocumental` → dev `DEBUG`, prod `INFO` por defecto | [x] | | prod: categoría `WARN` |
+| 1.6 | Decidir destino de `infrastructure/persistence/TestConexionBD.java`: mover a `src/test`, eliminar del JAR, o documentar exclusión | [x] | | Permanece en `main`; Javadoc Fase 1 |
+| 1.7 | Si queda en `main`: sin credenciales/URLs sensibles sin perfil; alinear con tests existentes `TestConexionOracle*.java` | [x] | | Sin URL/usuario en stdout |
+| 1.8 | Ejecutar `mvn test` en raíz del backend y corregir regresiones | [x] | | 2026-03-23 |
 
 **Criterio de salida fase:** sin `System.out.println` en `src/main/java` (salvo excepción documentada en README o plan); niveles configurables.
 
