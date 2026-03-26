@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioNegocioMessages;
 import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.application.port.out.InventarioDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepositoryPort;
@@ -83,7 +84,7 @@ class InventarioDocumentalUseCaseTest {
             assertThatThrownBy(() ->
                     useCase.registrarInventario(requestMinimo(), "1712345678", "192.168.1.1"))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("pendientes").hasMessageContaining("vencidos");
+                    .hasMessage(InventarioNegocioMessages.REGISTRO_BLOQUEADO_POR_PENDIENTES_VENCIDOS);
             verify(inventarioRepositoryPort).tienePendientesVencidos("1712345678");
         }
 
@@ -105,6 +106,25 @@ class InventarioDocumentalUseCaseTest {
             assertThat(response.getEstadoInventario()).isEqualTo("Registrado");
             assertThat(response.getOperador()).isEqualTo("1712345678");
             verify(inventarioRepositoryPort).persist(any(InventarioDocumental.class));
+        }
+
+        @Test
+        @DisplayName("registra inventario PASIVO con posición RAC formateada")
+        void registroArchivoPasivoConPosicion() {
+            when(inventarioRepositoryPort.tienePendientesVencidos(anyString())).thenReturn(false);
+            when(seccionDocumentalRepositoryPort.findById(any())).thenReturn(Optional.empty());
+            when(serieDocumentalRepositoryPort.findByIdOptional(any())).thenReturn(Optional.empty());
+            when(subserieDocumentalRepositoryPort.findByIdOptional(any())).thenReturn(Optional.empty());
+
+            InventarioDocumentalRequest r = requestMinimo();
+            r.setTipoArchivo("PASIVO");
+            r.setNumeroRac(5);
+            r.setNumeroFila(1);
+
+            InventarioDocumentalResponse response = useCase.registrarInventario(r, "1712345678", "192.168.1.1");
+
+            assertThat(response.getPosicionPasivo()).isEqualTo("05.01.00.00.00");
+            assertThat(response.getNumeroRac()).isEqualTo(5);
         }
     }
 
@@ -195,7 +215,7 @@ class InventarioDocumentalUseCaseTest {
             InventarioDocumentalRequest req = requestMinimo();
             assertThatThrownBy(() -> useCase.actualizarInventario(1L, req, "1798765432"))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("Solo el operador que creó");
+                    .hasMessage(InventarioNegocioMessages.SOLO_OPERADOR_CREADOR_PUEDE_ACTUALIZAR);
         }
     }
 

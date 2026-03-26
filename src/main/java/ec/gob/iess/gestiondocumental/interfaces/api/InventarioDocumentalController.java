@@ -6,7 +6,9 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.AprobacionRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.RechazoRequest;
-import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
+import ec.gob.iess.gestiondocumental.interfaces.api.support.HttpOperadorExtractor;
+import ec.gob.iess.gestiondocumental.interfaces.api.support.RestSecurityPlaceholder;
+import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -19,10 +21,13 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
- * Controlador REST para la gestión de inventarios documentales
- * Expone endpoints para crear, actualizar y consultar inventarios
+ * Adaptador REST (driving): HTTP ↔ {@link InventarioDocumentalUseCasePort}.
+ * Respuestas homogéneas vía {@link StandardResponses} y PAS-EST-043.
  */
 @Path("/v1/inventarios")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,246 +41,83 @@ public class InventarioDocumentalController {
     InventarioDocumentalUseCasePort inventarioUseCase;
 
     @Inject
-    RequestContext requestContext;
+    StandardResponses responses;
 
-    /**
-     * Registra un nuevo inventario documental
-     * 
-     * @param request Datos del inventario a crear
-     * @return Respuesta con el inventario creado
-     */
     @POST
     @Operation(
-        summary = "Registrar inventario documental",
-        description = "Registra un nuevo inventario documental. Requiere rol OPERADOR_SDNGD. " +
-                      "No se puede registrar si hay pendientes vencidos (más de 5 días)"
-    )
-    @APIResponse(
-        responseCode = "201",
-        description = "Inventario registrado exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "400",
-        description = "Datos inválidos o pendientes vencidos",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
+            summary = "Registrar inventario documental",
+            description = "Registra un nuevo inventario documental. Requiere rol OPERADOR_SDNGD. "
+                    + "No se puede registrar si hay pendientes vencidos (más de 5 días)")
+    @APIResponse(responseCode = "201", description = "Inventario registrado exitosamente",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "400", description = "Datos inválidos o pendientes vencidos",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     public Response registrarInventario(InventarioDocumentalRequest request,
                                         @HeaderParam("X-Operador-Id") String operadorIdHeader) {
-        try {
-            // ✅ Obtener operadorId del header personalizado enviado por el frontend
-            // Si no viene en el header, usar fallback temporal (para compatibilidad)
-            String operadorId = operadorIdHeader != null && !operadorIdHeader.trim().isEmpty() 
-                ? operadorIdHeader.trim() 
-                : "1"; // Fallback temporal hasta que todos los clientes envíen el header
-            
-            LOG.debugf("registrarInventario: longitud operadorId=%d",
-                    operadorId != null ? operadorId.length() : 0);
-            
-            String ipEquipo = "127.0.0.1"; // Temporal
-            
-            InventarioDocumentalResponse inventario = inventarioUseCase.registrarInventario(
-                    request, operadorId, ipEquipo);
-            ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
-                    requestContext.getPath(), requestContext.getRequestId());
-            return Response.status(Response.Status.CREATED).entity(response).build();
-        } catch (IllegalStateException e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                e.getMessage(),
+        return ejecutar(
+                () -> {
+                    String operadorId = HttpOperadorExtractor.fromHeaderOrFallback(operadorIdHeader);
+                    LOG.debugf("registrarInventario: longitud operadorId=%d", operadorId.length());
+                    return inventarioUseCase.registrarInventario(request, operadorId, "127.0.0.1");
+                },
+                responses::created,
                 "INVENTARIO_VALIDATION_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorResponse)
-                    .build();
-        } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al registrar inventario: " + e.getMessage(),
-                "INVENTARIO_CREATE_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
-        }
+                "Error al registrar inventario: ",
+                "INVENTARIO_CREATE_ERROR");
     }
 
-    /**
-     * Actualiza un inventario existente (solo Pendiente de Aprobación)
-     * 
-     * @param id ID del inventario a actualizar
-     * @param request Datos actualizados
-     * @return Respuesta con el inventario actualizado
-     */
     @PUT
     @Path("/{id}")
     @Operation(
-        summary = "Actualizar inventario documental",
-        description = "Actualiza un inventario documental existente. Solo se pueden actualizar " +
-                      "inventarios en estado 'Pendiente de Aprobación' y dentro de los 5 días calendario. " +
-                      "Requiere rol OPERADOR_SDNGD"
-    )
-    @APIResponse(
-        responseCode = "200",
-        description = "Inventario actualizado exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "400",
-        description = "No se puede actualizar (estado incorrecto o vencido)",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "404",
-        description = "Inventario no encontrado",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    public Response actualizarInventario(@PathParam("id") Long id, 
-                                        InventarioDocumentalRequest request,
-                                        @HeaderParam("X-Operador-Id") String operadorIdHeader) {
-        try {
-            // ✅ Obtener operadorId del header personalizado enviado por el frontend
-            // Si no viene en el header, usar fallback temporal (para compatibilidad)
-            String operadorId = operadorIdHeader != null && !operadorIdHeader.trim().isEmpty() 
-                ? operadorIdHeader.trim() 
-                : "1"; // Fallback temporal hasta que todos los clientes envíen el header
-            
-            LOG.debugf("actualizarInventario: longitud operadorId=%d",
-                    operadorId != null ? operadorId.length() : 0);
-            
-            return inventarioUseCase.actualizarInventario(id, request, operadorId)
-                    .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
-                                requestContext.getPath(), requestContext.getRequestId());
-                        return Response.ok(response).build();
-                    })
-                    .orElseGet(() -> {
-                        ApiResponse<Object> errorResponse = ApiResponse.error(
-                            "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND",
-                            requestContext.getPath(), requestContext.getRequestId()
-                        );
-                        return Response.status(Response.Status.NOT_FOUND)
-                                .entity(errorResponse)
-                                .build();
-                    });
-        } catch (IllegalStateException e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                e.getMessage(),
+            summary = "Actualizar inventario documental",
+            description = "Actualiza un inventario documental existente. Solo se pueden actualizar "
+                    + "inventarios en estado 'Pendiente de Aprobación' y dentro de los 5 días calendario. "
+                    + "Requiere rol OPERADOR_SDNGD")
+    @APIResponse(responseCode = "200", description = "Inventario actualizado exitosamente",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "400", description = "No se puede actualizar (estado incorrecto o vencido)",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "404", description = "Inventario no encontrado",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    public Response actualizarInventario(@PathParam("id") Long id,
+                                         InventarioDocumentalRequest request,
+                                         @HeaderParam("X-Operador-Id") String operadorIdHeader) {
+        return ejecutarOptional(
+                () -> {
+                    String operadorId = HttpOperadorExtractor.fromHeaderOrFallback(operadorIdHeader);
+                    LOG.debugf("actualizarInventario: longitud operadorId=%d", operadorId.length());
+                    return inventarioUseCase.actualizarInventario(id, request, operadorId);
+                },
+                id,
                 "INVENTARIO_UPDATE_VALIDATION_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorResponse)
-                    .build();
-        } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al actualizar inventario: " + e.getMessage(),
-                "INVENTARIO_UPDATE_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
-        }
+                "Error al actualizar inventario: ",
+                "INVENTARIO_UPDATE_ERROR");
     }
 
-    /**
-     * Obtiene un inventario específico por su ID
-     * 
-     * @param id ID del inventario
-     * @return Respuesta con el inventario encontrado
-     */
     @GET
     @Path("/{id}")
-    @Operation(
-        summary = "Obtener inventario por ID",
-        description = "Retorna un inventario documental específico identificado por su ID"
-    )
-    @APIResponse(
-        responseCode = "200",
-        description = "Inventario obtenido exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "404",
-        description = "Inventario no encontrado",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
+    @Operation(summary = "Obtener inventario por ID",
+            description = "Retorna un inventario documental específico identificado por su ID")
+    @APIResponse(responseCode = "200", description = "Inventario obtenido exitosamente",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "404", description = "Inventario no encontrado",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     public Response obtenerInventarioPorId(@PathParam("id") Long id) {
         try {
             return inventarioUseCase.obtenerPorId(id)
-                    .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
-                                requestContext.getPath(), requestContext.getRequestId());
-                        return Response.ok(response).build();
-                    })
-                    .orElseGet(() -> {
-                        ApiResponse<Object> errorResponse = ApiResponse.error(
-                            "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND",
-                            requestContext.getPath(), requestContext.getRequestId()
-                        );
-                        return Response.status(Response.Status.NOT_FOUND)
-                                .entity(errorResponse)
-                                .build();
-                    });
+                    .map(responses::ok)
+                    .orElseGet(() -> responses.notFound("Inventario no encontrado con ID: " + id, "INVENTARIO_NOT_FOUND"));
         } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al obtener inventario: " + e.getMessage(),
-                "INVENTARIO_GET_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
+            return responses.internalServerError(
+                    "Error al obtener inventario: " + e.getMessage(), "INVENTARIO_GET_ERROR");
         }
     }
 
-    /**
-     * Lista inventarios con filtros opcionales
-     * 
-     * @param idSeccion Filtro por sección
-     * @param idSerie Filtro por serie
-     * @param idSubserie Filtro por subserie
-     * @param numeroExpediente Filtro por número de expediente
-     * @param estado Filtro por estado
-     * @return Respuesta con lista de inventarios
-     */
     @GET
-    @Operation(
-        summary = "Listar inventarios documentales",
-        description = "Retorna una lista de inventarios documentales con filtros opcionales"
-    )
-    @APIResponse(
-        responseCode = "200",
-        description = "Lista de inventarios obtenida exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
+    @Operation(summary = "Listar inventarios documentales",
+            description = "Retorna una lista de inventarios documentales con filtros opcionales")
+    @APIResponse(responseCode = "200", description = "Lista de inventarios obtenida exitosamente",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     public Response listarInventarios(
             @QueryParam("idSeccion") Long idSeccion,
             @QueryParam("idSerie") Long idSerie,
@@ -290,294 +132,135 @@ public class InventarioDocumentalController {
                     idSeccion, idSerie, idSubserie, estado,
                     numeroExpediente != null && !numeroExpediente.isBlank(),
                     supervisor != null && !supervisor.isBlank()));
-            
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
-                idSeccion, idSerie, idSubserie, numeroExpediente, estado, 
-                null, null, null, null, null, null, null, null, null, null, null,
-                supervisor
-            );
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
-                    requestContext.getPath(), requestContext.getRequestId());
-            return Response.ok(response).build();
+                    idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                    null, null, null, null, null, null, null, null, null, null, null,
+                    supervisor);
+            return responses.ok(inventarios);
         } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al listar inventarios: " + e.getMessage(),
-                "INVENTARIOS_LIST_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
+            return responses.internalServerError(
+                    "Error al listar inventarios: " + e.getMessage(), "INVENTARIOS_LIST_ERROR");
         }
     }
 
-    /**
-     * Lista inventarios pendientes de aprobación (para supervisores)
-     * 
-     * @return Respuesta con lista de inventarios pendientes
-     */
     @GET
     @Path("/pendientes-aprobacion")
-    @Operation(
-        summary = "Listar inventarios pendientes de aprobación",
-        description = "Retorna una lista de inventarios pendientes de aprobación. Requiere rol SUPERVISOR_SDNGD"
-    )
-    @APIResponse(
-        responseCode = "200",
-        description = "Lista de inventarios pendientes obtenida exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
+    @Operation(summary = "Listar inventarios pendientes de aprobación",
+            description = "Retorna una lista de inventarios pendientes de aprobación. Requiere rol SUPERVISOR_SDNGD")
+    @APIResponse(responseCode = "200", description = "Lista de inventarios pendientes obtenida exitosamente",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     public Response listarPendientesAprobacion() {
         try {
-            List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarPendientesAprobacion();
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
-                    requestContext.getPath(), requestContext.getRequestId());
-            return Response.ok(response).build();
+            return responses.ok(inventarioUseCase.listarPendientesAprobacion());
         } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al listar inventarios pendientes: " + e.getMessage(),
-                "INVENTARIOS_PENDIENTES_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
+            return responses.internalServerError(
+                    "Error al listar inventarios pendientes: " + e.getMessage(), "INVENTARIOS_PENDIENTES_ERROR");
         }
     }
 
-    /**
-     * Lista inventarios pendientes del operador actual
-     * 
-     * @return Respuesta con lista de inventarios pendientes del operador
-     */
     @GET
     @Path("/pendientes")
-    @Operation(
-        summary = "Listar inventarios pendientes del operador",
-        description = "Retorna una lista de inventarios pendientes de aprobación del operador actual. " +
-                      "Requiere rol OPERADOR_SDNGD"
-    )
-    @APIResponse(
-        responseCode = "200",
-        description = "Lista de inventarios pendientes obtenida exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
+    @Operation(summary = "Listar inventarios pendientes del operador",
+            description = "Retorna inventarios pendientes del operador. Requiere rol OPERADOR_SDNGD")
+    @APIResponse(responseCode = "200", description = "Lista obtenida",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     public Response listarPendientes(@HeaderParam("X-Operador-Id") String operadorIdHeader) {
         try {
-            // ✅ Obtener operadorId del header personalizado enviado por el frontend
-            // Si no viene en el header, usar fallback temporal (para compatibilidad)
-            String operadorId = operadorIdHeader != null && !operadorIdHeader.trim().isEmpty() 
-                ? operadorIdHeader.trim() 
-                : "1"; // Fallback temporal hasta que todos los clientes envíen el header
-            
-            LOG.debugf("listarPendientes: longitud operadorId=%d",
-                    operadorId != null ? operadorId.length() : 0);
-            
-            List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarPendientesPorOperador(operadorId);
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
-                    requestContext.getPath(), requestContext.getRequestId());
-            return Response.ok(response).build();
+            String operadorId = HttpOperadorExtractor.fromHeaderOrFallback(operadorIdHeader);
+            LOG.debugf("listarPendientes: longitud operadorId=%d", operadorId.length());
+            return responses.ok(inventarioUseCase.listarPendientesPorOperador(operadorId));
         } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al listar inventarios pendientes: " + e.getMessage(),
-                "INVENTARIOS_PENDIENTES_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
+            return responses.internalServerError(
+                    "Error al listar inventarios pendientes: " + e.getMessage(), "INVENTARIOS_PENDIENTES_ERROR");
         }
     }
 
-    /**
-     * Aprueba un inventario (solo supervisores)
-     * 
-     * @param id ID del inventario a aprobar
-     * @param request Datos de la aprobación
-     * @return Respuesta con el inventario aprobado
-     */
     @PUT
     @Path("/{id}/aprobar")
-    @Operation(
-        summary = "Aprobar inventario",
-        description = "Aprueba un inventario documental. Solo se pueden aprobar inventarios en estado " +
-                      "'Registrado' o 'Actualizado'. Requiere rol SUPERVISOR_SDNGD"
-    )
-    @APIResponse(
-        responseCode = "200",
-        description = "Inventario aprobado exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "400",
-        description = "No se puede aprobar (estado incorrecto)",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "404",
-        description = "Inventario no encontrado",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
+    @Operation(summary = "Aprobar inventario",
+            description = "Aprueba un inventario. Estados permitidos: 'Registrado' o 'Actualizado'. Requiere SUPERVISOR_SDNGD")
+    @APIResponse(responseCode = "200", description = "Inventario aprobado",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "400", description = "Estado incorrecto",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "404", description = "Inventario no encontrado",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     public Response aprobarInventario(@PathParam("id") Long id, AprobacionRequest request) {
-        try {
-            // TODO: Obtener usuario del contexto de seguridad
-            String usuarioCedula = "0987654321"; // Temporal hasta implementar Keycloak
-            
-            return inventarioUseCase.aprobarInventario(id, usuarioCedula, 
-                    request != null ? request.getObservaciones() : null)
-                    .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
-                                requestContext.getPath(), requestContext.getRequestId());
-                        return Response.ok(response).build();
-                    })
-                    .orElseGet(() -> {
-                        ApiResponse<Object> errorResponse = ApiResponse.error(
-                            "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND",
-                            requestContext.getPath(), requestContext.getRequestId()
-                        );
-                        return Response.status(Response.Status.NOT_FOUND)
-                                .entity(errorResponse)
-                                .build();
-                    });
-        } catch (IllegalStateException e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                e.getMessage(),
+        return ejecutarOptional(
+                () -> inventarioUseCase.aprobarInventario(
+                        id, RestSecurityPlaceholder.SUPERVISOR_CEDULA_TEMPORAL,
+                        request != null ? request.getObservaciones() : null),
+                id,
                 "INVENTARIO_APROBACION_VALIDATION_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorResponse)
-                    .build();
+                "Error al aprobar inventario: ",
+                "INVENTARIO_APROBACION_ERROR");
+    }
+
+    @PUT
+    @Path("/{id}/rechazar")
+    @Operation(summary = "Rechazar inventario",
+            description = "Rechazo con observaciones obligatorias. Requiere SUPERVISOR_SDNGD")
+    @APIResponse(responseCode = "200", description = "Inventario rechazado",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "400", description = "Validación",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    @APIResponse(responseCode = "404", description = "Inventario no encontrado",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
+    public Response rechazarInventario(@PathParam("id") Long id, RechazoRequest request) {
+        if (request == null || request.getObservaciones() == null || request.getObservaciones().trim().isEmpty()) {
+            return responses.badRequest(
+                    "Las observaciones del rechazo son obligatorias", "RECHAZO_OBSERVACIONES_REQUIRED");
+        }
+        try {
+            return inventarioUseCase.rechazarInventario(
+                            id, RestSecurityPlaceholder.SUPERVISOR_CEDULA_TEMPORAL, request.getObservaciones())
+                    .map(responses::ok)
+                    .orElseGet(() -> responses.notFound("Inventario no encontrado con ID: " + id, "INVENTARIO_NOT_FOUND"));
+        } catch (IllegalArgumentException e) {
+            return responses.badRequest(e.getMessage(), "RECHAZO_VALIDATION_ERROR");
+        } catch (IllegalStateException e) {
+            return responses.badRequest(e.getMessage(), "INVENTARIO_RECHAZO_VALIDATION_ERROR");
         } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al aprobar inventario: " + e.getMessage(),
-                "INVENTARIO_APROBACION_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
+            return responses.internalServerError(
+                    "Error al rechazar inventario: " + e.getMessage(), "INVENTARIO_RECHAZO_ERROR");
         }
     }
 
     /**
-     * Rechaza un inventario (Pendiente de Aprobación)
-     * 
-     * @param id ID del inventario a rechazar
-     * @param request Datos del rechazo (observaciones obligatorias)
-     * @return Respuesta con el inventario rechazado
+     * Caso de uso que devuelve entidad: 201/200 vía {@code toResponse}, errores mapeados.
      */
-    @PUT
-    @Path("/{id}/rechazar")
-    @Operation(
-        summary = "Rechazar inventario",
-        description = "Rechaza un inventario documental, cambiando su estado a 'Pendiente de Aprobación'. " +
-                      "Solo se pueden rechazar inventarios en estado 'Registrado' o 'Actualizado'. " +
-                      "Requiere rol SUPERVISOR_SDNGD. Las observaciones son obligatorias."
-    )
-    @APIResponse(
-        responseCode = "200",
-        description = "Inventario rechazado exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "400",
-        description = "No se puede rechazar (estado incorrecto o observaciones faltantes)",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    @APIResponse(
-        responseCode = "404",
-        description = "Inventario no encontrado",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
-    public Response rechazarInventario(@PathParam("id") Long id, RechazoRequest request) {
+    private <T> Response ejecutar(
+            Supplier<T> accion,
+            Function<T, Response> toResponse,
+            String illegalStateCode,
+            String errorPrefijo,
+            String errorCode) {
         try {
-            if (request == null || request.getObservaciones() == null || request.getObservaciones().trim().isEmpty()) {
-                ApiResponse<Object> errorResponse = ApiResponse.error(
-                    "Las observaciones del rechazo son obligatorias",
-                    "RECHAZO_OBSERVACIONES_REQUIRED",
-                    requestContext.getPath(), requestContext.getRequestId()
-                );
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(errorResponse)
-                        .build();
-            }
-
-            // TODO: Obtener usuario del contexto de seguridad
-            String usuarioCedula = "0987654321"; // Temporal hasta implementar Keycloak
-            
-            return inventarioUseCase.rechazarInventario(id, usuarioCedula, request.getObservaciones())
-                    .map(inventario -> {
-                        ApiResponse<InventarioDocumentalResponse> response = ApiResponse.success(inventario,
-                                requestContext.getPath(), requestContext.getRequestId());
-                        return Response.ok(response).build();
-                    })
-                    .orElseGet(() -> {
-                        ApiResponse<Object> errorResponse = ApiResponse.error(
-                            "Inventario no encontrado con ID: " + id,
-                            "INVENTARIO_NOT_FOUND",
-                            requestContext.getPath(), requestContext.getRequestId()
-                        );
-                        return Response.status(Response.Status.NOT_FOUND)
-                                .entity(errorResponse)
-                                .build();
-                    });
-        } catch (IllegalArgumentException e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                e.getMessage(),
-                "RECHAZO_VALIDATION_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorResponse)
-                    .build();
+            return toResponse.apply(accion.get());
         } catch (IllegalStateException e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                e.getMessage(),
-                "INVENTARIO_RECHAZO_VALIDATION_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorResponse)
-                    .build();
+            return responses.badRequest(e.getMessage(), illegalStateCode);
         } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al rechazar inventario: " + e.getMessage(),
-                "INVENTARIO_RECHAZO_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
+            return responses.internalServerError(errorPrefijo + e.getMessage(), errorCode);
+        }
+    }
+
+    /**
+     * Caso de uso {@link Optional}: presente OK, vacío 404, {@link IllegalStateException} 400.
+     */
+    private <T> Response ejecutarOptional(
+            Supplier<Optional<T>> accion,
+            Long id,
+            String illegalStateCode,
+            String errorPrefijo,
+            String errorCode) {
+        try {
+            return accion.get()
+                    .map(responses::ok)
+                    .orElseGet(() -> responses.notFound("Inventario no encontrado con ID: " + id, "INVENTARIO_NOT_FOUND"));
+        } catch (IllegalStateException e) {
+            return responses.badRequest(e.getMessage(), illegalStateCode);
+        } catch (Exception e) {
+            return responses.internalServerError(errorPrefijo + e.getMessage(), errorCode);
         }
     }
 }
-
-
-
-

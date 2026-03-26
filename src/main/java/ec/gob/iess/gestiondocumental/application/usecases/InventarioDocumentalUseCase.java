@@ -1,5 +1,8 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioDocumentalRegistroMapper;
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioOperadorRegla;
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioPendientesRegla;
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
@@ -42,6 +45,9 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
     @Inject
     SubserieDocumentalRepositoryPort subserieRepositoryPort;
 
+    @Inject
+    InventarioDocumentalRegistroMapper inventarioRegistroMapper;
+
     /**
      * Registra un nuevo inventario documental
      * @param request Datos del inventario a crear
@@ -52,74 +58,10 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
     @Transactional
     public InventarioDocumentalResponse registrarInventario(InventarioDocumentalRequest request, 
                                                               String usuarioCedula, String ipEquipo) {
-        // ✅ Validar pendientes vencidos antes de permitir nuevo registro
-        // Si hay pendientes con más de 5 días, bloquear registro de nuevos inventarios
-        if (inventarioRepositoryPort.tienePendientesVencidos(usuarioCedula)) {
-            throw new IllegalStateException(
-                "No se puede registrar nuevo inventario. Tiene registros pendientes de aprobación vencidos "
-                + "(más de 5 días). Por favor actualice los registros pendientes primero."
-            );
-        }
-
-        InventarioDocumental inventario = new InventarioDocumental();
-        inventario.setIdSeccion(request.getIdSeccion());
-        inventario.setIdSerie(request.getIdSerie());
-        inventario.setIdSubserie(request.getIdSubserie());
-        inventario.setNumeroExpediente(request.getNumeroExpediente());
-        inventario.setNumeroCedula(request.getNumeroCedula());
-        inventario.setNumeroRuc(request.getNumeroRuc());
-        inventario.setNombresApellidos(request.getNombresApellidos());
-        inventario.setRazonSocial(request.getRazonSocial());
-        inventario.setDescripcionSerie(request.getDescripcionSerie());
-        inventario.setNumeroExtremoDesde(request.getNumeroExtremoDesde());
-        inventario.setNumeroExtremoHasta(request.getNumeroExtremoHasta());
-        inventario.setFechaDesde(request.getFechaDesde());
-        inventario.setFechaHasta(request.getFechaHasta());
-        inventario.setCantidadFojas(request.getCantidadFojas());
-        inventario.setTipoContenedor(request.getTipoContenedor());
-        inventario.setNumeroContenedor(request.getNumeroContenedor());
-        inventario.setSoporte(request.getSoporte());
-        inventario.setTipoArchivo(request.getTipoArchivo());
-        
-        // Construir posición archivo pasivo si aplica
-        // Aceptar tanto "PASIVO" (del frontend) como "Archivo pasivo" (legacy)
-        boolean esArchivoPasivo = "PASIVO".equals(request.getTipoArchivo()) 
-            || "Archivo pasivo".equals(request.getTipoArchivo());
-        
-        if (esArchivoPasivo && request.getNumeroRac() != null) {
-            // Si viene posicionPasivo del frontend, usarlo directamente
-            // Si no, construir desde los campos individuales
-            if (request.getPosicionPasivo() != null && !request.getPosicionPasivo().trim().isEmpty()) {
-                inventario.setPosicionPasivo(request.getPosicionPasivo());
-            } else {
-                String posicion = String.format("%02d.%02d.%02d.%02d.%02d",
-                    request.getNumeroRac(),
-                    request.getNumeroFila() != null ? request.getNumeroFila() : 0,
-                    request.getNumeroColumna() != null ? request.getNumeroColumna() : 0,
-                    request.getNumeroPosicion() != null ? request.getNumeroPosicion() : 0,
-                    request.getBodega() != null ? request.getBodega() : 0
-                );
-                inventario.setPosicionPasivo(posicion);
-            }
-            
-            // Guardar campos individuales
-            inventario.setNumeroRac(request.getNumeroRac());
-            inventario.setNumeroFila(request.getNumeroFila());
-            inventario.setNumeroColumna(request.getNumeroColumna());
-            inventario.setNumeroPosicion(request.getNumeroPosicion());
-            inventario.setBodega(request.getBodega());
-        }
-        
-        inventario.setObservaciones(request.getObservaciones());
-        inventario.setOperador(usuarioCedula);
-        inventario.setSupervisor(request.getSupervisor());
-        inventario.setEstadoInventario("Registrado");
-        inventario.setFechaCambioEstado(LocalDateTime.now());
-        inventario.setCedulaUsuarioCambio(usuarioCedula);
-        inventario.setUsuCreacion(usuarioCedula);
-        inventario.setFecCreacion(LocalDateTime.now());
-        inventario.setIpEquipo(ipEquipo);
-
+        InventarioPendientesRegla.validarPuedeRegistrarNuevo(inventarioRepositoryPort, usuarioCedula);
+        LocalDateTime ahora = LocalDateTime.now();
+        InventarioDocumental inventario = inventarioRegistroMapper.toNuevoInventario(
+                request, usuarioCedula, ipEquipo, ahora);
         inventarioRepositoryPort.persist(inventario);
         return toResponse(inventario);
     }
@@ -145,12 +87,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
                     inventario.getOperador() != null ? inventario.getOperador().length() : 0,
                     usuarioCedula != null && usuarioCedula.equals(inventario.getOperador())));
             
-            // Validar que el operador sea el mismo que creó el inventario
-            if (!usuarioCedula.equals(inventario.getOperador())) {
-                throw new IllegalStateException(
-                    "Solo el operador que creó el inventario puede actualizarlo"
-                );
-            }
+            InventarioOperadorRegla.assertMismoOperadorQueCreo(usuarioCedula, inventario.getOperador());
 
             // Validar estados permitidos para actualización
             if ("Aprobado".equals(estadoActual) || "Aprobado con Modificaciones".equals(estadoActual)) {
@@ -188,84 +125,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
                 );
             }
 
-            // Actualizar campos
-            if (request.getNumeroExpediente() != null) {
-                inventario.setNumeroExpediente(request.getNumeroExpediente());
-            }
-            if (request.getNumeroCedula() != null) {
-                inventario.setNumeroCedula(request.getNumeroCedula());
-            }
-            if (request.getNumeroRuc() != null) {
-                inventario.setNumeroRuc(request.getNumeroRuc());
-            }
-            if (request.getNombresApellidos() != null) {
-                inventario.setNombresApellidos(request.getNombresApellidos());
-            }
-            if (request.getRazonSocial() != null) {
-                inventario.setRazonSocial(request.getRazonSocial());
-            }
-            if (request.getDescripcionSerie() != null) {
-                inventario.setDescripcionSerie(request.getDescripcionSerie());
-            }
-            if (request.getNumeroExtremoDesde() != null) {
-                inventario.setNumeroExtremoDesde(request.getNumeroExtremoDesde());
-            }
-            if (request.getNumeroExtremoHasta() != null) {
-                inventario.setNumeroExtremoHasta(request.getNumeroExtremoHasta());
-            }
-            if (request.getFechaDesde() != null) {
-                inventario.setFechaDesde(request.getFechaDesde());
-            }
-            if (request.getFechaHasta() != null) {
-                inventario.setFechaHasta(request.getFechaHasta());
-            }
-            if (request.getCantidadFojas() != null) {
-                inventario.setCantidadFojas(request.getCantidadFojas());
-            }
-            if (request.getTipoContenedor() != null) {
-                inventario.setTipoContenedor(request.getTipoContenedor());
-            }
-            if (request.getNumeroContenedor() != null) {
-                inventario.setNumeroContenedor(request.getNumeroContenedor());
-            }
-            if (request.getSoporte() != null) {
-                inventario.setSoporte(request.getSoporte());
-            }
-            if (request.getTipoArchivo() != null) {
-                inventario.setTipoArchivo(request.getTipoArchivo());
-            }
-            if (request.getObservaciones() != null) {
-                inventario.setObservaciones(request.getObservaciones());
-            }
-
-            // Actualizar posición archivo pasivo si aplica
-            // Aceptar tanto "PASIVO" (del frontend) como "Archivo pasivo" (legacy)
-            boolean esArchivoPasivo = "PASIVO".equals(request.getTipoArchivo()) 
-                || "Archivo pasivo".equals(request.getTipoArchivo());
-            
-            if (esArchivoPasivo && request.getNumeroRac() != null) {
-                // Si viene posicionPasivo del frontend, usarlo directamente
-                // Si no, construir desde los campos individuales
-                if (request.getPosicionPasivo() != null && !request.getPosicionPasivo().trim().isEmpty()) {
-                    inventario.setPosicionPasivo(request.getPosicionPasivo());
-                } else {
-                    String posicion = String.format("%02d.%02d.%02d.%02d.%02d",
-                        request.getNumeroRac(),
-                        request.getNumeroFila() != null ? request.getNumeroFila() : 0,
-                        request.getNumeroColumna() != null ? request.getNumeroColumna() : 0,
-                        request.getNumeroPosicion() != null ? request.getNumeroPosicion() : 0,
-                        request.getBodega() != null ? request.getBodega() : 0
-                    );
-                    inventario.setPosicionPasivo(posicion);
-                }
-                
-                // Guardar campos individuales
-                inventario.setNumeroRac(request.getNumeroRac());
-                inventario.setNumeroFila(request.getNumeroFila());
-                inventario.setNumeroColumna(request.getNumeroColumna());
-                inventario.setNumeroPosicion(request.getNumeroPosicion());
-                inventario.setBodega(request.getBodega());
-            }
+            inventarioRegistroMapper.aplicarParchesDesdeRequest(inventario, request);
 
             // ✅ Supervisor NO se actualiza - se mantiene el asignado originalmente al crear el inventario
             // El campo supervisor del request se ignora intencionalmente según requerimiento funcional EF-2-2

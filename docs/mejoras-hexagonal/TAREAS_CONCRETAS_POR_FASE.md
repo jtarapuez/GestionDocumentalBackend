@@ -77,16 +77,16 @@
 
 | # | Tarea concreta | Hecho | Responsable | Fecha |
 |---|----------------|-------|-------------|-------|
-| 2.1 | Localizar mapeo `InventarioDocumentalRequest` → dominio en `InventarioDocumentalUseCase.java` | [ ] | | |
-| 2.2 | Crear componente dedicado en `application/` (ej. `*Mapper` / `*Factory`) **sin** JPA | [ ] | | |
-| 2.3 | Tests unitarios del mapper: casos normales + bordes (archivo pasivo, posición, campos nulos si aplica) | [ ] | | |
-| 2.4 | Extraer regla **pendientes vencidos** a clase/método reutilizable (dominio o application) | [ ] | | |
-| 2.5 | Test unitario de la regla con repositorio mock | [ ] | | |
-| 2.6 | Unificar lógica **posición archivo pasivo** (`PASIVO`, `Archivo pasivo`, formato `RAC...`) en un solo lugar | [ ] | | |
-| 2.7 | Tests de la construcción de posición | [ ] | | |
-| 2.8 | Extraer regla **mismo operador** en actualización + mensaje de negocio estable | [ ] | | |
-| 2.9 | Tests de actualización / operador | [ ] | | |
-| 2.10 | Revisión de par: métodos públicos legibles; `InventarioDocumentalUseCaseTest` sigue verde; ampliar tests si hace falta | [ ] | | |
+| 2.1 | Localizar mapeo `InventarioDocumentalRequest` → dominio en `InventarioDocumentalUseCase.java` | [x] | | 2026-03-23 |
+| 2.2 | Crear componente dedicado en `application/` (ej. `*Mapper` / `*Factory`) **sin** JPA | [x] | | `application/inventario/InventarioDocumentalRegistroMapper` |
+| 2.3 | Tests unitarios del mapper: casos normales + bordes (archivo pasivo, posición, campos nulos si aplica) | [x] | | `InventarioDocumentalRegistroMapperTest` |
+| 2.4 | Extraer regla **pendientes vencidos** a clase/método reutilizable (dominio o application) | [x] | | `InventarioPendientesRegla` |
+| 2.5 | Test unitario de la regla con repositorio mock | [x] | | `InventarioPendientesReglaTest` |
+| 2.6 | Unificar lógica **posición archivo pasivo** (`PASIVO`, `Archivo pasivo`, formato `RAC...`) en un solo lugar | [x] | | `ArchivoPasivoPosicion` |
+| 2.7 | Tests de la construcción de posición | [x] | | `ArchivoPasivoPosicionTest` |
+| 2.8 | Extraer regla **mismo operador** en actualización + mensaje de negocio estable | [x] | | `InventarioOperadorRegla` + `InventarioNegocioMessages` |
+| 2.9 | Tests de actualización / operador | [x] | | `InventarioOperadorReglaTest` + use case |
+| 2.10 | Revisión de par: métodos públicos legibles; `InventarioDocumentalUseCaseTest` sigue verde; ampliar tests si hace falta | [x] | | `mvn test` OK; caso PASIVO en use case |
 
 **Criterio de salida fase:** use case más corto y delegado; reglas y mapeo con tests; sin romper puertos hexagonales.
 
@@ -98,12 +98,12 @@
 
 | # | Tarea concreta | Hecho | Responsable | Fecha |
 |---|----------------|-------|-------------|-------|
-| 3.1 | Auditar `InventarioDocumentalController.java`: métodos > ~40 líneas | [ ] | | |
-| 3.2 | Mover lógica a caso de uso o componente de aplicación; dejar parseo HTTP + llamada al puerto | [ ] | | |
-| 3.3 | Revisar otros `interfaces/api/*Controller.java` con el mismo criterio (priorizar los más usados) | [ ] | | |
-| 3.4 | Homogeneizar `ApiResponse` + `RequestContext` según `docs/VALIDACION_PAS_EST_043.md` | [ ] | | |
-| 3.5 | Actualizar anotaciones OpenAPI si cambian DTOs o códigos HTTP | [ ] | | |
-| 3.6 | Prueba manual o integración de endpoints tocados (Postman/Swagger) | [ ] | | |
+| 3.1 | Auditar `InventarioDocumentalController.java`: métodos > ~40 líneas | [x] | | 2026-03-25 |
+| 3.2 | Mover lógica a caso de uso o componente de aplicación; dejar parseo HTTP + llamada al puerto | [x] | | `StandardResponses`, `HttpOperadorExtractor`, helpers `ejecutar` / `ejecutarOptional` |
+| 3.3 | Revisar otros `interfaces/api/*Controller.java` con el mismo criterio (priorizar los más usados) | [ ] | | Reutilizar `interfaces/api/support/StandardResponses` en Catálogo, Series, etc. |
+| 3.4 | Homogeneizar `ApiResponse` + `RequestContext` según `docs/VALIDACION_PAS_EST_043.md` | [ ] | | Base común en `StandardResponses`; extender al resto de controllers |
+| 3.5 | Actualizar anotaciones OpenAPI si cambian DTOs o códigos HTTP | [ ] | | Sin cambio de contrato en este paso |
+| 3.6 | Prueba manual o integración de endpoints tocados (Postman/Swagger) | [ ] | | Validar `/v1/inventarios/*` |
 
 **Criterio de salida fase:** controladores como adaptadores delgados; respuestas alineadas al estándar.
 
@@ -172,6 +172,8 @@ Semana __: Fase __
 |---------|-------|-------------|
 | 1.0 | 2026-01-26 | Emisión: checklist ejecutable por fases 0–6, rutas concretas al backend. |
 | 1.1 | 2026-01-26 | Principio validación incremental en todas las fases; Fase 0 con micro-pasos y `mvn test` tras commits/DoD. |
+| 1.2 | 2026-03-23 | Fase 2: paquete `application/inventario` (mapper, reglas pendientes/operador, posición pasivo) + tests unitarios. |
+| 1.3 | 2026-03-25 | Fase 3 (parcial): `InventarioDocumentalController` delgado + `interfaces/api/support/*` (`StandardResponses`, extractores HTTP). |
 
 ---
 
