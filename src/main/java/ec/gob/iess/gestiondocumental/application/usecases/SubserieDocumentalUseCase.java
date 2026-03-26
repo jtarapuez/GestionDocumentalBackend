@@ -1,7 +1,10 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.SubserieDocumentalUseCasePort;
+import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SubserieDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.subserie.SubserieCodigosError;
 import ec.gob.iess.gestiondocumental.domain.SerieDocumentalEstados;
 import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalRequest;
@@ -18,12 +21,19 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class SubserieDocumentalUseCase implements SubserieDocumentalUseCasePort {
 
+    private static final int HTTP_BAD_REQUEST = 400;
+
     @Inject
     SubserieDocumentalRepositoryPort subserieRepositoryPort;
+
+    @Inject
+    SerieDocumentalRepositoryPort serieRepositoryPort;
 
     @Transactional
     public SubserieDocumentalResponse crearSubserie(
             SubserieDocumentalRequest request, String usuarioCedula, String ipEquipo) {
+        validarSerieParaCreacion(request.getIdSerie());
+
         SubserieDocumental subserie = new SubserieDocumental();
         subserie.setIdSerie(request.getIdSerie());
         subserie.setNombreSubserie(request.getNombreSubserie());
@@ -101,5 +111,21 @@ public class SubserieDocumentalUseCase implements SubserieDocumentalUseCasePort 
         response.setUsuCreacion(subserie.getUsuCreacion());
         response.setFecCreacion(subserie.getFecCreacion());
         return response;
+    }
+
+    private void validarSerieParaCreacion(Long idSerie) {
+        if (idSerie == null) {
+            throw new NegocioApiException(
+                    SubserieCodigosError.SUB_ID_SERIE_REQUERIDO,
+                    "El identificador de serie (idSerie) es obligatorio para crear una subserie.",
+                    HTTP_BAD_REQUEST);
+        }
+        if (serieRepositoryPort.findByIdOptional(idSerie).isEmpty()) {
+            throw new NegocioApiException(
+                    SubserieCodigosError.SUB_ID_SERIE_NO_EXISTE,
+                    "No existe una serie documental con idSerie=" + idSerie + ". "
+                            + "Use GET /api/v1/series con idSeccion o consulte los listados de series.",
+                    HTTP_BAD_REQUEST);
+        }
     }
 }

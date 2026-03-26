@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.AprobacionRequest;
@@ -61,7 +62,6 @@ public class InventarioDocumentalController {
                     return inventarioUseCase.registrarInventario(request, operadorId, "127.0.0.1");
                 },
                 responses::created,
-                "INVENTARIO_VALIDATION_ERROR",
                 "Error al registrar inventario: ",
                 "INVENTARIO_CREATE_ERROR");
     }
@@ -89,7 +89,6 @@ public class InventarioDocumentalController {
                     return inventarioUseCase.actualizarInventario(id, request, operadorId);
                 },
                 id,
-                "INVENTARIO_UPDATE_VALIDATION_ERROR",
                 "Error al actualizar inventario: ",
                 "INVENTARIO_UPDATE_ERROR");
     }
@@ -107,6 +106,8 @@ public class InventarioDocumentalController {
             return inventarioUseCase.obtenerPorId(id)
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Inventario no encontrado con ID: " + id, "INVENTARIO_NOT_FOUND"));
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al obtener inventario: " + e.getMessage(), "INVENTARIO_GET_ERROR");
@@ -137,6 +138,8 @@ public class InventarioDocumentalController {
                     null, null, null, null, null, null, null, null, null, null, null,
                     supervisor);
             return responses.ok(inventarios);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar inventarios: " + e.getMessage(), "INVENTARIOS_LIST_ERROR");
@@ -152,6 +155,8 @@ public class InventarioDocumentalController {
     public Response listarPendientesAprobacion() {
         try {
             return responses.ok(inventarioUseCase.listarPendientesAprobacion());
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar inventarios pendientes: " + e.getMessage(), "INVENTARIOS_PENDIENTES_ERROR");
@@ -169,6 +174,8 @@ public class InventarioDocumentalController {
             String operadorId = HttpOperadorExtractor.fromHeaderOrFallback(operadorIdHeader);
             LOG.debugf("listarPendientes: longitud operadorId=%d", operadorId.length());
             return responses.ok(inventarioUseCase.listarPendientesPorOperador(operadorId));
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar inventarios pendientes: " + e.getMessage(), "INVENTARIOS_PENDIENTES_ERROR");
@@ -191,7 +198,6 @@ public class InventarioDocumentalController {
                         id, RestSecurityPlaceholder.SUPERVISOR_CEDULA_TEMPORAL,
                         request != null ? request.getObservaciones() : null),
                 id,
-                "INVENTARIO_APROBACION_VALIDATION_ERROR",
                 "Error al aprobar inventario: ",
                 "INVENTARIO_APROBACION_ERROR");
     }
@@ -207,23 +213,14 @@ public class InventarioDocumentalController {
     @APIResponse(responseCode = "404", description = "Inventario no encontrado",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     public Response rechazarInventario(@PathParam("id") Long id, RechazoRequest request) {
-        if (request == null || request.getObservaciones() == null || request.getObservaciones().trim().isEmpty()) {
-            return responses.badRequest(
-                    "Las observaciones del rechazo son obligatorias", "RECHAZO_OBSERVACIONES_REQUIRED");
-        }
-        try {
-            return inventarioUseCase.rechazarInventario(
-                            id, RestSecurityPlaceholder.SUPERVISOR_CEDULA_TEMPORAL, request.getObservaciones())
-                    .map(responses::ok)
-                    .orElseGet(() -> responses.notFound("Inventario no encontrado con ID: " + id, "INVENTARIO_NOT_FOUND"));
-        } catch (IllegalArgumentException e) {
-            return responses.badRequest(e.getMessage(), "RECHAZO_VALIDATION_ERROR");
-        } catch (IllegalStateException e) {
-            return responses.badRequest(e.getMessage(), "INVENTARIO_RECHAZO_VALIDATION_ERROR");
-        } catch (Exception e) {
-            return responses.internalServerError(
-                    "Error al rechazar inventario: " + e.getMessage(), "INVENTARIO_RECHAZO_ERROR");
-        }
+        return ejecutarOptional(
+                () -> inventarioUseCase.rechazarInventario(
+                        id,
+                        RestSecurityPlaceholder.SUPERVISOR_CEDULA_TEMPORAL,
+                        request != null ? request.getObservaciones() : null),
+                id,
+                "Error al rechazar inventario: ",
+                "INVENTARIO_RECHAZO_ERROR");
     }
 
     /**
@@ -232,33 +229,31 @@ public class InventarioDocumentalController {
     private <T> Response ejecutar(
             Supplier<T> accion,
             Function<T, Response> toResponse,
-            String illegalStateCode,
             String errorPrefijo,
             String errorCode) {
         try {
             return toResponse.apply(accion.get());
-        } catch (IllegalStateException e) {
-            return responses.badRequest(e.getMessage(), illegalStateCode);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(errorPrefijo + e.getMessage(), errorCode);
         }
     }
 
     /**
-     * Caso de uso {@link Optional}: presente OK, vacío 404, {@link IllegalStateException} 400.
+     * Caso de uso {@link Optional}: presente OK, vacío 404; {@link NegocioApiException} la mapea el ExceptionMapper.
      */
     private <T> Response ejecutarOptional(
             Supplier<Optional<T>> accion,
             Long id,
-            String illegalStateCode,
             String errorPrefijo,
             String errorCode) {
         try {
             return accion.get()
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Inventario no encontrado con ID: " + id, "INVENTARIO_NOT_FOUND"));
-        } catch (IllegalStateException e) {
-            return responses.badRequest(e.getMessage(), illegalStateCode);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(errorPrefijo + e.getMessage(), errorCode);
         }

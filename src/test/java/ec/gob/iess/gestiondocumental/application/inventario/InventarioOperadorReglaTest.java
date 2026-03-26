@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.application.inventario;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,10 +17,11 @@ class InventarioOperadorReglaTest {
     }
 
     @Test
-    @DisplayName("lanza IllegalStateException con mensaje estable si difieren")
+    @DisplayName("lanza NegocioApiException con mensaje estable si difieren")
     void distintoOperador() {
         assertThatThrownBy(() -> InventarioOperadorRegla.assertMismoOperadorQueCreo("1798765432", "1712345678"))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(NegocioApiException.class)
+                .hasFieldOrPropertyWithValue("codigo", InventarioCodigosError.INV_OPERADOR_NO_AUTORIZADO)
                 .hasMessage(InventarioNegocioMessages.SOLO_OPERADOR_CREADOR_PUEDE_ACTUALIZAR);
     }
 }

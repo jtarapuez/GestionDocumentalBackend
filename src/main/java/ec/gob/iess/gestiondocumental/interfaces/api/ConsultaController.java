@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ConsultaRequest;
@@ -68,6 +69,8 @@ public class ConsultaController {
                     null);
 
             return responses.ok(inventarios);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al realizar consulta: " + e.getMessage(), "CONSULTA_ERROR");

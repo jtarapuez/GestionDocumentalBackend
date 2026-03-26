@@ -115,10 +115,10 @@
 
 | # | Tarea concreta | Hecho | Responsable | Fecha |
 |---|----------------|-------|-------------|-------|
-| 4.1 | Inventariar excepciones lanzadas en `application/` e `interfaces/` (`IllegalStateException`, `IllegalArgumentException`, etc.) | [ ] | | |
-| 4.2 | Definir catálogo de códigos (ej. `INV_OPERADOR_NO_AUTORIZADO`, `INV_PENDIENTES_VENCIDOS`) en doc o enum | [ ] | | |
-| 4.3 | Implementar o extender `GlobalExceptionMapper` (o equivalente): código + mensaje + HTTP + `ApiResponse` | [ ] | | |
-| 4.4 | Añadir documento corto para frontend: tabla código → significado → acción (en `gestion-documental-backend/docs/` o `Documentacion/`) | [ ] | | |
+| 4.1 | Inventariar excepciones lanzadas en `application/` e `interfaces/` (`IllegalStateException`, `IllegalArgumentException`, etc.) | [x] | | 2026-03-26 |
+| 4.2 | Definir catálogo de códigos (ej. `INV_OPERADOR_NO_AUTORIZADO`, `INV_PENDIENTES_VENCIDOS`) en doc o enum | [x] | | `InventarioCodigosError`, `SerieCodigosError`, `SubserieCodigosError` + `docs/CODIGOS_ERROR_API.md` |
+| 4.3 | Implementar o extender `GlobalExceptionMapper` (o equivalente): código + mensaje + HTTP + `ApiResponse` | [x] | | `NegocioApiException` en mapper; controllers re-lanzan |
+| 4.4 | Añadir documento corto para frontend: tabla código → significado → acción (en `gestion-documental-backend/docs/` o `Documentacion/`) | [x] | | `docs/CODIGOS_ERROR_API.md` |
 | 4.5 | Coordinar con frontend si cambia forma de error (changelog o versión API) | [ ] | | |
 
 **Criterio de salida fase:** errores predecibles y documentados; menos dependencia del texto libre.
@@ -175,6 +175,7 @@ Semana __: Fase __
 | 1.2 | 2026-03-23 | Fase 2: paquete `application/inventario` (mapper, reglas pendientes/operador, posición pasivo) + tests unitarios. |
 | 1.3 | 2026-03-25 | Fase 3 (parcial): `InventarioDocumentalController` delgado + `interfaces/api/support/*` (`StandardResponses`, extractores HTTP). |
 | 1.4 | 2026-03-26 | Fase 3: resto de controllers con `StandardResponses`; `notImplemented` (501); `ADMIN_CEDULA_TEMPORAL` en `RestSecurityPlaceholder`. |
+| 1.5 | 2026-03-26 | Fase 4 (parcial): `NegocioApiException` + códigos INV/SER/SUB; validación FK serie-subserie; `CODIGOS_ERROR_API.md`; re-lanzar en catálogo/consulta/series. |
 
 ---
 

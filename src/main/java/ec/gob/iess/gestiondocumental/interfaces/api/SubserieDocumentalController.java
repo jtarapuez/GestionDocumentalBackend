@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.SubserieDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalRequest;
@@ -55,6 +56,8 @@ public class SubserieDocumentalController {
             SubserieDocumentalResponse subserie = subserieUseCase.crearSubserie(
                     request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL, ipEquipo);
             return responses.created(subserie);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al crear subserie: " + e.getMessage(), "SUBSERIE_CREATE_ERROR");
@@ -83,6 +86,8 @@ public class SubserieDocumentalController {
             return subserieUseCase.actualizarSubserie(id, request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL)
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Subserie no encontrada con ID: " + id, "SUBSERIE_NOT_FOUND"));
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al actualizar subserie: " + e.getMessage(), "SUBSERIE_UPDATE_ERROR");
@@ -105,6 +110,8 @@ public class SubserieDocumentalController {
                     ? subserieUseCase.listarPorSerie(idSerie)
                     : subserieUseCase.listarActivas();
             return responses.ok(subseries);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar subseries: " + e.getMessage(), "SUBSERIES_LIST_ERROR");
@@ -133,6 +140,8 @@ public class SubserieDocumentalController {
             return subserieUseCase.obtenerPorId(id)
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Subserie no encontrada con ID: " + id, "SUBSERIE_NOT_FOUND"));
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al obtener subserie: " + e.getMessage(), "SUBSERIE_GET_ERROR");
@@ -154,6 +163,8 @@ public class SubserieDocumentalController {
         try {
             List<SubserieDocumentalResponse> subseries = subserieUseCase.listarPorSerie(idSerie);
             return responses.ok(subseries);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar subseries: " + e.getMessage(), "SUBSERIES_LIST_ERROR");

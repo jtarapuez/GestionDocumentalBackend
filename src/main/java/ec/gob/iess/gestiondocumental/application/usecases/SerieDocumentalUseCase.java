@@ -1,7 +1,10 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.SerieDocumentalUseCasePort;
+import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.serie.SerieCodigosError;
 import ec.gob.iess.gestiondocumental.domain.SerieDocumentalEstados;
 import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SerieDocumentalRequest;
@@ -18,11 +21,18 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class SerieDocumentalUseCase implements SerieDocumentalUseCasePort {
 
+    private static final int HTTP_BAD_REQUEST = 400;
+
     @Inject
     SerieDocumentalRepositoryPort serieRepositoryPort;
 
+    @Inject
+    SeccionDocumentalRepositoryPort seccionRepositoryPort;
+
     @Transactional
     public SerieDocumentalResponse crearSerie(SerieDocumentalRequest request, String usuarioCedula, String ipEquipo) {
+        validarSeccionParaCreacion(request.getIdSeccion());
+
         SerieDocumental serie = new SerieDocumental();
         serie.setIdSeccion(request.getIdSeccion());
         serie.setNombreSerie(request.getNombreSerie());
@@ -100,5 +110,21 @@ public class SerieDocumentalUseCase implements SerieDocumentalUseCasePort {
         response.setUsuCreacion(serie.getUsuCreacion());
         response.setFecCreacion(serie.getFecCreacion());
         return response;
+    }
+
+    private void validarSeccionParaCreacion(Long idSeccion) {
+        if (idSeccion == null) {
+            throw new NegocioApiException(
+                    SerieCodigosError.SER_ID_SECCION_REQUERIDO,
+                    "El identificador de sección (idSeccion) es obligatorio para crear una serie.",
+                    HTTP_BAD_REQUEST);
+        }
+        if (seccionRepositoryPort.findById(idSeccion).isEmpty()) {
+            throw new NegocioApiException(
+                    SerieCodigosError.SER_ID_SECCION_NO_EXISTE,
+                    "No existe una sección documental con idSeccion=" + idSeccion + ". "
+                            + "Use GET /api/v1/catalogos/secciones para obtener identificadores válidos.",
+                    HTTP_BAD_REQUEST);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioCodigosError;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioNegocioMessages;
 import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.application.port.out.InventarioDocumentalRepositoryPort;
@@ -83,7 +85,8 @@ class InventarioDocumentalUseCaseTest {
 
             assertThatThrownBy(() ->
                     useCase.registrarInventario(requestMinimo(), "1712345678", "192.168.1.1"))
-                    .isInstanceOf(IllegalStateException.class)
+                    .isInstanceOf(NegocioApiException.class)
+                    .hasFieldOrPropertyWithValue("codigo", InventarioCodigosError.INV_PENDIENTES_VENCIDOS)
                     .hasMessage(InventarioNegocioMessages.REGISTRO_BLOQUEADO_POR_PENDIENTES_VENCIDOS);
             verify(inventarioRepositoryPort).tienePendientesVencidos("1712345678");
         }
@@ -214,7 +217,8 @@ class InventarioDocumentalUseCaseTest {
 
             InventarioDocumentalRequest req = requestMinimo();
             assertThatThrownBy(() -> useCase.actualizarInventario(1L, req, "1798765432"))
-                    .isInstanceOf(IllegalStateException.class)
+                    .isInstanceOf(NegocioApiException.class)
+                    .hasFieldOrPropertyWithValue("codigo", InventarioCodigosError.INV_OPERADOR_NO_AUTORIZADO)
                     .hasMessage(InventarioNegocioMessages.SOLO_OPERADOR_CREADOR_PUEDE_ACTUALIZAR);
         }
     }
@@ -256,10 +260,12 @@ class InventarioDocumentalUseCaseTest {
         @DisplayName("lanza cuando observaciones están vacías")
         void lanzaSiObservacionesVacias() {
             assertThatThrownBy(() -> useCase.rechazarInventario(1L, "1798765432", null))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(NegocioApiException.class)
+                    .hasFieldOrPropertyWithValue("codigo", InventarioCodigosError.INV_RECHAZO_OBSERVACIONES_REQUERIDAS)
                     .hasMessageContaining("observaciones");
             assertThatThrownBy(() -> useCase.rechazarInventario(1L, "1798765432", "   "))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NegocioApiException.class)
+                    .hasFieldOrPropertyWithValue("codigo", InventarioCodigosError.INV_RECHAZO_OBSERVACIONES_REQUERIDAS);
         }
 
         @Test

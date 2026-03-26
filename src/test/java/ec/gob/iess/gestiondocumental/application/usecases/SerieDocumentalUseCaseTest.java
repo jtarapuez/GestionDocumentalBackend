@@ -1,14 +1,19 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.SerieDocumentalUseCasePort;
+import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.serie.SerieCodigosError;
 import ec.gob.iess.gestiondocumental.domain.SerieDocumentalEstados;
+import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SerieDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SerieDocumentalResponse;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +22,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,8 +37,18 @@ class SerieDocumentalUseCaseTest {
     @InjectMock
     SerieDocumentalRepositoryPort serieRepositoryPort;
 
+    @InjectMock
+    SeccionDocumentalRepositoryPort seccionRepositoryPort;
+
     @Inject
     SerieDocumentalUseCasePort useCase;
+
+    @BeforeEach
+    void seccionValidaPorDefecto() {
+        SeccionDocumental sec = new SeccionDocumental();
+        sec.setId(1L);
+        when(seccionRepositoryPort.findById(1L)).thenReturn(Optional.of(sec));
+    }
 
     private static SerieDocumentalRequest requestMinimo() {
         SerieDocumentalRequest r = new SerieDocumentalRequest();
@@ -50,6 +67,30 @@ class SerieDocumentalUseCaseTest {
         s.setEstado(SerieDocumentalEstados.CREADO);
         s.setFecCreacion(LocalDateTime.now());
         return s;
+    }
+
+    @Test
+    @DisplayName("crearSerie lanza cuando idSeccion es nulo")
+    void crearSerieLanzaSiIdSeccionNulo() {
+        SerieDocumentalRequest r = requestMinimo();
+        r.setIdSeccion(null);
+
+        assertThatThrownBy(() -> useCase.crearSerie(r, "1712345678", "192.168.1.1"))
+                .isInstanceOf(NegocioApiException.class)
+                .hasFieldOrPropertyWithValue("codigo", SerieCodigosError.SER_ID_SECCION_REQUERIDO);
+    }
+
+    @Test
+    @DisplayName("crearSerie lanza cuando la sección no existe")
+    void crearSerieLanzaSiSeccionNoExiste() {
+        when(seccionRepositoryPort.findById(eq(999L))).thenReturn(Optional.empty());
+
+        SerieDocumentalRequest r = requestMinimo();
+        r.setIdSeccion(999L);
+
+        assertThatThrownBy(() -> useCase.crearSerie(r, "1712345678", "192.168.1.1"))
+                .isInstanceOf(NegocioApiException.class)
+                .hasFieldOrPropertyWithValue("codigo", SerieCodigosError.SER_ID_SECCION_NO_EXISTE);
     }
 
     @Test

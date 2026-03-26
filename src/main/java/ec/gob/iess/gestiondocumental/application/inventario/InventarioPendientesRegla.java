@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.application.inventario;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.out.InventarioDocumentalRepositoryPort;
 
 /**
@@ -7,17 +8,22 @@ import ec.gob.iess.gestiondocumental.application.port.out.InventarioDocumentalRe
  */
 public final class InventarioPendientesRegla {
 
+    private static final int HTTP_BAD_REQUEST = 400;
+
     private InventarioPendientesRegla() {
     }
 
     /**
-     * @throws IllegalStateException si el repositorio indica pendientes vencidos para la cédula
+     * @throws NegocioApiException si el repositorio indica pendientes vencidos para la cédula
      */
     public static void validarPuedeRegistrarNuevo(
             InventarioDocumentalRepositoryPort inventarioRepositoryPort,
             String operadorCedula) {
         if (inventarioRepositoryPort.tienePendientesVencidos(operadorCedula)) {
-            throw new IllegalStateException(InventarioNegocioMessages.REGISTRO_BLOQUEADO_POR_PENDIENTES_VENCIDOS);
+            throw new NegocioApiException(
+                    InventarioCodigosError.INV_PENDIENTES_VENCIDOS,
+                    InventarioNegocioMessages.REGISTRO_BLOQUEADO_POR_PENDIENTES_VENCIDOS,
+                    HTTP_BAD_REQUEST);
         }
     }
 }

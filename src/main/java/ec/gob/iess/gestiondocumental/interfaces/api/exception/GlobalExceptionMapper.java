@@ -1,6 +1,7 @@
 package ec.gob.iess.gestiondocumental.interfaces.api.exception;
 
 import ec.gob.iess.gestiondocumental.application.exception.CatalogoNoEncontradoException;
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import jakarta.inject.Inject;
@@ -26,6 +27,15 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
     public Response toResponse(Exception exception) {
         String path = requestContext != null ? requestContext.getPath() : null;
         String requestId = requestContext != null ? requestContext.getRequestId() : null;
+
+        if (exception instanceof NegocioApiException) {
+            NegocioApiException ex = (NegocioApiException) exception;
+            ApiResponse<Object> errorResponse = ApiResponse.error(
+                    ex.getMessage(),
+                    ex.getCodigo(),
+                    path, requestId);
+            return Response.status(ex.getStatusHttp()).entity(errorResponse).build();
+        }
 
         if (exception instanceof CatalogoNoEncontradoException) {
             CatalogoNoEncontradoException ex = (CatalogoNoEncontradoException) exception;

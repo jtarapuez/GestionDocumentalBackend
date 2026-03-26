@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.CatalogoUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoDetalleResponse;
@@ -46,6 +47,8 @@ public class CatalogoController {
     public Response listarCatalogos() {
         try {
             return responses.ok(catalogoUseCase.listarCatalogos());
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar catálogos: " + e.getMessage(), "CATALOGOS_LIST_ERROR");
@@ -75,6 +78,8 @@ public class CatalogoController {
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound(
                             "Catálogo no encontrado con código: " + codigo, "CATALOGO_NOT_FOUND"));
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al obtener catálogo: " + e.getMessage(), "CATALOGO_GET_ERROR");
@@ -106,6 +111,8 @@ public class CatalogoController {
             }
             List<CatalogoDetalleResponse> detalles = catalogoUseCase.listarDetallesPorCatalogo(codigo);
             return responses.ok(detalles);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar detalles del catálogo: " + e.getMessage(), "CATALOGO_DETALLES_ERROR");
@@ -218,6 +225,8 @@ public class CatalogoController {
         try {
             List<SeccionDocumentalResponse> secciones = catalogoUseCase.listarSecciones();
             return responses.ok(secciones);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar secciones: " + e.getMessage(), "SECCIONES_LIST_ERROR");

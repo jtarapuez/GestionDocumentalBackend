@@ -1,13 +1,18 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.SubserieDocumentalUseCasePort;
+import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SubserieDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.subserie.SubserieCodigosError;
+import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalResponse;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +21,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,8 +36,18 @@ class SubserieDocumentalUseCaseTest {
     @InjectMock
     SubserieDocumentalRepositoryPort subserieRepositoryPort;
 
+    @InjectMock
+    SerieDocumentalRepositoryPort serieRepositoryPort;
+
     @Inject
     SubserieDocumentalUseCasePort useCase;
+
+    @BeforeEach
+    void serieValidaPorDefecto() {
+        SerieDocumental serie = new SerieDocumental();
+        serie.setId(1L);
+        when(serieRepositoryPort.findByIdOptional(1L)).thenReturn(Optional.of(serie));
+    }
 
     private static SubserieDocumentalRequest requestMinimo() {
         SubserieDocumentalRequest r = new SubserieDocumentalRequest();
@@ -49,6 +66,30 @@ class SubserieDocumentalUseCaseTest {
         s.setEstado("Creado");
         s.setFecCreacion(LocalDateTime.now());
         return s;
+    }
+
+    @Test
+    @DisplayName("crearSubserie lanza cuando idSerie es nulo")
+    void crearSubserieLanzaSiIdSerieNulo() {
+        SubserieDocumentalRequest r = requestMinimo();
+        r.setIdSerie(null);
+
+        assertThatThrownBy(() -> useCase.crearSubserie(r, "1712345678", "192.168.1.1"))
+                .isInstanceOf(NegocioApiException.class)
+                .hasFieldOrPropertyWithValue("codigo", SubserieCodigosError.SUB_ID_SERIE_REQUERIDO);
+    }
+
+    @Test
+    @DisplayName("crearSubserie lanza cuando la serie no existe")
+    void crearSubserieLanzaSiSerieNoExiste() {
+        when(serieRepositoryPort.findByIdOptional(eq(999L))).thenReturn(Optional.empty());
+
+        SubserieDocumentalRequest r = requestMinimo();
+        r.setIdSerie(999L);
+
+        assertThatThrownBy(() -> useCase.crearSubserie(r, "1712345678", "192.168.1.1"))
+                .isInstanceOf(NegocioApiException.class)
+                .hasFieldOrPropertyWithValue("codigo", SubserieCodigosError.SUB_ID_SERIE_NO_EXISTE);
     }
 
     @Test

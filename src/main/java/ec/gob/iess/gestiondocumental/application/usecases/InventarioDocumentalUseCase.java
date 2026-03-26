@@ -1,5 +1,7 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioCodigosError;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioDocumentalRegistroMapper;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioOperadorRegla;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioPendientesRegla;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class InventarioDocumentalUseCase implements InventarioDocumentalUseCasePort {
+
+    private static final int HTTP_BAD_REQUEST = 400;
 
     private static final Logger LOG = Logger.getLogger(InventarioDocumentalUseCase.class);
 
@@ -72,7 +76,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
      * @param request Datos actualizados
      * @param usuarioCedula Cédula del usuario operador
      * @return Inventario actualizado
-     * @throws IllegalStateException Si el inventario no está en estado válido para actualizar
+     * @throws NegocioApiException Si el inventario no está en estado válido para actualizar
      */
     @Transactional
     public Optional<InventarioDocumentalResponse> actualizarInventario(Long id, 
@@ -91,10 +95,11 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
 
             // Validar estados permitidos para actualización
             if ("Aprobado".equals(estadoActual) || "Aprobado con Modificaciones".equals(estadoActual)) {
-                throw new IllegalStateException(
-                    "Los inventarios aprobados no pueden ser modificados. " +
-                    "Estado actual: " + estadoActual
-                );
+                throw new NegocioApiException(
+                        InventarioCodigosError.INV_ACTUALIZACION_APROBADO_NO_MODIFICABLE,
+                        "Los inventarios aprobados no pueden ser modificados. "
+                                + "Estado actual: " + estadoActual,
+                        HTTP_BAD_REQUEST);
             }
 
             // ✅ Permitir actualizar "Pendiente de Aprobación" siempre (sin límite de días)
@@ -110,19 +115,21 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
                 if (fechaReferencia != null) {
                     LocalDateTime fechaLimite = LocalDateTime.now().minusDays(5);
                     if (fechaReferencia.isBefore(fechaLimite)) {
-                        throw new IllegalStateException(
-                            "No se puede actualizar. Ha pasado más de 5 días calendario desde la creación"
-                        );
+                        throw new NegocioApiException(
+                                InventarioCodigosError.INV_ACTUALIZACION_PLAZO_VENCIDO,
+                                "No se puede actualizar. Ha pasado más de 5 días calendario desde la creación",
+                                HTTP_BAD_REQUEST);
                     }
                 }
             }
             
             // Validar que el estado sea uno de los permitidos para actualización
             if (!esPendienteAprobacion && !"Registrado".equals(estadoActual)) {
-                throw new IllegalStateException(
-                    "Solo se pueden actualizar inventarios en estado 'Registrado' o 'Pendiente de Aprobación'. " +
-                    "Estado actual: " + estadoActual
-                );
+                throw new NegocioApiException(
+                        InventarioCodigosError.INV_ACTUALIZACION_ESTADO_NO_PERMITIDO,
+                        "Solo se pueden actualizar inventarios en estado 'Registrado' o 'Pendiente de Aprobación'. "
+                                + "Estado actual: " + estadoActual,
+                        HTTP_BAD_REQUEST);
             }
 
             inventarioRegistroMapper.aplicarParchesDesdeRequest(inventario, request);
@@ -291,7 +298,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
      * @param usuarioCedula Cédula del supervisor
      * @param observaciones Observaciones opcionales
      * @return Inventario aprobado
-     * @throws IllegalStateException Si el inventario no está en estado válido para aprobar
+     * @throws NegocioApiException Si el inventario no está en estado válido para aprobar
      */
     @Transactional
     public Optional<InventarioDocumentalResponse> aprobarInventario(
@@ -301,10 +308,11 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
             
             // Validar que el estado permita aprobación
             if (!"Registrado".equals(estadoActual) && !"Actualizado".equals(estadoActual)) {
-                throw new IllegalStateException(
-                    "Solo se pueden aprobar inventarios en estado 'Registrado' o 'Actualizado'. "
-                    + "Estado actual: " + estadoActual
-                );
+                throw new NegocioApiException(
+                        InventarioCodigosError.INV_APROBACION_ESTADO_INVALIDO,
+                        "Solo se pueden aprobar inventarios en estado 'Registrado' o 'Actualizado'. "
+                                + "Estado actual: " + estadoActual,
+                        HTTP_BAD_REQUEST);
             }
 
             // Determinar el estado final según el estado actual
@@ -338,13 +346,16 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
      * @param usuarioCedula Cédula del supervisor
      * @param observaciones Observaciones del rechazo (obligatorio)
      * @return Inventario rechazado
-     * @throws IllegalStateException Si el inventario no está en estado válido para rechazar
+     * @throws NegocioApiException Si observaciones inválidas o estado no válido para rechazar
      */
     @Transactional
     public Optional<InventarioDocumentalResponse> rechazarInventario(
             Long id, String usuarioCedula, String observaciones) {
         if (observaciones == null || observaciones.trim().isEmpty()) {
-            throw new IllegalArgumentException("Las observaciones del rechazo son obligatorias");
+            throw new NegocioApiException(
+                    InventarioCodigosError.INV_RECHAZO_OBSERVACIONES_REQUERIDAS,
+                    "Las observaciones del rechazo son obligatorias",
+                    HTTP_BAD_REQUEST);
         }
 
         return inventarioRepositoryPort.findByIdOptional(id).map(inventario -> {
@@ -352,10 +363,11 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
             
             // Validar que el estado permita rechazo
             if (!"Registrado".equals(estadoActual) && !"Actualizado".equals(estadoActual)) {
-                throw new IllegalStateException(
-                    "Solo se pueden rechazar inventarios en estado 'Registrado' o 'Actualizado'. " +
-                    "Estado actual: " + estadoActual
-                );
+                throw new NegocioApiException(
+                        InventarioCodigosError.INV_RECHAZO_ESTADO_INVALIDO,
+                        "Solo se pueden rechazar inventarios en estado 'Registrado' o 'Actualizado'. "
+                                + "Estado actual: " + estadoActual,
+                        HTTP_BAD_REQUEST);
             }
 
             inventario.setEstadoInventario("Pendiente de Aprobación");

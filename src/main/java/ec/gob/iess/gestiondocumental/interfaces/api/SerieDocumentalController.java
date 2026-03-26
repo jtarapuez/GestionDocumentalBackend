@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.SerieDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.application.port.in.SubserieDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
@@ -63,6 +64,8 @@ public class SerieDocumentalController {
             SerieDocumentalResponse serie = serieUseCase.crearSerie(
                     request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL, ipEquipo);
             return responses.created(serie);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             LOG.error("crearSerie falló", e);
             return responses.internalServerError(
@@ -102,6 +105,8 @@ public class SerieDocumentalController {
             return serieUseCase.actualizarSerie(id, request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL)
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Serie no encontrada con ID: " + id, "SERIE_NOT_FOUND"));
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al actualizar serie: " + e.getMessage(), "SERIE_UPDATE_ERROR");
@@ -124,6 +129,8 @@ public class SerieDocumentalController {
                     ? serieUseCase.listarPorSeccion(idSeccion)
                     : serieUseCase.listarActivas();
             return responses.ok(series);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar series: " + e.getMessage(), "SERIES_LIST_ERROR");
@@ -152,6 +159,8 @@ public class SerieDocumentalController {
             return serieUseCase.obtenerPorId(id)
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Serie no encontrada con ID: " + id, "SERIE_NOT_FOUND"));
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al obtener serie: " + e.getMessage(), "SERIE_GET_ERROR");
@@ -173,6 +182,8 @@ public class SerieDocumentalController {
         try {
             List<SubserieDocumentalResponse> subseries = subserieUseCase.listarPorSerie(idSerie);
             return responses.ok(subseries);
+        } catch (NegocioApiException e) {
+            throw e;
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar subseries: " + e.getMessage(), "SUBSERIES_LIST_ERROR");

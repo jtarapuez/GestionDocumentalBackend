@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.application.inventario;
 
+import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.out.InventarioDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +23,8 @@ class InventarioPendientesReglaTest {
         when(port.tienePendientesVencidos("1712345678")).thenReturn(true);
 
         assertThatThrownBy(() -> InventarioPendientesRegla.validarPuedeRegistrarNuevo(port, "1712345678"))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(NegocioApiException.class)
+                .hasFieldOrPropertyWithValue("codigo", InventarioCodigosError.INV_PENDIENTES_VENCIDOS)
                 .hasMessage(InventarioNegocioMessages.REGISTRO_BLOQUEADO_POR_PENDIENTES_VENCIDOS);
 
         verify(port).tienePendientesVencidos("1712345678");
