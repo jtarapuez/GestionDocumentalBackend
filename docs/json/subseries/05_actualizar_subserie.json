@@ -89,9 +89,9 @@
   },
   "curlExample": "curl -X PUT 'http://localhost:8080/api/v1/subseries/5' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"nombreSubserie\":\"PRUEBA - Subserie Actualizada\",\"descripcion\":\"Descripción actualizada\"}'",
   "notes": [
-    "El estado se actualiza automáticamente a 'Actualizado' cuando se modifica una subserie",
-    "Solo envía los campos que quieres actualizar (no es necesario enviar todos)",
-    "El ID en la URL debe existir en la base de datos",
-    "IDs de prueba disponibles: 5, 6, 7, 8"
+    "Solo envía los campos que quieres actualizar; el resto se mantiene.",
+    "El {id} en la URL es el de la subserie (campo data.id devuelto por POST crear o por GET /api/v1/subseries/{id}).",
+    "Sustituir en url el número: http://localhost:8080/api/v1/subseries/<TU_ID>",
+    "Si el id no existe, respuesta 404 con code SUBSERIE_NOT_FOUND"
   ]
 }

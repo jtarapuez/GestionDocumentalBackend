@@ -102,8 +102,9 @@
   "curlExample": "curl -X POST 'http://localhost:8080/api/v1/subseries' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"idSerie\":7,\"nombreSubserie\":\"PRUEBA - Subserie Trámites Iniciales Vejez\",\"descripcion\":\"Subserie documental de prueba\",\"formatoDoc\":\"FISICO\",\"seguridad\":\"CONFIDENCIAL\"}'",
   "notes": [
     "El campo 'estado' es opcional. Si no se envía, se asigna 'Creado' por defecto",
-    "El 'idSerie' debe existir en la base de datos (IDs disponibles: 7, 8, 9)",
-    "Los valores de 'formatoDoc' y 'seguridad' deben coincidir con los códigos del catálogo",
+    "El 'idSerie' debe existir en BD (FK). Obtener uno válido: GET /api/v1/series o GET /api/v1/catalogos/secciones + series por sección; sustituir idSerie en body.",
+    "Los valores de 'formatoDoc' y 'seguridad' deben coincidir con catálogo (p. ej. GET /api/v1/catalogos/formatos y /seguridad).",
+    "Tras POST 201, guardar data.id para usar en PUT /api/v1/subseries/{id} (ver 05_actualizar_subserie.json).",
     "El 'responsable' es la cédula del usuario responsable"
   ]
 }

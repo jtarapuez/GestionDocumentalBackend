@@ -100,10 +100,10 @@
 |---|----------------|-------|-------------|-------|
 | 3.1 | Auditar `InventarioDocumentalController.java`: métodos > ~40 líneas | [x] | | 2026-03-25 |
 | 3.2 | Mover lógica a caso de uso o componente de aplicación; dejar parseo HTTP + llamada al puerto | [x] | | `StandardResponses`, `HttpOperadorExtractor`, helpers `ejecutar` / `ejecutarOptional` |
-| 3.3 | Revisar otros `interfaces/api/*Controller.java` con el mismo criterio (priorizar los más usados) | [ ] | | Reutilizar `interfaces/api/support/StandardResponses` en Catálogo, Series, etc. |
-| 3.4 | Homogeneizar `ApiResponse` + `RequestContext` según `docs/VALIDACION_PAS_EST_043.md` | [ ] | | Base común en `StandardResponses`; extender al resto de controllers |
-| 3.5 | Actualizar anotaciones OpenAPI si cambian DTOs o códigos HTTP | [ ] | | Sin cambio de contrato en este paso |
-| 3.6 | Prueba manual o integración de endpoints tocados (Postman/Swagger) | [ ] | | Validar `/v1/inventarios/*` |
+| 3.3 | Revisar otros `interfaces/api/*Controller.java` con el mismo criterio (priorizar los más usados) | [x] | | `Catalogo`, `Serie`, `Subserie`, `Consulta`, `Reporte` + `StandardResponses` |
+| 3.4 | Homogeneizar `ApiResponse` + `RequestContext` según `docs/VALIDACION_PAS_EST_043.md` | [x] | | Misma meta path/requestId vía `StandardResponses` en todos los controllers anteriores |
+| 3.5 | Actualizar anotaciones OpenAPI si cambian DTOs o códigos HTTP | [ ] | | Sin cambio de contrato; revisar Swagger si se desea más detalle |
+| 3.6 | Prueba manual o integración de endpoints tocados (Postman/Swagger) | [ ] | | Inventarios + catálogos + series + consultas + reportes (501) |
 
 **Criterio de salida fase:** controladores como adaptadores delgados; respuestas alineadas al estándar.
 
@@ -174,6 +174,7 @@ Semana __: Fase __
 | 1.1 | 2026-01-26 | Principio validación incremental en todas las fases; Fase 0 con micro-pasos y `mvn test` tras commits/DoD. |
 | 1.2 | 2026-03-23 | Fase 2: paquete `application/inventario` (mapper, reglas pendientes/operador, posición pasivo) + tests unitarios. |
 | 1.3 | 2026-03-25 | Fase 3 (parcial): `InventarioDocumentalController` delgado + `interfaces/api/support/*` (`StandardResponses`, extractores HTTP). |
+| 1.4 | 2026-03-26 | Fase 3: resto de controllers con `StandardResponses`; `notImplemented` (501); `ADMIN_CEDULA_TEMPORAL` en `RestSecurityPlaceholder`. |
 
 ---
 

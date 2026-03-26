@@ -4,7 +4,7 @@ import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUse
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ConsultaRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
-import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
+import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -18,8 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 
 /**
- * Controlador REST para consultas avanzadas de inventarios
- * Expone endpoints para consultas con múltiples filtros
+ * Adaptador REST: consulta avanzada de inventarios.
  */
 @Path("/v1/consultas")
 @Produces(MediaType.APPLICATION_JSON)
@@ -31,29 +30,18 @@ public class ConsultaController {
     InventarioDocumentalUseCasePort inventarioUseCase;
 
     @Inject
-    RequestContext requestContext;
+    StandardResponses responses;
 
-    /**
-     * Realiza una consulta avanzada de inventarios con múltiples filtros
-     * 
-     * @param request Filtros de la consulta
-     * @return Respuesta con lista de inventarios que cumplen los filtros
-     */
     @POST
     @Operation(
-        summary = "Consulta avanzada de inventarios",
-        description = "Realiza una consulta avanzada de inventarios con múltiples filtros opcionales. " +
-                      "Soporta filtros por: sección, serie, subserie, expediente, contenedor, tipo archivo, " +
-                      "operador, cédula/RUC, nombres, descripción, estado, y período de fechas"
-    )
+            summary = "Consulta avanzada de inventarios",
+            description = "Consulta con múltiples filtros opcionales (sección, serie, expediente, fechas, etc.)")
     @APIResponse(
-        responseCode = "200",
-        description = "Consulta realizada exitosamente",
-        content = @Content(
-            mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = ApiResponse.class)
-        )
-    )
+            responseCode = "200",
+            description = "Consulta realizada exitosamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = ApiResponse.class)))
     public Response consultarInventarios(ConsultaRequest request) {
         try {
             if (request == null) {
@@ -61,41 +49,28 @@ public class ConsultaController {
             }
 
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
-                request.getIdSeccion(),
-                request.getIdSerie(),
-                request.getIdSubserie(),
-                request.getNumeroExpediente(),
-                request.getEstado(),
-                request.getNumeroCedula(),
-                request.getNumeroRuc(),
-                request.getOperador(),
-                request.getNombresApellidos(),
-                request.getRazonSocial(),
-                request.getDescripcionSerie(),
-                request.getTipoContenedor(),
-                request.getNumeroContenedor(),
-                request.getTipoArchivo(),
-                request.getFechaDesde(),
-                request.getFechaHasta(),
-                null // supervisor - no se filtra por supervisor en consultas avanzadas
-            );
+                    request.getIdSeccion(),
+                    request.getIdSerie(),
+                    request.getIdSubserie(),
+                    request.getNumeroExpediente(),
+                    request.getEstado(),
+                    request.getNumeroCedula(),
+                    request.getNumeroRuc(),
+                    request.getOperador(),
+                    request.getNombresApellidos(),
+                    request.getRazonSocial(),
+                    request.getDescripcionSerie(),
+                    request.getTipoContenedor(),
+                    request.getNumeroContenedor(),
+                    request.getTipoArchivo(),
+                    request.getFechaDesde(),
+                    request.getFechaHasta(),
+                    null);
 
-            ApiResponse<List<InventarioDocumentalResponse>> response = ApiResponse.success(inventarios,
-                    requestContext.getPath(), requestContext.getRequestId());
-            return Response.ok(response).build();
+            return responses.ok(inventarios);
         } catch (Exception e) {
-            ApiResponse<Object> errorResponse = ApiResponse.error(
-                "Error al realizar consulta: " + e.getMessage(),
-                "CONSULTA_ERROR",
-                requestContext.getPath(), requestContext.getRequestId()
-            );
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(errorResponse)
-                    .build();
+            return responses.internalServerError(
+                    "Error al realizar consulta: " + e.getMessage(), "CONSULTA_ERROR");
         }
     }
 }
-
-
-
-

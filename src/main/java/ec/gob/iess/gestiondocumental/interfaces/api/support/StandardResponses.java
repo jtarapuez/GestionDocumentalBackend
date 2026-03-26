@@ -36,6 +36,13 @@ public class StandardResponses {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(wrapError(message, code)).build();
     }
 
+    /**
+     * HTTP 501 (funcionalidad no implementada; p. ej. exportación PDF/Excel pendiente).
+     */
+    public Response notImplemented(String message, String code) {
+        return Response.status(Response.Status.NOT_IMPLEMENTED).entity(wrapError(message, code)).build();
+    }
+
     private <T> ApiResponse<T> wrapSuccess(T data) {
         return ApiResponse.success(data, requestContext.getPath(), requestContext.getRequestId());
     }
