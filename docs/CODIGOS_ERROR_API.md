@@ -5,6 +5,7 @@ Respuesta de error típica: `error.code`, `error.message`, y `meta` (`path`, `re
 | Código HTTP | `error.code` | Significado breve | Acción sugerida (cliente) |
 |-------------|----------------|-------------------|---------------------------|
 | 400 | `INV_PENDIENTES_VENCIDOS` | El operador tiene inventarios pendientes vencidos | Resolver pendientes antes de registrar otro inventario |
+| 400 | `INV_OPERADOR_REQUERIDO` | Falta header `X-Operador-Id` (cédula Seguridades) | Login + `GET /autenticacion/me` con `cedula`; MFE envía header |
 | 400 | `INV_OPERADOR_NO_AUTORIZADO` | Solo el operador creador puede actualizar | Enviar header `X-Operador-Id` del creador |
 | 400 | `INV_ACTUALIZACION_*` | Estado/plazo no permite actualizar | Revisar estado y reglas de plazo |
 | 400 | `INV_APROBACION_ESTADO_INVALIDO` / `INV_RECHAZO_*` | Aprobar/rechazar en estado incorrecto u observaciones faltantes | Ajustar flujo según estado |
@@ -21,3 +22,5 @@ Respuesta de error típica: `error.code`, `error.message`, y `meta` (`path`, `re
 **Mapeo técnico:** `NegocioApiException` y otras excepciones de aplicación se traducen en `interfaces/api/exception/GlobalExceptionMapper.java`. Errores construidos con `StandardResponses` ya incluyen `meta.path` y `meta.requestId`.
 
 **Cambios de contrato:** códigos `INV_*` sustituyen a mensajes genéricos antiguos en inventario; coordinar despliegue con frontend si consumían solo texto libre.
+
+**Integración (monorepo):** nota para el equipo front y changelog — `CHANGELOG_API_INTEGRACION.md`; en el árbol del proyecto IESS también `Documentacion/Integracion/NOTA_CONTRATO_ERRORES_API.md`. En el template Next: `parseGestionDocumentalApiError` en `gestionDocumentalApi.ts`.

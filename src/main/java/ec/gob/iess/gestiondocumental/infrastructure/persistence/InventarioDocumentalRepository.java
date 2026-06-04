@@ -13,6 +13,9 @@ import java.util.Optional;
 
 /**
  * Repositorio Panache para {@link InventarioDocumentalEntity}. Usado por el adaptador (PAS-GUI-047).
+ * <p>
+ * La búsqueda dinámica {@link #buscarConFiltros} está documentada en
+ * {@code docs/CONSULTA_FILTROS_INVENTARIO.md} (Fase 5).
  */
 @ApplicationScoped
 public class InventarioDocumentalRepository implements PanacheRepository<InventarioDocumentalEntity> {
@@ -57,116 +60,142 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             List<Long> idsSubseriesCuandoFiltroPorSerie) {
         StringBuilder query = new StringBuilder();
         List<Object> params = new ArrayList<>();
-        int paramIndex = 1;
+        int[] paramIndex = {1};
 
-        if (idSeccion != null) {
-            query.append(query.length() == 0 ? "" : " AND ").append("idSeccion = ?").append(paramIndex);
-            params.add(idSeccion);
-            paramIndex++;
-        }
-        if (idSerie != null) {
-            boolean usarOrSubseries = idsSubseriesCuandoFiltroPorSerie != null && !idsSubseriesCuandoFiltroPorSerie.isEmpty();
-            if (!usarOrSubseries) {
-                query.append(query.length() == 0 ? "" : " AND ").append("idSerie = ?").append(paramIndex);
-                params.add(idSerie);
-                paramIndex++;
-            } else {
-                query.append(query.length() == 0 ? "" : " AND ").append("(idSerie = ?").append(paramIndex);
-                params.add(idSerie);
-                paramIndex++;
-                query.append(" OR idSubserie IN (");
-                for (int i = 0; i < idsSubseriesCuandoFiltroPorSerie.size(); i++) {
-                    if (i > 0) query.append(", ");
-                    query.append("?").append(paramIndex);
-                    params.add(idsSubseriesCuandoFiltroPorSerie.get(i));
-                    paramIndex++;
-                }
-                query.append("))");
-            }
-        }
-        if (idSubserie != null) {
-            query.append(query.length() == 0 ? "" : " AND ").append("idSubserie = ?").append(paramIndex);
-            params.add(idSubserie);
-            paramIndex++;
-        }
-        if (numeroExpediente != null && !numeroExpediente.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ")
-                    .append("UPPER(numeroExpediente) LIKE UPPER(?").append(paramIndex).append(")");
-            params.add("%" + numeroExpediente + "%");
-            paramIndex++;
-        }
-        if (estado != null && !estado.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("estadoInventario = ?").append(paramIndex);
-            params.add(estado);
-            paramIndex++;
-        }
-        if (numeroCedula != null && !numeroCedula.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("numeroCedula = ?").append(paramIndex);
-            params.add(numeroCedula);
-            paramIndex++;
-        }
-        if (numeroRuc != null && !numeroRuc.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("numeroRuc = ?").append(paramIndex);
-            params.add(numeroRuc);
-            paramIndex++;
-        }
-        if (operador != null && !operador.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("operador = ?").append(paramIndex);
-            params.add(operador);
-            paramIndex++;
-        }
-        if (nombresApellidos != null && !nombresApellidos.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ")
-                    .append("UPPER(nombresApellidos) LIKE UPPER(?").append(paramIndex).append(")");
-            params.add("%" + nombresApellidos + "%");
-            paramIndex++;
-        }
-        if (razonSocial != null && !razonSocial.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ")
-                    .append("UPPER(razonSocial) LIKE UPPER(?").append(paramIndex).append(")");
-            params.add("%" + razonSocial + "%");
-            paramIndex++;
-        }
-        if (descripcionSerie != null && !descripcionSerie.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ")
-                    .append("UPPER(descripcionSerie) LIKE UPPER(?").append(paramIndex).append(")");
-            params.add("%" + descripcionSerie + "%");
-            paramIndex++;
-        }
-        if (tipoContenedor != null && !tipoContenedor.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("tipoContenedor = ?").append(paramIndex);
-            params.add(tipoContenedor);
-            paramIndex++;
-        }
-        if (numeroContenedor != null) {
-            query.append(query.length() == 0 ? "" : " AND ").append("numeroContenedor = ?").append(paramIndex);
-            params.add(numeroContenedor);
-            paramIndex++;
-        }
-        if (tipoArchivo != null && !tipoArchivo.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("tipoArchivo = ?").append(paramIndex);
-            params.add(tipoArchivo);
-            paramIndex++;
-        }
-        if (fechaDesde != null) {
-            query.append(query.length() == 0 ? "" : " AND ").append("fechaDesde >= ?").append(paramIndex);
-            params.add(fechaDesde);
-            paramIndex++;
-        }
-        if (fechaHasta != null) {
-            query.append(query.length() == 0 ? "" : " AND ").append("fechaHasta <= ?").append(paramIndex);
-            params.add(fechaHasta);
-            paramIndex++;
-        }
-        if (supervisor != null && !supervisor.isEmpty()) {
-            query.append(query.length() == 0 ? "" : " AND ").append("supervisor = ?").append(paramIndex);
-            params.add(supervisor.trim());
-            paramIndex++;
-        }
+        appendIgualLong(query, params, paramIndex, "idSeccion", idSeccion);
+        appendFiltroSerieYSubseries(query, params, paramIndex, idSerie, idsSubseriesCuandoFiltroPorSerie);
+        appendIgualLong(query, params, paramIndex, "idSubserie", idSubserie);
+        appendLikeUpper(query, params, paramIndex, "numeroExpediente", numeroExpediente);
+        appendIgualString(query, params, paramIndex, "estadoInventario", estado);
+        appendIgualString(query, params, paramIndex, "numeroCedula", numeroCedula);
+        appendIgualString(query, params, paramIndex, "numeroRuc", numeroRuc);
+        appendIgualString(query, params, paramIndex, "operador", operador);
+        appendLikeUpper(query, params, paramIndex, "nombresApellidos", nombresApellidos);
+        appendLikeUpper(query, params, paramIndex, "razonSocial", razonSocial);
+        appendLikeUpper(query, params, paramIndex, "descripcionSerie", descripcionSerie);
+        appendIgualString(query, params, paramIndex, "tipoContenedor", tipoContenedor);
+        appendIgualInteger(query, params, paramIndex, "numeroContenedor", numeroContenedor);
+        appendIgualString(query, params, paramIndex, "tipoArchivo", tipoArchivo);
+        appendFechaDesde(query, params, paramIndex, fechaDesde);
+        appendFechaHasta(query, params, paramIndex, fechaHasta);
+        appendSupervisor(query, params, paramIndex, supervisor);
 
         if (query.length() > 0) {
             return find(query.toString(), params.toArray()).list();
         }
         return listAll();
+    }
+
+    private static void appendAndSiNecesario(StringBuilder q) {
+        if (q.length() > 0) {
+            q.append(" AND ");
+        }
+    }
+
+    private static void appendIgualLong(StringBuilder q, List<Object> params, int[] idx, String campo, Long valor) {
+        if (valor == null) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        q.append(campo).append(" = ?").append(idx[0]);
+        params.add(valor);
+        idx[0]++;
+    }
+
+    private static void appendIgualInteger(StringBuilder q, List<Object> params, int[] idx, String campo, Integer valor) {
+        if (valor == null) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        q.append(campo).append(" = ?").append(idx[0]);
+        params.add(valor);
+        idx[0]++;
+    }
+
+    private static void appendIgualString(StringBuilder q, List<Object> params, int[] idx, String campo, String valor) {
+        if (valor == null || valor.isEmpty()) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        q.append(campo).append(" = ?").append(idx[0]);
+        params.add(valor);
+        idx[0]++;
+    }
+
+    private static void appendLikeUpper(StringBuilder q, List<Object> params, int[] idx, String campo, String valor) {
+        if (valor == null || valor.isEmpty()) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        q.append("UPPER(").append(campo).append(") LIKE UPPER(?").append(idx[0]).append(")");
+        params.add("%" + valor + "%");
+        idx[0]++;
+    }
+
+    private static void appendFechaDesde(StringBuilder q, List<Object> params, int[] idx, LocalDate fechaDesde) {
+        if (fechaDesde == null) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        q.append("fechaDesde >= ?").append(idx[0]);
+        params.add(fechaDesde);
+        idx[0]++;
+    }
+
+    private static void appendFechaHasta(StringBuilder q, List<Object> params, int[] idx, LocalDate fechaHasta) {
+        if (fechaHasta == null) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        q.append("fechaHasta <= ?").append(idx[0]);
+        params.add(fechaHasta);
+        idx[0]++;
+    }
+
+    private static void appendSupervisor(StringBuilder q, List<Object> params, int[] idx, String supervisor) {
+        if (supervisor == null || supervisor.isEmpty()) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        q.append("supervisor = ?").append(idx[0]);
+        params.add(supervisor.trim());
+        idx[0]++;
+    }
+
+    /**
+     * Replica la lógica original: con lista de subseries no vacía usa (idSerie = ? OR idSubserie IN (...)).
+     */
+    private static void appendFiltroSerieYSubseries(
+            StringBuilder query,
+            List<Object> params,
+            int[] paramIndex,
+            Long idSerie,
+            List<Long> idsSubseriesCuandoFiltroPorSerie) {
+        if (idSerie == null) {
+            return;
+        }
+        boolean usarOrSubseries = idsSubseriesCuandoFiltroPorSerie != null
+                && !idsSubseriesCuandoFiltroPorSerie.isEmpty();
+        if (!usarOrSubseries) {
+            appendAndSiNecesario(query);
+            query.append("idSerie = ?").append(paramIndex[0]);
+            params.add(idSerie);
+            paramIndex[0]++;
+        } else {
+            appendAndSiNecesario(query);
+            query.append("(idSerie = ?").append(paramIndex[0]);
+            params.add(idSerie);
+            paramIndex[0]++;
+            query.append(" OR idSubserie IN (");
+            for (int i = 0; i < idsSubseriesCuandoFiltroPorSerie.size(); i++) {
+                if (i > 0) {
+                    query.append(", ");
+                }
+                query.append("?").append(paramIndex[0]);
+                params.add(idsSubseriesCuandoFiltroPorSerie.get(i));
+                paramIndex[0]++;
+            }
+            query.append("))");
+        }
     }
 }

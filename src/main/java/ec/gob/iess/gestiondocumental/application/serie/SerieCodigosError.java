@@ -7,6 +7,7 @@ public final class SerieCodigosError {
 
     public static final String SER_ID_SECCION_REQUERIDO = "SER_ID_SECCION_REQUERIDO";
     public static final String SER_ID_SECCION_NO_EXISTE = "SER_ID_SECCION_NO_EXISTE";
+    public static final String SER_USUARIO_CREACION_REQUERIDO = "SER_USUARIO_CREACION_REQUERIDO";
 
     private SerieCodigosError() {
     }

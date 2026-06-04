@@ -7,7 +7,7 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SerieDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SerieDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalResponse;
-import ec.gob.iess.gestiondocumental.interfaces.api.support.RestSecurityPlaceholder;
+import ec.gob.iess.gestiondocumental.interfaces.api.support.HttpUsuarioCreacionExtractor;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -23,7 +23,7 @@ import org.jboss.logging.Logger;
 import java.util.List;
 
 /**
- * Adaptador REST: series y subseries por serie. {@link StandardResponses} + placeholder de seguridad.
+ * Adaptador REST: series y subseries por serie. {@link StandardResponses}; auditoría vía header de sesión.
  */
 @Path("/v1/series")
 @Produces(MediaType.APPLICATION_JSON)
@@ -58,11 +58,16 @@ public class SerieDocumentalController {
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = ApiResponse.class)))
-    public Response crearSerie(SerieDocumentalRequest request) {
+    public Response crearSerie(
+            SerieDocumentalRequest request,
+            @HeaderParam(HttpUsuarioCreacionExtractor.HEADER_USUARIO_CREACION)
+                    String usuarioCreacionHeader) {
         try {
             String ipEquipo = "127.0.0.1";
+            String usuarioCreacion =
+                    HttpUsuarioCreacionExtractor.fromHeaderRequired(usuarioCreacionHeader);
             SerieDocumentalResponse serie = serieUseCase.crearSerie(
-                    request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL, ipEquipo);
+                    request, usuarioCreacion, ipEquipo);
             return responses.created(serie);
         } catch (NegocioApiException e) {
             throw e;
@@ -100,9 +105,15 @@ public class SerieDocumentalController {
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = ApiResponse.class)))
-    public Response actualizarSerie(@PathParam("id") Long id, SerieDocumentalRequest request) {
+    public Response actualizarSerie(
+            @PathParam("id") Long id,
+            SerieDocumentalRequest request,
+            @HeaderParam(HttpUsuarioCreacionExtractor.HEADER_USUARIO_CREACION)
+                    String usuarioCreacionHeader) {
         try {
-            return serieUseCase.actualizarSerie(id, request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL)
+            String usuarioCreacion =
+                    HttpUsuarioCreacionExtractor.fromHeaderRequired(usuarioCreacionHeader);
+            return serieUseCase.actualizarSerie(id, request, usuarioCreacion)
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Serie no encontrada con ID: " + id, "SERIE_NOT_FOUND"));
         } catch (NegocioApiException e) {

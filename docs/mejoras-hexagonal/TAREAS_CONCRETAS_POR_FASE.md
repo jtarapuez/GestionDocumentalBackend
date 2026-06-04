@@ -119,7 +119,7 @@
 | 4.2 | Definir catálogo de códigos (ej. `INV_OPERADOR_NO_AUTORIZADO`, `INV_PENDIENTES_VENCIDOS`) en doc o enum | [x] | | `InventarioCodigosError`, `SerieCodigosError`, `SubserieCodigosError` + `docs/CODIGOS_ERROR_API.md` |
 | 4.3 | Implementar o extender `GlobalExceptionMapper` (o equivalente): código + mensaje + HTTP + `ApiResponse` | [x] | | `NegocioApiException` en mapper; controllers re-lanzan |
 | 4.4 | Añadir documento corto para frontend: tabla código → significado → acción (en `gestion-documental-backend/docs/` o `Documentacion/`) | [x] | | `docs/CODIGOS_ERROR_API.md` |
-| 4.5 | Coordinar con frontend si cambia forma de error (changelog o versión API) | [ ] | | |
+| 4.5 | Coordinar con frontend si cambia forma de error (changelog o versión API) | [x] | | `CHANGELOG_API_INTEGRACION.md`, `Documentacion/Integracion/NOTA_CONTRATO_ERRORES_API.md`, `template-Kaycloack/docs/integracion/CONTRATO_ERRORES_BACKEND.md`, `parseGestionDocumentalApiError` |
 
 **Criterio de salida fase:** errores predecibles y documentados; menos dependencia del texto libre.
 
@@ -131,12 +131,12 @@
 
 | # | Tarea concreta | Hecho | Responsable | Fecha |
 |---|----------------|-------|-------------|-------|
-| 5.1 | Listar filtros de `InventarioDocumentalRepository.java` (u homólogo de consultas dinámicas) | [ ] | | |
-| 5.2 | Documentar cada filtro: parámetro API → columna → operador (`=`, `LIKE`, rango fechas) en `gestion-documental-backend/docs/` | [ ] | | |
-| 5.3 | Documentar semántica de `operador` en BD (id vs cédula) y alinear con frontend | [ ] | | |
-| 5.4 | Decidir estrategia de tests: Testcontainers / H2 / mocks (registrar decisión en el mismo doc) | [ ] | | |
-| 5.5 | Refactor incremental: extraer predicados a métodos privados o builder **sin** cambiar comportamiento (PR pequeño) | [ ] | | |
-| 5.6 | Repetir 5.5 hasta que el repositorio sea legible; `mvn test` tras cada PR | [ ] | | |
+| 5.1 | Listar filtros de `InventarioDocumentalRepository.java` (u homólogo de consultas dinámicas) | [x] | | 2026-03-27 |
+| 5.2 | Documentar cada filtro: parámetro API → columna → operador (`=`, `LIKE`, rango fechas) en `gestion-documental-backend/docs/` | [x] | | `docs/CONSULTA_FILTROS_INVENTARIO.md` |
+| 5.3 | Documentar semántica de `operador` en BD (id vs cédula) y alinear con frontend | [x] | | Misma nota en `CONSULTA_FILTROS_INVENTARIO.md` |
+| 5.4 | Decidir estrategia de tests: Testcontainers / H2 / mocks (registrar decisión en el mismo doc) | [x] | | Tabla en `CONSULTA_FILTROS_INVENTARIO.md` |
+| 5.5 | Refactor incremental: extraer predicados a métodos privados o builder **sin** cambiar comportamiento (PR pequeño) | [x] | | `InventarioDocumentalRepository`: helpers `append*` |
+| 5.6 | Repetir 5.5 hasta que el repositorio sea legible; `mvn test` tras cada PR | [x] | | Primera iteración OK; nuevos filtros: mismo patrón |
 
 **Criterio de salida fase:** documentación de filtros vigente; código más modular sin regresiones.
 
@@ -176,6 +176,8 @@ Semana __: Fase __
 | 1.3 | 2026-03-25 | Fase 3 (parcial): `InventarioDocumentalController` delgado + `interfaces/api/support/*` (`StandardResponses`, extractores HTTP). |
 | 1.4 | 2026-03-26 | Fase 3: resto de controllers con `StandardResponses`; `notImplemented` (501); `ADMIN_CEDULA_TEMPORAL` en `RestSecurityPlaceholder`. |
 | 1.5 | 2026-03-26 | Fase 4 (parcial): `NegocioApiException` + códigos INV/SER/SUB; validación FK serie-subserie; `CODIGOS_ERROR_API.md`; re-lanzar en catálogo/consulta/series. |
+| 1.6 | 2026-03-26 | Fase 4.5: nota integración monorepo, changelog API, doc template `CONTRATO_ERRORES_BACKEND.md`, parser errores RTK en `gestionDocumentalApi.ts`. |
+| 1.7 | 2026-03-27 | Fase 5: `docs/CONSULTA_FILTROS_INVENTARIO.md`; refactor `InventarioDocumentalRepository.buscarConFiltros` (helpers `append*`). |
 
 ---
 

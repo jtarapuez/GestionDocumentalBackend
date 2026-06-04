@@ -8,7 +8,6 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequ
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.RechazoRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.HttpOperadorExtractor;
-import ec.gob.iess.gestiondocumental.interfaces.api.support.RestSecurityPlaceholder;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -53,11 +52,12 @@ public class InventarioDocumentalController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     @APIResponse(responseCode = "400", description = "Datos inválidos o pendientes vencidos",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    public Response registrarInventario(InventarioDocumentalRequest request,
-                                        @HeaderParam("X-Operador-Id") String operadorIdHeader) {
+    public Response registrarInventario(
+            InventarioDocumentalRequest request,
+            @HeaderParam(HttpOperadorExtractor.HEADER_OPERADOR_ID) String operadorIdHeader) {
         return ejecutar(
                 () -> {
-                    String operadorId = HttpOperadorExtractor.fromHeaderOrFallback(operadorIdHeader);
+                    String operadorId = HttpOperadorExtractor.fromHeaderRequired(operadorIdHeader);
                     LOG.debugf("registrarInventario: longitud operadorId=%d", operadorId.length());
                     return inventarioUseCase.registrarInventario(request, operadorId, "127.0.0.1");
                 },
@@ -79,12 +79,13 @@ public class InventarioDocumentalController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     @APIResponse(responseCode = "404", description = "Inventario no encontrado",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    public Response actualizarInventario(@PathParam("id") Long id,
-                                         InventarioDocumentalRequest request,
-                                         @HeaderParam("X-Operador-Id") String operadorIdHeader) {
+    public Response actualizarInventario(
+            @PathParam("id") Long id,
+            InventarioDocumentalRequest request,
+            @HeaderParam(HttpOperadorExtractor.HEADER_OPERADOR_ID) String operadorIdHeader) {
         return ejecutarOptional(
                 () -> {
-                    String operadorId = HttpOperadorExtractor.fromHeaderOrFallback(operadorIdHeader);
+                    String operadorId = HttpOperadorExtractor.fromHeaderRequired(operadorIdHeader);
                     LOG.debugf("actualizarInventario: longitud operadorId=%d", operadorId.length());
                     return inventarioUseCase.actualizarInventario(id, request, operadorId);
                 },
@@ -169,9 +170,10 @@ public class InventarioDocumentalController {
             description = "Retorna inventarios pendientes del operador. Requiere rol OPERADOR_SDNGD")
     @APIResponse(responseCode = "200", description = "Lista obtenida",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    public Response listarPendientes(@HeaderParam("X-Operador-Id") String operadorIdHeader) {
+    public Response listarPendientes(
+            @HeaderParam(HttpOperadorExtractor.HEADER_OPERADOR_ID) String operadorIdHeader) {
         try {
-            String operadorId = HttpOperadorExtractor.fromHeaderOrFallback(operadorIdHeader);
+            String operadorId = HttpOperadorExtractor.fromHeaderRequired(operadorIdHeader);
             LOG.debugf("listarPendientes: longitud operadorId=%d", operadorId.length());
             return responses.ok(inventarioUseCase.listarPendientesPorOperador(operadorId));
         } catch (NegocioApiException e) {
@@ -192,10 +194,14 @@ public class InventarioDocumentalController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     @APIResponse(responseCode = "404", description = "Inventario no encontrado",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    public Response aprobarInventario(@PathParam("id") Long id, AprobacionRequest request) {
+    public Response aprobarInventario(
+            @PathParam("id") Long id,
+            AprobacionRequest request,
+            @HeaderParam(HttpOperadorExtractor.HEADER_OPERADOR_ID) String supervisorIdHeader) {
         return ejecutarOptional(
                 () -> inventarioUseCase.aprobarInventario(
-                        id, RestSecurityPlaceholder.SUPERVISOR_CEDULA_TEMPORAL,
+                        id,
+                        HttpOperadorExtractor.fromHeaderRequired(supervisorIdHeader),
                         request != null ? request.getObservaciones() : null),
                 id,
                 "Error al aprobar inventario: ",
@@ -212,11 +218,14 @@ public class InventarioDocumentalController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
     @APIResponse(responseCode = "404", description = "Inventario no encontrado",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    public Response rechazarInventario(@PathParam("id") Long id, RechazoRequest request) {
+    public Response rechazarInventario(
+            @PathParam("id") Long id,
+            RechazoRequest request,
+            @HeaderParam(HttpOperadorExtractor.HEADER_OPERADOR_ID) String supervisorIdHeader) {
         return ejecutarOptional(
                 () -> inventarioUseCase.rechazarInventario(
                         id,
-                        RestSecurityPlaceholder.SUPERVISOR_CEDULA_TEMPORAL,
+                        HttpOperadorExtractor.fromHeaderRequired(supervisorIdHeader),
                         request != null ? request.getObservaciones() : null),
                 id,
                 "Error al rechazar inventario: ",

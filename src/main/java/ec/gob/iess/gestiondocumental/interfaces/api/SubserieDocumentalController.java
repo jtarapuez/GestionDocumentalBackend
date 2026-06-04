@@ -5,7 +5,7 @@ import ec.gob.iess.gestiondocumental.application.port.in.SubserieDocumentalUseCa
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalResponse;
-import ec.gob.iess.gestiondocumental.interfaces.api.support.RestSecurityPlaceholder;
+import ec.gob.iess.gestiondocumental.interfaces.api.support.HttpUsuarioCreacionExtractor;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -20,7 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.List;
 
 /**
- * Adaptador REST: subseries. {@link StandardResponses} + placeholder de seguridad.
+ * Adaptador REST: subseries. {@link StandardResponses}; auditoría vía header de sesión.
  */
 @Path("/v1/subseries")
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,11 +50,16 @@ public class SubserieDocumentalController {
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = ApiResponse.class)))
-    public Response crearSubserie(SubserieDocumentalRequest request) {
+    public Response crearSubserie(
+            SubserieDocumentalRequest request,
+            @HeaderParam(HttpUsuarioCreacionExtractor.HEADER_USUARIO_CREACION)
+                    String usuarioCreacionHeader) {
         try {
             String ipEquipo = "127.0.0.1";
+            String usuarioCreacion =
+                    HttpUsuarioCreacionExtractor.fromHeaderRequired(usuarioCreacionHeader);
             SubserieDocumentalResponse subserie = subserieUseCase.crearSubserie(
-                    request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL, ipEquipo);
+                    request, usuarioCreacion, ipEquipo);
             return responses.created(subserie);
         } catch (NegocioApiException e) {
             throw e;
@@ -81,9 +86,15 @@ public class SubserieDocumentalController {
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = ApiResponse.class)))
-    public Response actualizarSubserie(@PathParam("id") Long id, SubserieDocumentalRequest request) {
+    public Response actualizarSubserie(
+            @PathParam("id") Long id,
+            SubserieDocumentalRequest request,
+            @HeaderParam(HttpUsuarioCreacionExtractor.HEADER_USUARIO_CREACION)
+                    String usuarioCreacionHeader) {
         try {
-            return subserieUseCase.actualizarSubserie(id, request, RestSecurityPlaceholder.ADMIN_CEDULA_TEMPORAL)
+            String usuarioCreacion =
+                    HttpUsuarioCreacionExtractor.fromHeaderRequired(usuarioCreacionHeader);
+            return subserieUseCase.actualizarSubserie(id, request, usuarioCreacion)
                     .map(responses::ok)
                     .orElseGet(() -> responses.notFound("Subserie no encontrada con ID: " + id, "SUBSERIE_NOT_FOUND"));
         } catch (NegocioApiException e) {
