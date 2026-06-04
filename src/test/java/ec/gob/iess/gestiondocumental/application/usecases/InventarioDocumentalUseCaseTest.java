@@ -9,6 +9,9 @@ import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepos
 import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SubserieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
+import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
+import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
+import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import io.quarkus.test.InjectMock;
@@ -29,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +70,9 @@ class InventarioDocumentalUseCaseTest {
     private static InventarioDocumental inventarioDominio(Long id, String estado, String operador) {
         InventarioDocumental inv = new InventarioDocumental();
         inv.setId(id);
+        inv.setIdSeccion(10L);
+        inv.setIdSerie(20L);
+        inv.setIdSubserie(30L);
         inv.setEstadoInventario(estado);
         inv.setOperador(operador);
         inv.setFechaCambioEstado(LocalDateTime.now());
@@ -150,13 +157,39 @@ class InventarioDocumentalUseCaseTest {
         void respuestaCuandoExiste() {
             InventarioDocumental inv = inventarioDominio(1L, "Registrado", "1712345678");
             when(inventarioRepositoryPort.findByIdOptional(1L)).thenReturn(Optional.of(inv));
+            when(seccionDocumentalRepositoryPort.findById(10L)).thenReturn(Optional.of(seccionConNombre()));
+            when(serieDocumentalRepositoryPort.findByIdOptional(20L)).thenReturn(Optional.of(serieConNombre()));
+            when(subserieDocumentalRepositoryPort.findByIdOptional(30L)).thenReturn(Optional.of(subserieConNombre()));
 
             Optional<InventarioDocumentalResponse> result = useCase.obtenerPorId(1L);
 
             assertThat(result).isPresent();
             assertThat(result.get().getId()).isEqualTo(1L);
             assertThat(result.get().getEstadoInventario()).isEqualTo("Registrado");
+            assertThat(result.get().getNombreSeccion()).isEqualTo("Sección Test");
+            verify(seccionDocumentalRepositoryPort).findById(10L);
         }
+    }
+
+    private static SeccionDocumental seccionConNombre() {
+        SeccionDocumental s = new SeccionDocumental();
+        s.setId(10L);
+        s.setNombre("Sección Test");
+        return s;
+    }
+
+    private static SerieDocumental serieConNombre() {
+        SerieDocumental s = new SerieDocumental();
+        s.setId(20L);
+        s.setNombreSerie("Serie Test");
+        return s;
+    }
+
+    private static SubserieDocumental subserieConNombre() {
+        SubserieDocumental s = new SubserieDocumental();
+        s.setId(30L);
+        s.setNombreSubserie("Subserie Test");
+        return s;
     }
 
     @Nested
@@ -173,6 +206,9 @@ class InventarioDocumentalUseCaseTest {
 
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getId()).isEqualTo(1L);
+            verify(seccionDocumentalRepositoryPort, never()).findById(any());
+            verify(serieDocumentalRepositoryPort, never()).findByIdOptional(any());
+            verify(subserieDocumentalRepositoryPort, never()).findByIdOptional(any());
         }
     }
 
@@ -190,6 +226,33 @@ class InventarioDocumentalUseCaseTest {
 
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getOperador()).isEqualTo("1712345678");
+            verify(seccionDocumentalRepositoryPort, never()).findById(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("listarConFiltros")
+    class ListarConFiltros {
+
+        @Test
+        @DisplayName("no consulta catálogos por fila (sin N+1)")
+        void listadoSinEnriquecimientoPorFila() {
+            InventarioDocumental inv1 = inventarioDominio(1L, "Registrado", "1712345678");
+            InventarioDocumental inv2 = inventarioDominio(2L, "Aprobado", "1798765432");
+            when(inventarioRepositoryPort.buscarConFiltros(
+                    any(), any(), any(), any(), any(), any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                    .thenReturn(List.of(inv1, inv2));
+
+            List<InventarioDocumentalResponse> result = useCase.listarConFiltros(
+                    null, null, null, null, null, null, null, null,
+                    null, null, null, null, null, null, null, null, null);
+
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).getNombreSeccion()).isNull();
+            verify(seccionDocumentalRepositoryPort, never()).findById(any());
+            verify(serieDocumentalRepositoryPort, never()).findByIdOptional(any());
+            verify(subserieDocumentalRepositoryPort, never()).findByIdOptional(any());
         }
     }
 

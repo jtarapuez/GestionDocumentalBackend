@@ -162,7 +162,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
      */
     public List<InventarioDocumentalResponse> listarPendientesAprobacion() {
         return inventarioRepositoryPort.findPendientesAprobacion().stream()
-                .map(this::toResponse)
+                .map(this::toResponseBasico)
                 .collect(Collectors.toList());
     }
 
@@ -173,7 +173,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
      */
     public List<InventarioDocumentalResponse> listarPendientesPorOperador(String operador) {
         return inventarioRepositoryPort.findPendientesByOperador(operador).stream()
-                .map(this::toResponse)
+                .map(this::toResponseBasico)
                 .collect(Collectors.toList());
     }
 
@@ -212,19 +212,66 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
                 tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
                 supervisor, null)
                 .stream()
-                .map(this::toResponse)
+                .map(this::toResponseBasico)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Convierte una entidad InventarioDocumental a DTO InventarioDocumentalResponse
-     * @param inventario Entidad InventarioDocumental
-     * @return DTO InventarioDocumentalResponse
+     * Mapeo para listados: sin consultas extra a sección/serie/subserie (evita N+1).
+     * El frontend resuelve nombres con catálogos o {@link #toResponse} en detalle por ID.
+     */
+    public InventarioDocumentalResponse toResponseBasico(InventarioDocumental inventario) {
+        if (inventario == null) {
+            return null;
+        }
+        InventarioDocumentalResponse response = copiarCamposBase(inventario);
+        response.setOperadorNombre(inventario.getOperador());
+        response.setSupervisorNombre(inventario.getSupervisor());
+        return response;
+    }
+
+    /**
+     * Convierte una entidad InventarioDocumental a DTO con nombres descriptivos (detalle/altas).
      */
     public InventarioDocumentalResponse toResponse(InventarioDocumental inventario) {
         if (inventario == null) {
             return null;
         }
+        InventarioDocumentalResponse response = copiarCamposBase(inventario);
+
+        // Enriquecer respuesta con nombres descriptivos (opcionales) para consultas/reportes
+        // Estos campos NO reemplazan a los IDs existentes, solo facilitan la visualización en el frontend.
+        if (inventario.getIdSeccion() != null) {
+            SeccionDocumental seccion = seccionRepositoryPort.findById(inventario.getIdSeccion()).orElse(null);
+            if (seccion != null) {
+                response.setNombreSeccion(seccion.getNombre());
+            }
+        }
+
+        if (inventario.getIdSerie() != null) {
+            SerieDocumental serie = serieRepositoryPort.findByIdOptional(inventario.getIdSerie()).orElse(null);
+            if (serie != null) {
+                response.setNombreSerie(serie.getNombreSerie());
+            }
+        }
+
+        if (inventario.getIdSubserie() != null) {
+            SubserieDocumental subserie = subserieRepositoryPort.findByIdOptional(inventario.getIdSubserie()).orElse(null);
+            if (subserie != null) {
+                response.setNombreSubserie(subserie.getNombreSubserie());
+            }
+        }
+
+        // Por ahora, operador y supervisor se exponen tal como están almacenados.
+        // Si más adelante se integra con un catálogo de usuarios/Keycloak, estos campos
+        // podrán mapearse a nombres completos sin cambiar el contrato existente.
+        response.setOperadorNombre(inventario.getOperador());
+        response.setSupervisorNombre(inventario.getSupervisor());
+
+        return response;
+    }
+
+    private InventarioDocumentalResponse copiarCamposBase(InventarioDocumental inventario) {
         InventarioDocumentalResponse response = new InventarioDocumentalResponse();
         response.setId(inventario.getId());
         response.setIdSeccion(inventario.getIdSeccion());
@@ -259,36 +306,6 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
         response.setCedulaUsuarioCambio(inventario.getCedulaUsuarioCambio());
         response.setUsuCreacion(inventario.getUsuCreacion());
         response.setFecCreacion(inventario.getFecCreacion());
-
-        // Enriquecer respuesta con nombres descriptivos (opcionales) para consultas/reportes
-        // Estos campos NO reemplazan a los IDs existentes, solo facilitan la visualización en el frontend.
-        if (inventario.getIdSeccion() != null) {
-            SeccionDocumental seccion = seccionRepositoryPort.findById(inventario.getIdSeccion()).orElse(null);
-            if (seccion != null) {
-                response.setNombreSeccion(seccion.getNombre());
-            }
-        }
-
-        if (inventario.getIdSerie() != null) {
-            SerieDocumental serie = serieRepositoryPort.findByIdOptional(inventario.getIdSerie()).orElse(null);
-            if (serie != null) {
-                response.setNombreSerie(serie.getNombreSerie());
-            }
-        }
-
-        if (inventario.getIdSubserie() != null) {
-            SubserieDocumental subserie = subserieRepositoryPort.findByIdOptional(inventario.getIdSubserie()).orElse(null);
-            if (subserie != null) {
-                response.setNombreSubserie(subserie.getNombreSubserie());
-            }
-        }
-
-        // Por ahora, operador y supervisor se exponen tal como están almacenados.
-        // Si más adelante se integra con un catálogo de usuarios/Keycloak, estos campos
-        // podrán mapearse a nombres completos sin cambiar el contrato existente.
-        response.setOperadorNombre(inventario.getOperador());
-        response.setSupervisorNombre(inventario.getSupervisor());
-
         return response;
     }
 

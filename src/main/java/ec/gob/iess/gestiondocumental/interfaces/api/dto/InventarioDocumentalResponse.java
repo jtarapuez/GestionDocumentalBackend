@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
  * Se devuelve en operaciones de alta, actualización, aprobación, rechazo, listados y consultas
  * ({@code GET/POST/PUT /v1/inventarios}, {@code POST /v1/consultas}). Incluye datos de auditoría
  * y nombres descriptivos opcionales (sección, serie, subserie, operador, supervisor).
+ * En listados ({@code toResponseBasico}) los campos nombreSeccion/nombreSerie/nombreSubserie pueden ser null;
+ * en detalle por ID o tras alta/actualización ({@code toResponse}) se enriquecen desde BD.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventarioDocumentalResponse {
