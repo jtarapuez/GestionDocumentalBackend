@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api.support;
 
+import ec.gob.iess.gestiondocumental.application.common.PaginatedResult;
 import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import jakarta.enterprise.context.RequestScoped;
@@ -18,6 +19,20 @@ public class StandardResponses {
 
     public <T> Response ok(T data) {
         return Response.ok(wrapSuccess(data)).build();
+    }
+
+    /**
+     * Respuesta paginada con meta (totalItems, totalPages, currentPage, pageSize).
+     */
+    public <T> Response okPaginated(PaginatedResult<T> page) {
+        ApiResponse.Meta meta = new ApiResponse.Meta();
+        meta.setPath(requestContext.getPath());
+        meta.setRequestId(requestContext.getRequestId());
+        meta.setTotalItems((int) Math.min(page.totalItems(), Integer.MAX_VALUE));
+        meta.setTotalPages(page.totalPages());
+        meta.setCurrentPage(page.page());
+        meta.setPageSize(page.pageSize());
+        return Response.ok(ApiResponse.success(page.items(), meta)).build();
     }
 
     public <T> Response created(T data) {

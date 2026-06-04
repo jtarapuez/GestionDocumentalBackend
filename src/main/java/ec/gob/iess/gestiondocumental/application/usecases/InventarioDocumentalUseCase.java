@@ -1,6 +1,7 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
 import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
+import ec.gob.iess.gestiondocumental.application.common.PaginatedResult;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioCodigosError;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioDocumentalRegistroMapper;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioOperadorRegla;
@@ -214,6 +215,29 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
                 .stream()
                 .map(this::toResponseBasico)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PaginatedResult<InventarioDocumentalResponse> listarConFiltrosPaginado(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            java.time.LocalDate fechaDesde, java.time.LocalDate fechaHasta,
+            String supervisor,
+            int page,
+            int pageSize) {
+        PaginatedResult<InventarioDocumental> pageResult = inventarioRepositoryPort.buscarConFiltrosPaginado(
+                idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                numeroCedula, numeroRuc, operador,
+                nombresApellidos, razonSocial, descripcionSerie,
+                tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
+                supervisor, null, page, pageSize);
+        List<InventarioDocumentalResponse> items = pageResult.items().stream()
+                .map(this::toResponseBasico)
+                .collect(Collectors.toList());
+        return new PaginatedResult<>(items, pageResult.totalItems(), page, pageSize);
     }
 
     /**

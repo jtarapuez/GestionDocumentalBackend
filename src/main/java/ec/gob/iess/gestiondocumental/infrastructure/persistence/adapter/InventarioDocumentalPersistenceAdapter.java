@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.infrastructure.persistence.adapter;
 
+import ec.gob.iess.gestiondocumental.application.common.PaginatedResult;
 import ec.gob.iess.gestiondocumental.application.port.out.InventarioDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SubserieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
@@ -76,14 +77,7 @@ public class InventarioDocumentalPersistenceAdapter implements InventarioDocumen
             LocalDate fechaDesde, LocalDate fechaHasta,
             String supervisor,
             List<Long> idsSubseriesCuandoFiltroPorSerie) {
-        List<Long> ids = idsSubseriesCuandoFiltroPorSerie;
-        if (idSerie != null && (ids == null || ids.isEmpty())) {
-            List<SubserieDocumental> subseries = subserieDocumentalRepositoryPort.findBySerie(idSerie);
-            ids = subseries.stream().map(SubserieDocumental::getId).collect(Collectors.toList());
-        }
-        if (idSerie != null && ids == null) {
-            ids = Collections.emptyList();
-        }
+        List<Long> ids = resolverIdsSubseries(idSerie, idsSubseriesCuandoFiltroPorSerie);
         return inventarioDocumentalRepository.buscarConFiltros(
                 idSeccion, idSerie, idSubserie, numeroExpediente, estado,
                 numeroCedula, numeroRuc, operador,
@@ -93,6 +87,43 @@ public class InventarioDocumentalPersistenceAdapter implements InventarioDocumen
                 .stream()
                 .map(inventarioDocumentalMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PaginatedResult<InventarioDocumental> buscarConFiltrosPaginado(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            LocalDate fechaDesde, LocalDate fechaHasta,
+            String supervisor,
+            List<Long> idsSubseriesCuandoFiltroPorSerie,
+            int page,
+            int pageSize) {
+        List<Long> ids = resolverIdsSubseries(idSerie, idsSubseriesCuandoFiltroPorSerie);
+        var pageResult = inventarioDocumentalRepository.buscarConFiltrosPaginado(
+                idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                numeroCedula, numeroRuc, operador,
+                nombresApellidos, razonSocial, descripcionSerie,
+                tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
+                supervisor, ids, page, pageSize);
+        List<InventarioDocumental> items = pageResult.items().stream()
+                .map(inventarioDocumentalMapper::toDomain)
+                .collect(Collectors.toList());
+        return new PaginatedResult<>(items, pageResult.totalItems(), page, pageSize);
+    }
+
+    private List<Long> resolverIdsSubseries(Long idSerie, List<Long> idsSubseriesCuandoFiltroPorSerie) {
+        List<Long> ids = idsSubseriesCuandoFiltroPorSerie;
+        if (idSerie != null && (ids == null || ids.isEmpty())) {
+            List<SubserieDocumental> subseries = subserieDocumentalRepositoryPort.findBySerie(idSerie);
+            ids = subseries.stream().map(SubserieDocumental::getId).collect(Collectors.toList());
+        }
+        if (idSerie != null && ids == null) {
+            ids = Collections.emptyList();
+        }
+        return ids;
     }
 
     @Override

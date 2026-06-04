@@ -126,14 +126,25 @@ public class InventarioDocumentalController {
             @QueryParam("idSubserie") Long idSubserie,
             @QueryParam("numeroExpediente") String numeroExpediente,
             @QueryParam("estado") String estado,
-            @QueryParam("supervisor") String supervisor) {
+            @QueryParam("supervisor") String supervisor,
+            @QueryParam("page") Integer page,
+            @QueryParam("size") Integer size) {
         try {
             LOG.debug(String.format(
                     "listarInventarios: idSeccion=%s, idSerie=%s, idSubserie=%s, estado=%s, "
-                            + "filtro expediente presente=%s, supervisor presente=%s",
+                            + "filtro expediente presente=%s, supervisor presente=%s, page=%s, size=%s",
                     idSeccion, idSerie, idSubserie, estado,
                     numeroExpediente != null && !numeroExpediente.isBlank(),
-                    supervisor != null && !supervisor.isBlank()));
+                    supervisor != null && !supervisor.isBlank(),
+                    page, size));
+            if (ec.gob.iess.gestiondocumental.application.common.PaginationParams.usePagination(page, size)) {
+                int p = ec.gob.iess.gestiondocumental.application.common.PaginationParams.normalizePage(page);
+                int s = ec.gob.iess.gestiondocumental.application.common.PaginationParams.normalizeSize(size);
+                return responses.okPaginated(inventarioUseCase.listarConFiltrosPaginado(
+                        idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                        null, null, null, null, null, null, null, null, null, null, null,
+                        supervisor, p, s));
+            }
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
                     idSeccion, idSerie, idSubserie, numeroExpediente, estado,
                     null, null, null, null, null, null, null, null, null, null, null,

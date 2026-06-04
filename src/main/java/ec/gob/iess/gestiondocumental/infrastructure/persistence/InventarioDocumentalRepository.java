@@ -1,12 +1,13 @@
 package ec.gob.iess.gestiondocumental.infrastructure.persistence;
 
 import ec.gob.iess.gestiondocumental.infrastructure.persistence.entity.InventarioDocumentalEntity;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -58,41 +59,71 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
             LocalDate fechaDesde, LocalDate fechaHasta,
             String supervisor,
             List<Long> idsSubseriesCuandoFiltroPorSerie) {
-        StringBuilder query = new StringBuilder();
-        List<Object> params = new ArrayList<>();
-        int[] paramIndex = {1};
-
-        appendIgualLong(query, params, paramIndex, "idSeccion", idSeccion);
-        appendFiltroSerieYSubseries(query, params, paramIndex, idSerie, idsSubseriesCuandoFiltroPorSerie);
-        appendIgualLong(query, params, paramIndex, "idSubserie", idSubserie);
-        appendLikeUpper(query, params, paramIndex, "numeroExpediente", numeroExpediente);
-        appendIgualString(query, params, paramIndex, "estadoInventario", estado);
-        appendIgualString(query, params, paramIndex, "numeroCedula", numeroCedula);
-        appendIgualString(query, params, paramIndex, "numeroRuc", numeroRuc);
-        appendIgualString(query, params, paramIndex, "operador", operador);
-        appendLikeUpper(query, params, paramIndex, "nombresApellidos", nombresApellidos);
-        appendLikeUpper(query, params, paramIndex, "razonSocial", razonSocial);
-        appendLikeUpper(query, params, paramIndex, "descripcionSerie", descripcionSerie);
-        appendIgualString(query, params, paramIndex, "tipoContenedor", tipoContenedor);
-        appendIgualInteger(query, params, paramIndex, "numeroContenedor", numeroContenedor);
-        appendIgualString(query, params, paramIndex, "tipoArchivo", tipoArchivo);
-        appendFechaDesde(query, params, paramIndex, fechaDesde);
-        appendFechaHasta(query, params, paramIndex, fechaHasta);
-        appendSupervisor(query, params, paramIndex, supervisor);
-
-        if (query.length() > 0) {
-            return find(query.toString(), params.toArray()).list();
-        }
-        return listAll();
+        return queryConFiltros(filtros(
+                idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                numeroCedula, numeroRuc, operador, nombresApellidos, razonSocial, descripcionSerie,
+                tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
+                supervisor, idsSubseriesCuandoFiltroPorSerie)).list();
     }
 
-    private static void appendAndSiNecesario(StringBuilder q) {
+    /**
+     * Misma consulta que {@link #buscarConFiltros} con paginación Panache (page base 0).
+     */
+    public PaginatedEntities<InventarioDocumentalEntity> buscarConFiltrosPaginado(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            LocalDate fechaDesde, LocalDate fechaHasta,
+            String supervisor,
+            List<Long> idsSubseriesCuandoFiltroPorSerie,
+            int page,
+            int size) {
+        PanacheQuery<InventarioDocumentalEntity> q = queryConFiltros(filtros(
+                idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                numeroCedula, numeroRuc, operador, nombresApellidos, razonSocial, descripcionSerie,
+                tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
+                supervisor, idsSubseriesCuandoFiltroPorSerie));
+        long total = q.count();
+        List<InventarioDocumentalEntity> items = q.page(Page.of(page, size)).list();
+        return new PaginatedEntities<>(items, total);
+    }
+
+    public record PaginatedEntities<T>(List<T> items, long totalItems) {
+    }
+
+    private static InventarioFiltrosQuery filtros(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            LocalDate fechaDesde, LocalDate fechaHasta,
+            String supervisor,
+            List<Long> idsSubseriesCuandoFiltroPorSerie) {
+        return new InventarioFiltrosQuery(
+                idSeccion, idSerie, idSubserie, numeroExpediente, estado,
+                numeroCedula, numeroRuc, operador, nombresApellidos, razonSocial, descripcionSerie,
+                tipoContenedor, numeroContenedor, tipoArchivo, fechaDesde, fechaHasta,
+                supervisor, idsSubseriesCuandoFiltroPorSerie);
+    }
+
+    private PanacheQuery<InventarioDocumentalEntity> queryConFiltros(InventarioFiltrosQuery filtros) {
+        InventarioFiltrosQuery.BuiltQuery built = filtros.build();
+        if (built.hasWhere()) {
+            return find(built.jpql, built.params);
+        }
+        return findAll();
+    }
+
+    static void appendAndSiNecesario(StringBuilder q) {
         if (q.length() > 0) {
             q.append(" AND ");
         }
     }
 
-    private static void appendIgualLong(StringBuilder q, List<Object> params, int[] idx, String campo, Long valor) {
+    static void appendIgualLong(StringBuilder q, List<Object> params, int[] idx, String campo, Long valor) {
         if (valor == null) {
             return;
         }
@@ -102,7 +133,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
         idx[0]++;
     }
 
-    private static void appendIgualInteger(StringBuilder q, List<Object> params, int[] idx, String campo, Integer valor) {
+    static void appendIgualInteger(StringBuilder q, List<Object> params, int[] idx, String campo, Integer valor) {
         if (valor == null) {
             return;
         }
@@ -112,7 +143,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
         idx[0]++;
     }
 
-    private static void appendIgualString(StringBuilder q, List<Object> params, int[] idx, String campo, String valor) {
+    static void appendIgualString(StringBuilder q, List<Object> params, int[] idx, String campo, String valor) {
         if (valor == null || valor.isEmpty()) {
             return;
         }
@@ -122,7 +153,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
         idx[0]++;
     }
 
-    private static void appendLikeUpper(StringBuilder q, List<Object> params, int[] idx, String campo, String valor) {
+    static void appendLikeUpper(StringBuilder q, List<Object> params, int[] idx, String campo, String valor) {
         if (valor == null || valor.isEmpty()) {
             return;
         }
@@ -132,7 +163,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
         idx[0]++;
     }
 
-    private static void appendFechaDesde(StringBuilder q, List<Object> params, int[] idx, LocalDate fechaDesde) {
+    static void appendFechaDesde(StringBuilder q, List<Object> params, int[] idx, LocalDate fechaDesde) {
         if (fechaDesde == null) {
             return;
         }
@@ -142,7 +173,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
         idx[0]++;
     }
 
-    private static void appendFechaHasta(StringBuilder q, List<Object> params, int[] idx, LocalDate fechaHasta) {
+    static void appendFechaHasta(StringBuilder q, List<Object> params, int[] idx, LocalDate fechaHasta) {
         if (fechaHasta == null) {
             return;
         }
@@ -152,7 +183,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
         idx[0]++;
     }
 
-    private static void appendSupervisor(StringBuilder q, List<Object> params, int[] idx, String supervisor) {
+    static void appendSupervisor(StringBuilder q, List<Object> params, int[] idx, String supervisor) {
         if (supervisor == null || supervisor.isEmpty()) {
             return;
         }
@@ -165,7 +196,7 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
     /**
      * Replica la lógica original: con lista de subseries no vacía usa (idSerie = ? OR idSubserie IN (...)).
      */
-    private static void appendFiltroSerieYSubseries(
+    static void appendFiltroSerieYSubseries(
             StringBuilder query,
             List<Object> params,
             int[] paramIndex,

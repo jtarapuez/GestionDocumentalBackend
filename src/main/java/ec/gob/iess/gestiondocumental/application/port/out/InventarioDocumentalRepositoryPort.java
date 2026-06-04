@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.application.port.out;
 
+import ec.gob.iess.gestiondocumental.application.common.PaginatedResult;
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
 
 import java.time.LocalDate;
@@ -32,6 +33,18 @@ public interface InventarioDocumentalRepositoryPort {
             LocalDate fechaDesde, LocalDate fechaHasta,
             String supervisor,
             List<Long> idsSubseriesCuandoFiltroPorSerie);
+
+    PaginatedResult<InventarioDocumental> buscarConFiltrosPaginado(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            LocalDate fechaDesde, LocalDate fechaHasta,
+            String supervisor,
+            List<Long> idsSubseriesCuandoFiltroPorSerie,
+            int page,
+            int pageSize);
 
     void persist(InventarioDocumental inventario);
 }

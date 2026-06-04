@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.application.port.in;
 
+import ec.gob.iess.gestiondocumental.application.common.PaginatedResult;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 
@@ -26,6 +27,17 @@ public interface InventarioDocumentalUseCasePort {
             String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
             LocalDate fechaDesde, LocalDate fechaHasta,
             String supervisor);
+
+    PaginatedResult<InventarioDocumentalResponse> listarConFiltrosPaginado(
+            Long idSeccion, Long idSerie, Long idSubserie,
+            String numeroExpediente, String estado,
+            String numeroCedula, String numeroRuc, String operador,
+            String nombresApellidos, String razonSocial, String descripcionSerie,
+            String tipoContenedor, Integer numeroContenedor, String tipoArchivo,
+            LocalDate fechaDesde, LocalDate fechaHasta,
+            String supervisor,
+            int page,
+            int pageSize);
 
     List<InventarioDocumentalResponse> listarPendientesAprobacion();
 
