@@ -3,6 +3,7 @@ package ec.gob.iess.gestiondocumental.interfaces.api;
 import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.CatalogoUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
+import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoBootstrapResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoDetalleResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SeccionDocumentalResponse;
@@ -52,6 +53,29 @@ public class CatalogoController {
         } catch (Exception e) {
             return responses.internalServerError(
                     "Error al listar catálogos: " + e.getMessage(), "CATALOGOS_LIST_ERROR");
+        }
+    }
+
+    @GET
+    @Path("/bootstrap")
+    @Operation(
+            summary = "Precarga de catálogos frecuentes",
+            description = "Secciones y detalles de catálogos usados por el MFE (formato, seguridad, estados, etc.)")
+    @APIResponse(
+            responseCode = "200",
+            description = "Bootstrap obtenido exitosamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = ApiResponse.class)))
+    public Response obtenerBootstrap() {
+        try {
+            CatalogoBootstrapResponse bootstrap = catalogoUseCase.obtenerBootstrap();
+            return responses.ok(bootstrap);
+        } catch (NegocioApiException e) {
+            throw e;
+        } catch (Exception e) {
+            return responses.internalServerError(
+                    "Error al obtener bootstrap de catálogos: " + e.getMessage(), "CATALOGOS_BOOTSTRAP_ERROR");
         }
     }
 

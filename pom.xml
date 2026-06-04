@@ -80,6 +80,12 @@
       <artifactId>quarkus-smallrye-metrics</artifactId>
     </dependency>
 
+    <!-- Cache de catálogos (Fase 3 optimización API) -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-cache</artifactId>
+    </dependency>
+
     <!-- Hibernate ORM con Panache -->
     <dependency>
       <groupId>io.quarkus</groupId>

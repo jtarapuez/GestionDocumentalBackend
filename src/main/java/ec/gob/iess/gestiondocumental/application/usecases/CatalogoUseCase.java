@@ -7,13 +7,17 @@ import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepos
 import ec.gob.iess.gestiondocumental.domain.model.Catalogo;
 import ec.gob.iess.gestiondocumental.domain.model.CatalogoDetalle;
 import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
+import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoBootstrapResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoDetalleResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SeccionDocumentalResponse;
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,6 +27,14 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class CatalogoUseCase implements CatalogoUseCasePort {
+
+    private static final List<String> BOOTSTRAP_CATALOGOS = List.of(
+            "FORMATO",
+            "SEGURIDAD",
+            "ESTADO_INVENTARIO",
+            "ESTADO_SERIE",
+            "TIPO_CONTENEDOR",
+            "TIPO_ARCHIVO");
 
     @Inject
     CatalogoRepositoryPort catalogoRepositoryPort;
@@ -45,6 +57,7 @@ public class CatalogoUseCase implements CatalogoUseCasePort {
                 .map(this::toResponse);
     }
 
+    @CacheResult(cacheName = "catalogo-detalles")
     public List<CatalogoDetalleResponse> listarDetallesPorCatalogo(String codigoCatalogo) {
         List<CatalogoDetalle> detalles = catalogoDetalleRepositoryPort.findActivosByCodigoCatalogo(codigoCatalogo);
         return detalles.stream()
@@ -83,11 +96,21 @@ public class CatalogoUseCase implements CatalogoUseCasePort {
         return response;
     }
 
+    @CacheResult(cacheName = "catalogo-secciones")
     public List<SeccionDocumentalResponse> listarSecciones() {
         List<SeccionDocumental> secciones = seccionDocumentalRepositoryPort.findActivas();
         return secciones.stream()
                 .map(this::toSeccionResponse)
                 .collect(Collectors.toList());
+    }
+
+    @CacheResult(cacheName = "catalogo-bootstrap")
+    public CatalogoBootstrapResponse obtenerBootstrap() {
+        Map<String, List<CatalogoDetalleResponse>> detalles = new LinkedHashMap<>();
+        for (String codigo : BOOTSTRAP_CATALOGOS) {
+            detalles.put(codigo, listarDetallesPorCatalogo(codigo));
+        }
+        return new CatalogoBootstrapResponse(listarSecciones(), detalles);
     }
 
     public SeccionDocumentalResponse toSeccionResponse(SeccionDocumental seccion) {

@@ -1,6 +1,7 @@
 package ec.gob.iess.gestiondocumental.application.port.in;
 
 import ec.gob.iess.gestiondocumental.domain.model.Catalogo;
+import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoBootstrapResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoDetalleResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SeccionDocumentalResponse;
@@ -22,4 +23,6 @@ public interface CatalogoUseCasePort {
     Optional<Catalogo> obtenerCatalogoCompleto(String codigo);
 
     List<SeccionDocumentalResponse> listarSecciones();
+
+    CatalogoBootstrapResponse obtenerBootstrap();
 }
