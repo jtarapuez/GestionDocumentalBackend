@@ -5,7 +5,6 @@ import ec.gob.iess.gestiondocumental.application.port.in.CatalogoUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoBootstrapResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoDetalleResponse;
-import ec.gob.iess.gestiondocumental.interfaces.api.dto.CatalogoResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SeccionDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
 import jakarta.inject.Inject;
