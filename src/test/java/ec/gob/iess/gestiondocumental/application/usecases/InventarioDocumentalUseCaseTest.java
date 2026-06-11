@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.application.usecases;
 
+import ec.gob.iess.gestiondocumental.application.common.PaginatedResult;
 import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioCodigosError;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioNegocioMessages;
@@ -253,6 +254,34 @@ class InventarioDocumentalUseCaseTest {
             verify(seccionDocumentalRepositoryPort, never()).findById(any());
             verify(serieDocumentalRepositoryPort, never()).findByIdOptional(any());
             verify(subserieDocumentalRepositoryPort, never()).findByIdOptional(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("listarConFiltrosPaginado")
+    class ListarConFiltrosPaginado {
+
+        @Test
+        @DisplayName("devuelve página y total sin N+1 en catálogos")
+        void paginadoSinEnriquecimientoPorFila() {
+            InventarioDocumental inv = inventarioDominio(1L, "Registrado", "1712345678");
+            when(inventarioRepositoryPort.buscarConFiltrosPaginado(
+                    any(), any(), any(), any(), any(), any(), any(), any(),
+                    any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
+                    eq(1), eq(5)))
+                    .thenReturn(new PaginatedResult<>(List.of(inv), 12, 1, 5));
+
+            PaginatedResult<InventarioDocumentalResponse> result = useCase.listarConFiltrosPaginado(
+                    null, null, null, null, null, null, null, null,
+                    null, null, null, null, null, null, null, null, null,
+                    1, 5);
+
+            assertThat(result.items()).hasSize(1);
+            assertThat(result.totalItems()).isEqualTo(12);
+            assertThat(result.page()).isEqualTo(1);
+            assertThat(result.pageSize()).isEqualTo(5);
+            assertThat(result.totalPages()).isEqualTo(3);
+            verify(seccionDocumentalRepositoryPort, never()).findById(any());
         }
     }
 

@@ -27,6 +27,10 @@ public class ConsultaRequest {
     private String estado;
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
+    /** Página (base 0). Con {@code size} activa respuesta paginada con meta. */
+    private Integer page;
+    /** Tamaño de página (máx. 100). */
+    private Integer size;
 
     /** Constructor por defecto. */
     public ConsultaRequest() {
@@ -159,6 +163,22 @@ public class ConsultaRequest {
 
     public void setFechaHasta(LocalDate fechaHasta) {
         this.fechaHasta = fechaHasta;
+    }
+
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
     }
 }
 

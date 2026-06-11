@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
+import ec.gob.iess.gestiondocumental.application.common.PaginationParams;
 import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
@@ -47,6 +48,31 @@ public class ConsultaController {
         try {
             if (request == null) {
                 request = new ConsultaRequest();
+            }
+
+            if (PaginationParams.usePagination(request.getPage(), request.getSize())) {
+                int page = PaginationParams.normalizePage(request.getPage());
+                int size = PaginationParams.normalizeSize(request.getSize());
+                return responses.okPaginated(inventarioUseCase.listarConFiltrosPaginado(
+                        request.getIdSeccion(),
+                        request.getIdSerie(),
+                        request.getIdSubserie(),
+                        request.getNumeroExpediente(),
+                        request.getEstado(),
+                        request.getNumeroCedula(),
+                        request.getNumeroRuc(),
+                        request.getOperador(),
+                        request.getNombresApellidos(),
+                        request.getRazonSocial(),
+                        request.getDescripcionSerie(),
+                        request.getTipoContenedor(),
+                        request.getNumeroContenedor(),
+                        request.getTipoArchivo(),
+                        request.getFechaDesde(),
+                        request.getFechaHasta(),
+                        null,
+                        page,
+                        size));
             }
 
             List<InventarioDocumentalResponse> inventarios = inventarioUseCase.listarConFiltros(
