@@ -305,11 +305,48 @@ quarkus.log.category."ec.gob.iess".level=INFO
 
 ---
 
+### 12. Cache de catálogos (Quarkus Cache + Caffeine) — 2026-06
+
+```properties
+quarkus.cache.caffeine."catalogo-secciones".expire-after-write=10M
+quarkus.cache.caffeine."catalogo-detalles".expire-after-write=10M
+quarkus.cache.caffeine."catalogo-bootstrap".expire-after-write=10M
+```
+
+**Descripción:**
+- Extensión `quarkus-cache` con backend **Caffeine** (memoria local por instancia JVM).
+- TTL **10 minutos** tras la última escritura en cada entrada (`expire-after-write`).
+- Usado en `CatalogoUseCase` con `@CacheResult` para:
+  - `catalogo-bootstrap` → respuesta de `GET /api/v1/catalogos/bootstrap`
+  - `catalogo-secciones` → listado de secciones
+  - `catalogo-detalles` → detalles por código de catálogo
+
+**Documentación ampliada:** [CATALOGOS_BOOTSTRAP_Y_CACHE.md](./CATALOGOS_BOOTSTRAP_Y_CACHE.md)
+
+**Para producción:**
+- Catálogos cambian poco; 10 min suele ser adecuado.
+- Si hay varias réplicas, cada nodo tiene su propia cache (no es Redis compartido).
+- Tras cambios urgentes en BD, reiniciar instancia o esperar TTL.
+
+---
+
+### 13. Compresión HTTP — 2026-06
+
+```properties
+quarkus.http.enable-compression=true
+```
+
+**Descripción:** Comprime respuestas JSON (incluido bootstrap) cuando el cliente envía `Accept-Encoding: gzip`. Reduce ancho de banda hacia el MFE.
+
+---
+
 ## 📚 Referencias
 
 - **Documentación Quarkus:** https://quarkus.io/guides/
 - **Quarkus Configuration Guide:** https://quarkus.io/guides/config
 - **Quarkus CORS:** https://quarkus.io/guides/http-reference#cors-filter
+- **Quarkus Cache:** https://quarkus.io/guides/cache
+- **Bootstrap catálogos:** [CATALOGOS_BOOTSTRAP_Y_CACHE.md](./CATALOGOS_BOOTSTRAP_Y_CACHE.md)
 - **Estándar PAS-EST-043:** Documentación interna IESS
 
 ---
@@ -340,5 +377,5 @@ quarkus.log.category."ec.gob.iess".level=INFO
 
 ---
 
-**Última actualización:** 2026-01-05  
+**Última actualización:** 2026-06-11  
 **Mantenido por:** Sistema de Gestión Documental - Backend Team

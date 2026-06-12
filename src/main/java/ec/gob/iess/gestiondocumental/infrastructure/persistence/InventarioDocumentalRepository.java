@@ -1,5 +1,6 @@
 package ec.gob.iess.gestiondocumental.infrastructure.persistence;
 
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioEstadoUtil;
 import ec.gob.iess.gestiondocumental.infrastructure.persistence.entity.InventarioDocumentalEntity;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
@@ -30,7 +31,12 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
     }
 
     public List<InventarioDocumentalEntity> findPendientesByOperador(String operador) {
-        return find("operador = ?1 AND estadoInventario = ?2", operador, "Pendiente de Aprobación").list();
+        return find(
+                "operador = ?1 AND estadoInventario IN (?2, ?3)",
+                operador,
+                InventarioEstadoUtil.PENDIENTE_APROBACION,
+                InventarioEstadoUtil.PENDIENTE_APROBACION_SIN_TILDE)
+                .list();
     }
 
     public List<InventarioDocumentalEntity> findPendientesAprobacion() {
@@ -43,8 +49,12 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
 
     public boolean tienePendientesVencidos(String operador) {
         LocalDateTime fechaLimite = LocalDateTime.now().minusDays(5);
-        return count("operador = ?1 AND estadoInventario = ?2 AND fechaCambioEstado < ?3",
-                operador, "Pendiente de Aprobación", fechaLimite) > 0;
+        return count(
+                "operador = ?1 AND estadoInventario IN (?2, ?3) AND fechaCambioEstado < ?4",
+                operador,
+                InventarioEstadoUtil.PENDIENTE_APROBACION,
+                InventarioEstadoUtil.PENDIENTE_APROBACION_SIN_TILDE,
+                fechaLimite) > 0;
     }
 
     /**
@@ -151,6 +161,31 @@ public class InventarioDocumentalRepository implements PanacheRepository<Inventa
         q.append(campo).append(" = ?").append(idx[0]);
         params.add(valor);
         idx[0]++;
+    }
+
+    /** Filtro estado con variantes históricas (p. ej. Pendiente con/sin tilde en BD). */
+    static void appendEstadoInventario(StringBuilder q, List<Object> params, int[] idx, String estadoFiltro) {
+        List<String> variantes = InventarioEstadoUtil.variantesParaFiltroApi(estadoFiltro);
+        if (variantes.isEmpty()) {
+            return;
+        }
+        appendAndSiNecesario(q);
+        if (variantes.size() == 1) {
+            q.append("estadoInventario = ?").append(idx[0]);
+            params.add(variantes.get(0));
+            idx[0]++;
+            return;
+        }
+        q.append("estadoInventario IN (");
+        for (int i = 0; i < variantes.size(); i++) {
+            if (i > 0) {
+                q.append(", ");
+            }
+            q.append("?").append(idx[0]);
+            params.add(variantes.get(i));
+            idx[0]++;
+        }
+        q.append(")");
     }
 
     static void appendLikeUpper(StringBuilder q, List<Object> params, int[] idx, String campo, String valor) {

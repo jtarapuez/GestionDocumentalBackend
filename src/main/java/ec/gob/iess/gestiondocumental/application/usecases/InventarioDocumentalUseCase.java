@@ -5,6 +5,7 @@ import ec.gob.iess.gestiondocumental.application.common.PaginatedResult;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioCodigosError;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioDocumentalRegistroMapper;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioOperadorRegla;
+import ec.gob.iess.gestiondocumental.application.inventario.InventarioEstadoUtil;
 import ec.gob.iess.gestiondocumental.application.inventario.InventarioPendientesRegla;
 import ec.gob.iess.gestiondocumental.domain.model.InventarioDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
@@ -105,10 +106,10 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
 
             // ✅ Permitir actualizar "Pendiente de Aprobación" siempre (sin límite de días)
             // El bloqueo de 5 días aplica solo para REGISTRAR nuevos inventarios, no para actualizar pendientes
-            boolean esPendienteAprobacion = "Pendiente de Aprobación".equals(estadoActual);
+            boolean esPendienteAprobacion = InventarioEstadoUtil.esPendienteAprobacion(estadoActual);
             
             // Para "Registrado", validar que no haya pasado más de 5 días
-            if (!esPendienteAprobacion && "Registrado".equals(estadoActual)) {
+            if (!esPendienteAprobacion && InventarioEstadoUtil.esRegistrado(estadoActual)) {
                 LocalDateTime fechaReferencia = inventario.getFechaCambioEstado() != null 
                     ? inventario.getFechaCambioEstado() 
                     : inventario.getFecCreacion();
@@ -125,7 +126,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
             }
             
             // Validar que el estado sea uno de los permitidos para actualización
-            if (!esPendienteAprobacion && !"Registrado".equals(estadoActual)) {
+            if (!esPendienteAprobacion && !InventarioEstadoUtil.esRegistrado(estadoActual)) {
                 throw new NegocioApiException(
                         InventarioCodigosError.INV_ACTUALIZACION_ESTADO_NO_PERMITIDO,
                         "Solo se pueden actualizar inventarios en estado 'Registrado' o 'Pendiente de Aprobación'. "
@@ -139,7 +140,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
             // El campo supervisor del request se ignora intencionalmente según requerimiento funcional EF-2-2
             
             // Cambiar estado a Actualizado
-            inventario.setEstadoInventario("Actualizado");
+            inventario.setEstadoInventario(InventarioEstadoUtil.ACTUALIZADO);
             inventario.setFechaCambioEstado(LocalDateTime.now());
             inventario.setCedulaUsuarioCambio(usuarioCedula);
 
@@ -348,7 +349,8 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
             String estadoActual = inventario.getEstadoInventario();
             
             // Validar que el estado permita aprobación
-            if (!"Registrado".equals(estadoActual) && !"Actualizado".equals(estadoActual)) {
+            if (!InventarioEstadoUtil.esRegistrado(estadoActual)
+                    && !InventarioEstadoUtil.esActualizado(estadoActual)) {
                 throw new NegocioApiException(
                         InventarioCodigosError.INV_APROBACION_ESTADO_INVALIDO,
                         "Solo se pueden aprobar inventarios en estado 'Registrado' o 'Actualizado'. "
@@ -358,10 +360,10 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
 
             // Determinar el estado final según el estado actual
             String nuevoEstado;
-            if ("Actualizado".equals(estadoActual)) {
-                nuevoEstado = "Aprobado con Modificaciones";
+            if (InventarioEstadoUtil.esActualizado(estadoActual)) {
+                nuevoEstado = InventarioEstadoUtil.APROBADO_CON_MODIFICACIONES;
             } else {
-                nuevoEstado = "Aprobado";
+                nuevoEstado = InventarioEstadoUtil.APROBADO;
             }
 
             inventario.setEstadoInventario(nuevoEstado);
@@ -403,7 +405,8 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
             String estadoActual = inventario.getEstadoInventario();
             
             // Validar que el estado permita rechazo
-            if (!"Registrado".equals(estadoActual) && !"Actualizado".equals(estadoActual)) {
+            if (!InventarioEstadoUtil.esRegistrado(estadoActual)
+                    && !InventarioEstadoUtil.esActualizado(estadoActual)) {
                 throw new NegocioApiException(
                         InventarioCodigosError.INV_RECHAZO_ESTADO_INVALIDO,
                         "Solo se pueden rechazar inventarios en estado 'Registrado' o 'Actualizado'. "
@@ -411,7 +414,7 @@ public class InventarioDocumentalUseCase implements InventarioDocumentalUseCaseP
                         HTTP_BAD_REQUEST);
             }
 
-            inventario.setEstadoInventario("Pendiente de Aprobación");
+            inventario.setEstadoInventario(InventarioEstadoUtil.PENDIENTE_APROBACION);
             inventario.setFechaCambioEstado(LocalDateTime.now());
             inventario.setCedulaUsuarioCambio(usuarioCedula);
             

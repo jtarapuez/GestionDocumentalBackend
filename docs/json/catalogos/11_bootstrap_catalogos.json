@@ -1,0 +1,36 @@
+{
+  "_comentario": "Ejemplo de respuesta GET /api/v1/catalogos/bootstrap — estructura reducida",
+  "data": {
+    "secciones": [
+      {
+        "id": 23,
+        "nombre": "PRUEBA - Sección Pensiones",
+        "descripcion": "Sección documental de prueba para expedientes de pensiones. [PRUEBA]",
+        "estadoRegistro": "Creado"
+      }
+    ],
+    "detallesPorCodigo": {
+      "FORMATO": [
+        {
+          "id": 111,
+          "codigo": "FISICO",
+          "descripcion": "Documento en soporte fisico (papel)",
+          "estado": "A",
+          "observacion": "Documento físico almacenado en formato papel",
+          "idCatalogo": 3
+        }
+      ],
+      "SEGURIDAD": [],
+      "ESTADO_INVENTARIO": [],
+      "ESTADO_SERIE": [],
+      "TIPO_CONTENEDOR": [],
+      "TIPO_ARCHIVO": []
+    }
+  },
+  "meta": {
+    "timestamp": "2026-06-11T16:24:08.989091",
+    "path": "/v1/catalogos/bootstrap",
+    "requestId": "119e0113-9202-4ee0-a7d0-745546250ba6"
+  },
+  "error": null
+}

@@ -57,6 +57,14 @@
 - **Archivo:** `10_listar_secciones.json`
 - **Resultado esperado:** Lista de secciones documentales (diferente a áreas IESS)
 
+### 11. **GET /api/v1/catalogos/bootstrap** ⭐ *(optimización API — recomendado para MFE)*
+- **Descripción:** Precarga agregada: secciones + 6 catálogos de detalle en un solo JSON
+- **Archivo:** `11_bootstrap_catalogos.json`
+- **Cache:** Quarkus Caffeine, TTL 10 min (`catalogo-bootstrap`)
+- **Documentación:** `docs/CATALOGOS_BOOTSTRAP_Y_CACHE.md`
+- **Swagger:** `http://localhost:8080/swagger-ui` → Catálogos → bootstrap
+- **Resultado esperado:** `data.secciones` + `data.detallesPorCodigo.FORMATO|SEGURIDAD|...`
+
 ---
 
 ## 📁 Estructura de Archivos
@@ -75,6 +83,7 @@ docs/json/
 │   ├── 08_listar_tipos_contenedor.json
 │   ├── 09_listar_tipos_archivo.json
 │   ├── 10_listar_secciones.json
+│   ├── 11_bootstrap_catalogos.json    # GET /api/v1/catalogos/bootstrap
 │   ├── PROBAR_ENDPOINTS.md            # Guía de pruebas
 │   └── RESUMEN_ENDPOINTS.md           # Este archivo
 ```
@@ -96,6 +105,7 @@ docs/json/
 | `GET /api/v1/catalogos/tipos-contenedor` | 200 | 4 | Tipos de contenedor |
 | `GET /api/v1/catalogos/tipos-archivo` | 200 | 2 | Tipos de archivo |
 | `GET /api/v1/catalogos/secciones` | 200 | Variable | Secciones documentales |
+| `GET /api/v1/catalogos/bootstrap` | 200 | 1 objeto | Secciones + 6 catálogos (MFE) |
 
 ---
 
@@ -139,7 +149,7 @@ Respuestas de error:
 
 ---
 
-**Última actualización:** 2025-01-XX  
+**Última actualización:** 2026-06-11  
 **Mantenido por:** Equipo de Desarrollo Backend
 
 

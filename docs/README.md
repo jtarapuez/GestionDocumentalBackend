@@ -2,7 +2,7 @@
 
 **Proyecto:** Backend del Sistema de Gestión Documental  
 **Framework:** Quarkus 3.9.5  
-**Última actualización:** 2026-01-05
+**Última actualización:** 2026-06-11
 
 ---
 
@@ -13,6 +13,16 @@
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** (raíz del repo) — DoD por PR, ramas, Git seguro.
 - **Copia en workspace IESS:** `Documentacion/backend/Mejoras Hexagonal/CONTRIBUTING.md` (misma carpeta que PLAN y TAREAS en tu máquina).
 - **[mejoras-hexagonal/](./mejoras-hexagonal/)** — Plan por fases y checklist (Fase 0–6) en este repositorio.
+
+### 🚀 Optimización API (2026-06)
+
+1. **[CATALOGOS_BOOTSTRAP_Y_CACHE.md](./CATALOGOS_BOOTSTRAP_Y_CACHE.md)**
+   - Endpoint `GET /api/v1/catalogos/bootstrap`
+   - Cache Quarkus (Caffeine, TTL 10 min)
+   - Swagger, MFE y pruebas rápidas
+
+2. **[CHANGELOG_API_INTEGRACION.md](./CHANGELOG_API_INTEGRACION.md)**
+   - Contrato API para frontend (paginación, bootstrap, errores)
 
 ### 🔧 Configuración y Arreglos
 

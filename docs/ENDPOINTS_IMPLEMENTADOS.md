@@ -36,6 +36,7 @@ Se han implementado **todos los endpoints principales** según el requerimiento 
 | GET | `/api/v1/catalogos/tipos-contenedor` | Tipos de contenedor |
 | GET | `/api/v1/catalogos/tipos-archivo` | Tipos de archivo |
 | GET | `/api/v1/catalogos/secciones` | Secciones documentales |
+| GET | `/api/v1/catalogos/bootstrap` | **Precarga MFE:** secciones + catálogos frecuentes (cache 10 min) — ver `CATALOGOS_BOOTSTRAP_Y_CACHE.md` |
 
 ---
 

@@ -51,7 +51,7 @@ public record InventarioFiltrosQuery(
                 query, params, paramIndex, idSerie, idsSubseriesCuandoFiltroPorSerie);
         InventarioDocumentalRepository.appendIgualLong(query, params, paramIndex, "idSubserie", idSubserie);
         InventarioDocumentalRepository.appendLikeUpper(query, params, paramIndex, "numeroExpediente", numeroExpediente);
-        InventarioDocumentalRepository.appendIgualString(query, params, paramIndex, "estadoInventario", estado);
+        InventarioDocumentalRepository.appendEstadoInventario(query, params, paramIndex, estado);
         InventarioDocumentalRepository.appendIgualString(query, params, paramIndex, "numeroCedula", numeroCedula);
         InventarioDocumentalRepository.appendIgualString(query, params, paramIndex, "numeroRuc", numeroRuc);
         InventarioDocumentalRepository.appendIgualString(query, params, paramIndex, "operador", operador);
