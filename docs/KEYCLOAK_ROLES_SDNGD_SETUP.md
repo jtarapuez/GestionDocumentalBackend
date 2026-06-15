@@ -29,7 +29,7 @@ Quarkus lee (`application.properties`):
 - `user.rol` (string)
 - `realm_access.roles` (fallback)
 
-El augmentor `SdngdJwtRolesAugmentor` fusiona JWT + header `ec-iess-role-identifier` (puente S4b). Cuando Keycloak emite `*_SDNGD`, el JWT basta.
+El augmentor `SdngdJwtRolesAugmentor` lee **solo el JWT** Keycloak (`user.rolesDisponibles`, `user.rol`, `realm_access`). El puente por header `ec-iess-role-identifier` fue retirado en la rama `feature/keycloak-roles-sdngd`.
 
 ---
 

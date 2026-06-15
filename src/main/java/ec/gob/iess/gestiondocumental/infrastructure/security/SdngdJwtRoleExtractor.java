@@ -14,12 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Extrae roles SDNGD del access token Keycloak con la misma lógica que el MFE
+ * Extrae roles SDNGD del access token Keycloak
  * ({@code user.rolesDisponibles}, {@code user.rol}, {@code realm_access}, {@code resource_access}).
  */
 public final class SdngdJwtRoleExtractor {
-
-    public static final String HEADER_ROLE_IDENTIFIER = "ec-iess-role-identifier";
 
     private SdngdJwtRoleExtractor() {
     }
@@ -72,21 +70,6 @@ public final class SdngdJwtRoleExtractor {
         addRolesFromJsonWebTokenClaim(roles, jwt, "groups");
         addRolesFromJsonWebTokenClaim(roles, jwt, "realm_access");
         addRolesFromJsonWebTokenClaim(roles, jwt, "resource_access");
-        return roles;
-    }
-
-    public static Set<String> parseRoleHeader(String headerValue) {
-        Set<String> roles = new LinkedHashSet<>();
-        if (headerValue == null || headerValue.isBlank()) {
-            return roles;
-        }
-        for (String part : headerValue.split(",")) {
-            String trimmed = part.trim();
-            if (!trimmed.isEmpty()) {
-                // Cabecera institucional (Seguridades): no filtrar ruido Keycloak.
-                addRoleString(roles, trimmed, false);
-            }
-        }
         return roles;
     }
 

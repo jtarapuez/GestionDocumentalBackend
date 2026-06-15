@@ -5,9 +5,7 @@ import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.identity.SecurityIdentityAugmentor;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
-import io.quarkus.vertx.http.runtime.security.HttpSecurityUtils;
 import io.smallrye.mutiny.Uni;
-import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
@@ -17,8 +15,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Complementa roles de {@link RolesAllowed} con claims del access token IESS
- * y cabecera {@value SdngdJwtRoleExtractor#HEADER_ROLE_IDENTIFIER} del MFE.
+ * Complementa roles de {@link jakarta.annotation.security.RolesAllowed} desde el access token Keycloak
+ * ({@code user.rolesDisponibles}, {@code user.rol}, {@code realm_access}, etc.).
  */
 @ApplicationScoped
 public class SdngdJwtRolesAugmentor implements SecurityIdentityAugmentor {
@@ -28,7 +26,7 @@ public class SdngdJwtRolesAugmentor implements SecurityIdentityAugmentor {
     @Override
     public Uni<SecurityIdentity> augment(SecurityIdentity identity, AuthenticationRequestContext context,
             Map<String, Object> attributes) {
-        return Uni.createFrom().item(() -> augmentBlocking(identity, attributes));
+        return Uni.createFrom().item(() -> augmentBlocking(identity));
     }
 
     @Override
@@ -36,7 +34,7 @@ public class SdngdJwtRolesAugmentor implements SecurityIdentityAugmentor {
         return augment(identity, context, Map.of());
     }
 
-    private SecurityIdentity augmentBlocking(SecurityIdentity identity, Map<String, Object> attributes) {
+    private SecurityIdentity augmentBlocking(SecurityIdentity identity) {
         if (identity.isAnonymous()) {
             return identity;
         }
@@ -49,26 +47,8 @@ public class SdngdJwtRolesAugmentor implements SecurityIdentityAugmentor {
             extracted.addAll(SdngdJwtRoleExtractor.extract(jwt));
         }
 
-        RoutingContext routingContext = HttpSecurityUtils.getRoutingContextAttribute(attributes);
-        if (routingContext == null) {
-            routingContext = identity.getAttribute(RoutingContext.class.getName());
-        }
-        if (routingContext == null) {
-            Object fromAttr = attributes.get(HttpSecurityUtils.ROUTING_CONTEXT_ATTRIBUTE);
-            if (fromAttr instanceof RoutingContext rc) {
-                routingContext = rc;
-            }
-        }
-        if (routingContext != null) {
-            String headerValue = routingContext.get(SdngdRoleHeaderHttpFilter.ROUTING_CONTEXT_ATTR);
-            if (headerValue == null || headerValue.isBlank()) {
-                headerValue = routingContext.request().getHeader(SdngdJwtRoleExtractor.HEADER_ROLE_IDENTIFIER);
-            }
-            extracted.addAll(SdngdJwtRoleExtractor.parseRoleHeader(headerValue));
-        }
-
         if (extracted.isEmpty()) {
-            LOG.debugf("Sin roles SDNGD en JWT ni header para principal=%s",
+            LOG.debugf("Sin roles SDNGD en JWT para principal=%s",
                     identity.getPrincipal() != null ? identity.getPrincipal().getName() : "?");
             return identity;
         }

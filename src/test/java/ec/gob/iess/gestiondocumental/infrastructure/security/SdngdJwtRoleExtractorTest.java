@@ -58,12 +58,4 @@ class SdngdJwtRoleExtractorTest {
         assertFalse(roles.contains("default-roles-plantilla-front"));
         assertFalse(roles.contains("offline_access"));
     }
-
-    @Test
-    @DisplayName("parsea ec-iess-role-identifier con varios roles")
-    void parseaHeaderRoles() {
-        Set<String> roles = SdngdJwtRoleExtractor.parseRoleHeader("ADMINISTRADOR_SDNGD,OPERADOR");
-        assertTrue(roles.contains("ADMINISTRADOR_SDNGD"));
-        assertTrue(roles.contains("OPERADOR"));
-    }
 }
