@@ -2,8 +2,10 @@ package ec.gob.iess.gestiondocumental.interfaces.api.exception;
 
 import ec.gob.iess.gestiondocumental.application.exception.CatalogoNoEncontradoException;
 import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
+import ec.gob.iess.gestiondocumental.infrastructure.security.SecurityCodigosError;
 import ec.gob.iess.gestiondocumental.interfaces.api.context.RequestContext;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
+import io.quarkus.security.ForbiddenException;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Response;
@@ -35,6 +37,14 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
                     ex.getCodigo(),
                     path, requestId);
             return Response.status(ex.getStatusHttp()).entity(errorResponse).build();
+        }
+
+        if (exception instanceof ForbiddenException || exception instanceof jakarta.ws.rs.ForbiddenException) {
+            ApiResponse<Object> errorResponse = ApiResponse.error(
+                    "No tiene permisos para realizar esta operación",
+                    SecurityCodigosError.AUTH_FORBIDDEN,
+                    path, requestId);
+            return Response.status(Response.Status.FORBIDDEN).entity(errorResponse).build();
         }
 
         if (exception instanceof CatalogoNoEncontradoException) {

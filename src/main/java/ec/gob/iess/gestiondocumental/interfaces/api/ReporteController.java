@@ -3,6 +3,7 @@ package ec.gob.iess.gestiondocumental.interfaces.api;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ConsultaRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -27,6 +28,7 @@ public class ReporteController {
 
     @POST
     @Path("/exportar-pdf")
+    @RolesAllowed({"ADMINISTRADOR_SDNGD", "ADMINISTRADOR", "SUPERVISOR_SDNGD", "SUPERVISOR"})
     @Operation(
             summary = "Exportar inventarios a PDF",
             description = "TODO: Implementar generación de PDF")
@@ -48,6 +50,7 @@ public class ReporteController {
 
     @POST
     @Path("/exportar-excel")
+    @RolesAllowed({"ADMINISTRADOR_SDNGD", "ADMINISTRADOR", "SUPERVISOR_SDNGD", "SUPERVISOR"})
     @Operation(
             summary = "Exportar inventarios a Excel",
             description = "TODO: Implementar generación de Excel")

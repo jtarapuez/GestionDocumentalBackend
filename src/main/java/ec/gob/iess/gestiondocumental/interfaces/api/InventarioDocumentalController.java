@@ -3,14 +3,21 @@ package ec.gob.iess.gestiondocumental.interfaces.api;
 import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
-import ec.gob.iess.gestiondocumental.interfaces.api.dto.AprobacionRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
-import ec.gob.iess.gestiondocumental.interfaces.api.dto.RechazoRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.HttpOperadorExtractor;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -43,6 +50,7 @@ public class InventarioDocumentalController {
     @Inject
     StandardResponses responses;
 
+    @RolesAllowed({"OPERADOR_SDNGD", "OPERADOR"})
     @POST
     @Operation(
             summary = "Registrar inventario documental",
@@ -66,6 +74,7 @@ public class InventarioDocumentalController {
                 "INVENTARIO_CREATE_ERROR");
     }
 
+    @RolesAllowed({"OPERADOR_SDNGD", "OPERADOR"})
     @PUT
     @Path("/{id}")
     @Operation(
@@ -158,6 +167,7 @@ public class InventarioDocumentalController {
         }
     }
 
+    @RolesAllowed({"SUPERVISOR_SDNGD", "SUPERVISOR"})
     @GET
     @Path("/pendientes-aprobacion")
     @Operation(summary = "Listar inventarios pendientes de aprobación",
@@ -175,6 +185,7 @@ public class InventarioDocumentalController {
         }
     }
 
+    @RolesAllowed({"OPERADOR_SDNGD", "OPERADOR"})
     @GET
     @Path("/pendientes")
     @Operation(summary = "Listar inventarios pendientes del operador",
@@ -193,54 +204,6 @@ public class InventarioDocumentalController {
             return responses.internalServerError(
                     "Error al listar inventarios pendientes: " + e.getMessage(), "INVENTARIOS_PENDIENTES_ERROR");
         }
-    }
-
-    @PUT
-    @Path("/{id}/aprobar")
-    @Operation(summary = "Aprobar inventario",
-            description = "Aprueba un inventario. Estados permitidos: 'Registrado' o 'Actualizado'. Requiere SUPERVISOR_SDNGD")
-    @APIResponse(responseCode = "200", description = "Inventario aprobado",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    @APIResponse(responseCode = "400", description = "Estado incorrecto",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    @APIResponse(responseCode = "404", description = "Inventario no encontrado",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    public Response aprobarInventario(
-            @PathParam("id") Long id,
-            AprobacionRequest request,
-            @HeaderParam(HttpOperadorExtractor.HEADER_OPERADOR_ID) String supervisorIdHeader) {
-        return ejecutarOptional(
-                () -> inventarioUseCase.aprobarInventario(
-                        id,
-                        HttpOperadorExtractor.fromHeaderRequired(supervisorIdHeader),
-                        request != null ? request.getObservaciones() : null),
-                id,
-                "Error al aprobar inventario: ",
-                "INVENTARIO_APROBACION_ERROR");
-    }
-
-    @PUT
-    @Path("/{id}/rechazar")
-    @Operation(summary = "Rechazar inventario",
-            description = "Rechazo con observaciones obligatorias. Requiere SUPERVISOR_SDNGD")
-    @APIResponse(responseCode = "200", description = "Inventario rechazado",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    @APIResponse(responseCode = "400", description = "Validación",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    @APIResponse(responseCode = "404", description = "Inventario no encontrado",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ApiResponse.class)))
-    public Response rechazarInventario(
-            @PathParam("id") Long id,
-            RechazoRequest request,
-            @HeaderParam(HttpOperadorExtractor.HEADER_OPERADOR_ID) String supervisorIdHeader) {
-        return ejecutarOptional(
-                () -> inventarioUseCase.rechazarInventario(
-                        id,
-                        HttpOperadorExtractor.fromHeaderRequired(supervisorIdHeader),
-                        request != null ? request.getObservaciones() : null),
-                id,
-                "Error al rechazar inventario: ",
-                "INVENTARIO_RECHAZO_ERROR");
     }
 
     /**

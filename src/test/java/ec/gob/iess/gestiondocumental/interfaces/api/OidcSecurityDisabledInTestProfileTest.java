@@ -1,6 +1,7 @@
 package ec.gob.iess.gestiondocumental.interfaces.api;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
  * Valida que la API no exige Bearer en tests automatizados.
  */
 @QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 class OidcSecurityDisabledInTestProfileTest {
 
     @Test

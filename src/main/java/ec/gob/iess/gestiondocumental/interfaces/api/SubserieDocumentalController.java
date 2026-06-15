@@ -7,6 +7,7 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalReques
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.HttpUsuarioCreacionExtractor;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -35,6 +36,7 @@ public class SubserieDocumentalController {
     StandardResponses responses;
 
     @POST
+    @RolesAllowed({"ADMINISTRADOR_SDNGD", "ADMINISTRADOR"})
     @Operation(
             summary = "Crear subserie documental",
             description = "Crea una nueva subserie documental. Requiere rol ADMINISTRADOR_SDNGD")
@@ -71,6 +73,7 @@ public class SubserieDocumentalController {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({"ADMINISTRADOR_SDNGD", "ADMINISTRADOR"})
     @Operation(
             summary = "Actualizar subserie documental",
             description = "Actualiza una subserie documental existente. Requiere rol ADMINISTRADOR_SDNGD")

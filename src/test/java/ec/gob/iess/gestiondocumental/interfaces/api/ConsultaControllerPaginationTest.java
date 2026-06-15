@@ -5,6 +5,7 @@ import ec.gob.iess.gestiondocumental.application.port.in.InventarioDocumentalUse
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
  * Contrato POST /v1/consultas: paginación opcional (page/size) sin romper consultas sin paginar.
  */
 @QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 class ConsultaControllerPaginationTest {
 
     @InjectMock

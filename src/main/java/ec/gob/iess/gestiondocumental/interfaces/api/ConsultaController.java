@@ -7,6 +7,7 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.ApiResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.ConsultaRequest;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.InventarioDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -35,6 +36,11 @@ public class ConsultaController {
     StandardResponses responses;
 
     @POST
+    @RolesAllowed({
+            "ADMINISTRADOR_SDNGD", "ADMINISTRADOR",
+            "OPERADOR_SDNGD", "OPERADOR",
+            "SUPERVISOR_SDNGD", "SUPERVISOR"
+    })
     @Operation(
             summary = "Consulta avanzada de inventarios",
             description = "Consulta con múltiples filtros opcionales (sección, serie, expediente, fechas, etc.)")

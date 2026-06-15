@@ -1,6 +1,7 @@
 package ec.gob.iess.gestiondocumental;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -14,6 +15,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
  * y que el header X-Request-Id se propague a meta.requestId.
  */
 @QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 class ApiMetaRequestIdTest {
 
     @Test

@@ -9,6 +9,7 @@ import ec.gob.iess.gestiondocumental.interfaces.api.dto.SerieDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SubserieDocumentalResponse;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.HttpUsuarioCreacionExtractor;
 import ec.gob.iess.gestiondocumental.interfaces.api.support.StandardResponses;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -43,6 +44,7 @@ public class SerieDocumentalController {
     StandardResponses responses;
 
     @POST
+    @RolesAllowed({"ADMINISTRADOR_SDNGD", "ADMINISTRADOR"})
     @Operation(
             summary = "Crear serie documental",
             description = "Crea una nueva serie documental. Requiere rol ADMINISTRADOR_SDNGD")
@@ -90,6 +92,7 @@ public class SerieDocumentalController {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({"ADMINISTRADOR_SDNGD", "ADMINISTRADOR"})
     @Operation(
             summary = "Actualizar serie documental",
             description = "Actualiza una serie documental existente. Requiere rol ADMINISTRADOR_SDNGD")
