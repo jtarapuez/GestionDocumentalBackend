@@ -63,6 +63,24 @@ class RolesAllowedAuthorizationTest {
     }
 
     @Test
+    @DisplayName("operador con OPERADOR_SDNGD puede registrar inventario → no 403")
+    @TestSecurity(user = "operador", roles = {SdngdRoles.OPERADOR_SDNGD})
+    void operadorPuedeRegistrarInventario() {
+        when(inventarioUseCase.registrarInventario(any(), eq("1712345678"), any()))
+                .thenReturn(new InventarioDocumentalResponse());
+
+        given()
+                .contentType(JSON)
+                .accept(JSON)
+                .header("X-Operador-Id", "1712345678")
+                .body("{\"idSeccion\":1,\"idSerie\":1,\"numeroExpediente\":\"EXP-TEST-001\"}")
+                .when()
+                .post("/api/v1/inventarios")
+                .then()
+                .statusCode(org.hamcrest.Matchers.not(403));
+    }
+
+    @Test
     @DisplayName("operador no puede crear serie → 403")
     @TestSecurity(user = "operador", roles = {SdngdRoles.OPERADOR_SDNGD})
     void operadorNoPuedeCrearSerie() {
