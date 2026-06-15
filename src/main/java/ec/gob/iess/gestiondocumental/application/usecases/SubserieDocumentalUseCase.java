@@ -4,6 +4,8 @@ import ec.gob.iess.gestiondocumental.application.exception.NegocioApiException;
 import ec.gob.iess.gestiondocumental.application.port.in.SubserieDocumentalUseCasePort;
 import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SubserieDocumentalRepositoryPort;
+import ec.gob.iess.gestiondocumental.application.serie.SerieSubserieCreadorRegla;
+import ec.gob.iess.gestiondocumental.application.serie.SerieSubserieNegocioMessages;
 import ec.gob.iess.gestiondocumental.application.subserie.SubserieCodigosError;
 import ec.gob.iess.gestiondocumental.domain.SerieDocumentalEstados;
 import ec.gob.iess.gestiondocumental.domain.model.SubserieDocumental;
@@ -60,6 +62,11 @@ public class SubserieDocumentalUseCase implements SubserieDocumentalUseCasePort 
     public Optional<SubserieDocumentalResponse> actualizarSubserie(
             Long id, SubserieDocumentalRequest request, String usuarioCedula) {
         return subserieRepositoryPort.findByIdOptional(id).map(subserie -> {
+            SerieSubserieCreadorRegla.assertMismoCreadorQueCreo(
+                    usuarioCedula,
+                    subserie.getUsuCreacion(),
+                    SubserieCodigosError.SUB_USUARIO_NO_AUTORIZADO,
+                    SerieSubserieNegocioMessages.SOLO_CREADOR_PUEDE_ACTUALIZAR_SUBSERIE);
             if (request.getNombreSubserie() != null) subserie.setNombreSubserie(request.getNombreSubserie());
             if (request.getDescripcion() != null) subserie.setDescripcion(request.getDescripcion());
             if (request.getFormatoDoc() != null) subserie.setFormatoDoc(request.getFormatoDoc());

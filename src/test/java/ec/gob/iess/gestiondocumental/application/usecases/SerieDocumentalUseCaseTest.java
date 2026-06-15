@@ -5,6 +5,7 @@ import ec.gob.iess.gestiondocumental.application.port.in.SerieDocumentalUseCaseP
 import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.serie.SerieCodigosError;
+import ec.gob.iess.gestiondocumental.application.serie.SerieSubserieNegocioMessages;
 import ec.gob.iess.gestiondocumental.domain.SerieDocumentalEstados;
 import ec.gob.iess.gestiondocumental.domain.model.SeccionDocumental;
 import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
@@ -65,6 +66,7 @@ class SerieDocumentalUseCaseTest {
         s.setNombreSerie(nombre);
         s.setIdSeccion(idSeccion);
         s.setEstado(SerieDocumentalEstados.CREADO);
+        s.setUsuCreacion("1712345678");
         s.setFecCreacion(LocalDateTime.now());
         return s;
     }
@@ -139,6 +141,21 @@ class SerieDocumentalUseCaseTest {
         assertThat(result.get().getEstado())
                 .isEqualTo(SerieDocumentalEstados.ACTUALIZADO);
         verify(serieRepositoryPort).persist(existente);
+    }
+
+    @Test
+    @DisplayName("actualizarSerie lanza si X-Operador-Id no coincide con USU_CREACION")
+    void actualizarSerieLanzaSiNoEsCreador() {
+        SerieDocumental existente = serieDominio(1L, "Serie A", 1L);
+        when(serieRepositoryPort.findByIdOptional(1L)).thenReturn(Optional.of(existente));
+
+        SerieDocumentalRequest r = new SerieDocumentalRequest();
+        r.setEstado("Serie documental actualizada");
+
+        assertThatThrownBy(() -> useCase.actualizarSerie(1L, r, "1798765432"))
+                .isInstanceOf(NegocioApiException.class)
+                .hasFieldOrPropertyWithValue("codigo", SerieCodigosError.SER_USUARIO_NO_AUTORIZADO)
+                .hasMessage(SerieSubserieNegocioMessages.SOLO_CREADOR_PUEDE_ACTUALIZAR_SERIE);
     }
 
     @Test

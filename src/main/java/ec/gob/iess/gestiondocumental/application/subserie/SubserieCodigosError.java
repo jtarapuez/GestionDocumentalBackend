@@ -7,6 +7,7 @@ public final class SubserieCodigosError {
 
     public static final String SUB_ID_SERIE_REQUERIDO = "SUB_ID_SERIE_REQUERIDO";
     public static final String SUB_ID_SERIE_NO_EXISTE = "SUB_ID_SERIE_NO_EXISTE";
+    public static final String SUB_USUARIO_NO_AUTORIZADO = "SUB_USUARIO_NO_AUTORIZADO";
 
     private SubserieCodigosError() {
     }

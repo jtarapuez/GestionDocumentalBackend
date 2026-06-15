@@ -5,6 +5,8 @@ import ec.gob.iess.gestiondocumental.application.port.in.SerieDocumentalUseCaseP
 import ec.gob.iess.gestiondocumental.application.port.out.SeccionDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.port.out.SerieDocumentalRepositoryPort;
 import ec.gob.iess.gestiondocumental.application.serie.SerieCodigosError;
+import ec.gob.iess.gestiondocumental.application.serie.SerieSubserieCreadorRegla;
+import ec.gob.iess.gestiondocumental.application.serie.SerieSubserieNegocioMessages;
 import ec.gob.iess.gestiondocumental.domain.SerieDocumentalEstados;
 import ec.gob.iess.gestiondocumental.domain.model.SerieDocumental;
 import ec.gob.iess.gestiondocumental.interfaces.api.dto.SerieDocumentalRequest;
@@ -59,6 +61,11 @@ public class SerieDocumentalUseCase implements SerieDocumentalUseCasePort {
     public Optional<SerieDocumentalResponse> actualizarSerie(
             Long id, SerieDocumentalRequest request, String usuarioCedula) {
         return serieRepositoryPort.findByIdOptional(id).map(serie -> {
+            SerieSubserieCreadorRegla.assertMismoCreadorQueCreo(
+                    usuarioCedula,
+                    serie.getUsuCreacion(),
+                    SerieCodigosError.SER_USUARIO_NO_AUTORIZADO,
+                    SerieSubserieNegocioMessages.SOLO_CREADOR_PUEDE_ACTUALIZAR_SERIE);
             if (request.getNombreSerie() != null) serie.setNombreSerie(request.getNombreSerie());
             if (request.getDescripcion() != null) serie.setDescripcion(request.getDescripcion());
             if (request.getFormatoDoc() != null) serie.setFormatoDoc(request.getFormatoDoc());

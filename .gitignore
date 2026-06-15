@@ -51,6 +51,11 @@ Thumbs.db
 # application-local.properties
 # application-prod.properties
 
+# Variables locales (Keycloak secret, etc.)
+.env
+.env.*
+!.env.example
+
 # Quarkus
 .quarkus/
 
